@@ -3,6 +3,7 @@ import { Form, Location, redirect } from "@remix-run/react";
 import React from "react";
 import { getStripeCheckout } from "~/.server/stripe";
 import { Animations } from "~/components/Animations";
+import { NavBar } from "~/components/NavBar";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { ToggleButton } from "~/components/ToggleButton";
 import { Faq } from "~/home/Faq";
@@ -27,14 +28,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Route({ children }: { children: React.ReactNode }) {
   return (
     <main id="main" className="  bg-white dark:bg-dark overflow-hidden">
-      <nav className="fixed h-16  bg-white/40 dark:bg-dark/40 backdrop-blur-md z-[100] w-full  px-6 md:px-[6%] lg:px-0 ">
-        <div className="xl:max-w-7xl justify-between items-center h-16 mx-auto flex">
-          <a>
-            <img className="h-10" src="/Logo.png" alt="logo" />
-          </a>
-          <ToggleButton />
-        </div>
-      </nav>
+      <NavBar />
       <Hero>
         <Form method="POST">
           <PrimaryButton
