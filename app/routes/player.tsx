@@ -34,6 +34,7 @@ import { cn } from "~/lib/utils";
 import { Drawer } from "~/components/SimpleDrawer";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { getStripeCheckout } from "~/.server/stripe";
+import { getUserORNull } from "~/.server/user";
 
 const video = {
   title: "¿Qué son las future flags?",
@@ -80,9 +81,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
   if (!video) throw json(null, { status: 404 });
   const moduleNames = [...new Set(videos.map((video) => video.moduleName))];
-  // @todo active user and its purchasing
-  const user = { courses: ["645d3dbd668b73b34443789cx"] };
-  const isPurchased = user.courses.includes("645d3dbd668b73b34443789c");
+  const user = await getUserORNull(request);
+  const isPurchased = user
+    ? user.courses.includes("645d3dbd668b73b34443789c")
+    : false;
   return {
     user,
     isPurchased,
