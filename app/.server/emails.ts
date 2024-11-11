@@ -18,5 +18,6 @@ export const sendMagicLinkEmail = (user: User, token: string) => {
       bcc: [user.email],
       html: magicLinkTemplate({ link: url.toString() }),
     })
+    .then((result: unknown) => console.log(result))
     .catch((e: Error) => console.error(e));
 };
