@@ -10,7 +10,7 @@ export const getStripeCheckout = async (
   const stripe = new Stripe(
     isDev
       ? process.env.STRIPE_SECRET_KEY_DEV || ""
-      : process.env.STRIPE_SECRET_KEY || "",
+      : (process.env.STRIPE_SECRET_KEY as string),
     {}
   );
 
@@ -24,7 +24,7 @@ export const getStripeCheckout = async (
       {
         price: isDev
           ? "price_1KBnlPJ7Zwl77LqnixoYRahN"
-          : "price_1LbSx0J7Zwl77LqnTK9noQRh", // prod
+          : "price_1QKLfhJ7Zwl77LqnZw5iaY1V", // prod
         quantity: 1,
       },
     ],

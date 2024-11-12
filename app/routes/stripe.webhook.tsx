@@ -7,8 +7,8 @@ const isDev = process.env.NODE_ENV === "development";
 
 const stripe = new Stripe(
   isDev
-    ? process.env.STRIPE_SECRET_KEY || ""
-    : process.env.STRIPE_SECRET_KEY_DEV || "",
+    ? process.env.STRIPE_SECRET_KEY_DEV || ""
+    : (process.env.STRIPE_SECRET_KEY as string),
   {
     // apiVersion: "2020-08-27",
   }
@@ -21,10 +21,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const payload = await request.text();
   const webhookStripeSignatureHeader =
     request.headers.get("stripe-signature") || "";
-  const endpointSecret =
-    process.env.NODE_ENV === "development"
-      ? process.env.STRIPE_SIGN_DEV || ""
-      : process.env.STRIPE_SIGN || "";
+  const endpointSecret = isDev
+    ? process.env.STRIPE_SIGN_DEV || ""
+    : process.env.STRIPE_SIGN || "";
   let event;
   try {
     event = stripe.webhooks.constructEvent(
