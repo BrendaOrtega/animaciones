@@ -1,21 +1,34 @@
-import { Location } from "@remix-run/react";
 import Stripe from "stripe";
 
-export const getStripeCheckout = async () => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {});
+const isDev = process.env.NODE_ENV === "development";
 
-  const next = `/player`;
+export const getStripeCheckout = async (options: {
+  customer_email?: string;
+}) => {
+  const stripe = new Stripe(
+    isDev
+      ? process.env.STRIPE_SECRET_KEY_DEV || ""
+      : process.env.STRIPE_SECRET_KEY || "",
+    {}
+  );
+
   const session = await stripe.checkout.sessions.create({
     metadata: {
-      courseSlug: "animaciones_react",
+      courseId: "645d3dbd668b73b34443789c", // others?
     },
-    customer_email: undefined, // @todo use logged user
+    customer_email: options?.customer_email,
     mode: "payment",
-    // line_items: [{ price: 'price_1LbSx0J7Zwl77LqnTK9noQRh', quantity: 1 }],
-    line_items: [{ price: "price_1LbSx0J7Zwl77LqnTK9noQRh", quantity: 1 }], // <= multi moneda
+    line_items: [
+      {
+        price: isDev
+          ? "price_1KBnlPJ7Zwl77LqnixoYRahN"
+          : "price_1LbSx0J7Zwl77LqnTK9noQRh", // prod
+        quantity: 1,
+      },
+    ], // <= @todo multi moneda?
     success_url: `${process.env.CURRENT_URL}/player?success=1`,
     cancel_url: `${process.env.CURRENT_URL}/player?success=0`,
-    //   ...discounts,
+    //   ...discounts, // cupones
   });
   return session.url || "/";
 };

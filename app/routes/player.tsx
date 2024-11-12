@@ -152,6 +152,10 @@ export default function Route() {
             paso a paso. <br />
             ¡Desbloquea el curso completo! 🫶🏻
           </p>
+          <p className="text-2xl text-center pt-20 pb-8">
+            Si estás aquí justo después de tu compra, no olvides revisar tu
+            bandeja de spam, para encontrar tu acceso. 😅
+          </p>
           <Form method="POST">
             <PrimaryButton
               // auto loading
@@ -160,9 +164,9 @@ export default function Route() {
               name="intent"
               value="checkout"
               type="submit"
-              className="font-bold w-full mt-20 hover:text-2xl"
+              className="font-bold w-full mt-20 hover:tracking-wide"
             >
-              ¡Que siga la mágia! 🎩🪄
+              ¡Que siga la magia! 🎩🪄
             </PrimaryButton>
           </Form>
         </Drawer>

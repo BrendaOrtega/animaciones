@@ -4,6 +4,7 @@ import { MagicLink } from "~/components/MagicLink";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { z } from "zod";
 import {
+  confirmUser,
   sendMagicLink,
   setSessionWithEmailAndRedirect,
   verifyToken,
@@ -25,12 +26,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const token = url.searchParams.get("token");
+  const next = url.searchParams.get("next");
   if (token) {
     const verified = verifyToken(token as string);
-    if (!verified.success) return { screen: "wrong_token" };
+    if (!verified.success || !verified.decoded)
+      return { screen: "wrong_token" };
+    const { email } = verified.decoded;
+    // confirm account
+    await confirmUser(email);
     // set cookie
-    return await setSessionWithEmailAndRedirect(verified.decoded.email, {
+    return await setSessionWithEmailAndRedirect(email, {
       request,
+      redirectURL: next || undefined,
     });
   }
 
