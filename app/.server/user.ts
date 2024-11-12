@@ -1,11 +1,10 @@
 import { db } from "./db";
-import jwt, { type JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { sendMagicLinkEmail, sendWelcomeEmail } from "./emails";
-import { isValid } from "zod";
 import { commitSession, destroySession, getSession } from "~/sessions";
-import { json, redirect, Session } from "@remix-run/node";
+import { redirect, Session } from "@remix-run/node";
 
-const secret = "pelusina69";
+const secret = "yutuSecret"; // @todo from .env file
 
 // throw redirect
 const throwRedirect = async (redirectURL: string, session: Session) => {

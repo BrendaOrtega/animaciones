@@ -34,7 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   } catch (error: unknown) {
     console.error(`Stripe event construct error: ${error}`);
-    return json(error, { status: 400 });
+    return json(error, { status: 401 });
   }
 
   switch (event.type) {
@@ -51,7 +51,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         return json(
           "customer_email or courseId are missing from webhook event",
           {
-            status: 400,
+            status: 403,
           }
         );
       }
@@ -67,7 +67,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         data: { courses },
       });
       await sendWelcome(user.email);
-      // @todo send email
       break;
   }
   return json(null, { status: 200 });

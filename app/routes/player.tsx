@@ -1,14 +1,7 @@
 import { Video } from "@prisma/client";
 import { nanoid } from "nanoid";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import {
-  Form,
-  json,
-  Link,
-  redirect,
-  useLoaderData,
-  useNavigation,
-} from "@remix-run/react";
+import { Form, json, Link, redirect, useLoaderData } from "@remix-run/react";
 import {
   AnimatePresence,
   motion,
@@ -101,12 +94,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function Route() {
   const { isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
+  const [successIsOpen, setSuccessIsOpen] = useState(searchParams.success);
   const [isLoading, setIsLoading] = useState(false);
   const handleClickEnding = () => {
     // @TODO: change to next video (navigate?)
   };
-  const nextIndex = (video.index + 1) % videos.length;
+  const nextIndex = ((video.index || 0) + 1) % videos.length;
   const nextVideo = videos[nextIndex];
+
   return (
     <>
       <article className="bg-slate-950 relative overflow-x-hidden">
@@ -126,7 +121,27 @@ export default function Route() {
           isLocked={!isPurchased}
         />
       </article>
-      {searchParams.success && <EmojiConfetti />}
+      {searchParams.success && (
+        <>
+          <EmojiConfetti />
+          <Drawer
+            header={<></>}
+            cta={<></>}
+            className="z-50"
+            title="Desbloquea todo el curso"
+            isOpen={successIsOpen}
+            onClose={() => setSuccessIsOpen(false)}
+          >
+            <img src="/Logo.png" alt="logo" className="mx-auto w-lg" />
+            <h2 className="text-3xl text-center pt-20">
+              ¡Has desbloqueado todos los tutoriales! <br /> 🎉 🍾
+            </h2>
+            <p className="mt-20 text-center">
+              Ahora, revisa tu correo para encontrar tu acceso. 🪄
+            </p>
+          </Drawer>
+        </>
+      )}
       {!isPurchased && !video.isPublic && (
         <Drawer
           header={<></>}
@@ -135,7 +150,7 @@ export default function Route() {
           title="Desbloquea todo el curso"
           isOpen
         >
-          <p className="text-2xl text-center pt-20 pb-8">
+          <p className="text-xl text-center pt-20 pb-8">
             Recuerda que el código de los componentes es Open Source y puedes{" "}
             <a
               className="text-blue-500 hover:text-blue-600"
@@ -147,12 +162,12 @@ export default function Route() {
             </a>{" "}
             libremente para tus proyectos. 😎
           </p>
-          <p className="text-3xl text-center">
+          <p className="text-2xl text-center">
             Puedes seguir mirando, y construir conmigo todos los componentes
             paso a paso. <br />
             ¡Desbloquea el curso completo! 🫶🏻
           </p>
-          <p className="text-2xl text-center pt-20 pb-8">
+          <p className="text-xl text-center pt-20 pb-8">
             Si estás aquí justo después de tu compra, no olvides revisar tu
             bandeja de spam, para encontrar tu acceso. 😅
           </p>
@@ -176,11 +191,13 @@ export default function Route() {
 }
 
 const VideosMenu = ({
+  isLocked,
   videos,
   defaultOpen,
   moduleNames,
   currentVideoSlug,
 }: {
+  isLocked?: boolean;
   currentVideoSlug?: string;
   moduleNames: string[];
   videos: Partial<Video>[];
@@ -238,9 +255,9 @@ const VideosMenu = ({
                 .filter((vid) => vid.moduleName === moduleName)
                 .map((v) => (
                   <ListItem
-                    // why this is not receiving the video as a prop?
-                    isLocked={!v.isPublic}
-                    // isCompleted={checkIfWatched(v.slug)}
+                    // why this is not receiving the video as a prop? ...because I am creative...
+                    isLocked={v.isPublic ? false : isLocked}
+                    isCompleted={checkIfWatched(v.slug || "")}
                     isCurrent={currentVideoSlug === v.slug}
                     slug={v.slug || ""}
                     key={v.id}
@@ -400,17 +417,17 @@ const MenuButton = ({
         {isOpen ? (
           <motion.span
             key="open"
-            initial={{ filter: "blur(4px)", opacity: 0 }}
+            initial={{ filter: "blur(9px)", opacity: 0 }}
             animate={{ filter: "blur(0px)", opacity: 1 }}
-            exit={{ filter: "blur(4px)", opacity: 0 }}
+            exit={{ filter: "blur(9px)", opacity: 0 }}
           >
             <MdMenuOpen />
           </motion.span>
         ) : (
           <motion.span
-            initial={{ filter: "blur(4px)", opacity: 0 }}
+            initial={{ filter: "blur(9px)", opacity: 0 }}
             animate={{ filter: "blur(0px)", opacity: 1 }}
-            exit={{ filter: "blur(4px)", opacity: 0 }}
+            exit={{ filter: "blur(9px)", opacity: 0 }}
             key="close"
           >
             <BsMenuButtonWide />
@@ -440,7 +457,6 @@ const VideoPlayer = ({
   src?: string;
   onPlay?: () => void;
 }) => {
-  // @TODO initiate loading with no play button
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isEnding, setIsEnding] = useState(false);

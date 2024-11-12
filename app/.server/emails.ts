@@ -31,12 +31,12 @@ export const sendWelcomeEmail = (email: string, token: string) => {
   );
   url.pathname = "/portal";
   url.searchParams.set("token", token);
-  url.searchParams.set("next", "/player?videoSlug=primer-animacion-simple"); // @todo correct
-  console.log("URL? ", url.toString());
+  url.searchParams.set("next", "/player?videoSlug=primer-animacion-simple"); // @todo update param
+
   return sendgridTransport
     .sendMail({
       from: "contacto@fixter.org",
-      subject: "🪄 Aquí está tu acceso 🎫 a todo",
+      subject: "🪄 Aquí está tu acceso 🎫",
       bcc: [email],
       html: welcomeTemplate({ link: url.toString() }),
     })

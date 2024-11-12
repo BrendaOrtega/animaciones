@@ -27,10 +27,11 @@ export const getStripeCheckout = async (
           : "price_1LbSx0J7Zwl77LqnTK9noQRh", // prod
         quantity: 1,
       },
-    ], // <= @todo multi moneda?
+    ],
     success_url: `${process.env.CURRENT_URL}/player?success=1`,
     cancel_url: `${process.env.CURRENT_URL}/player?videoSlug=primer-animacion-simple`,
     //   ...discounts, // cupones
+    // <= @todo multi moneda?
   });
   return session.url || "/";
 };
