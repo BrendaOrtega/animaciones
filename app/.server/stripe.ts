@@ -2,9 +2,11 @@ import Stripe from "stripe";
 
 const isDev = process.env.NODE_ENV === "development";
 
-export const getStripeCheckout = async (options: {
-  customer_email?: string;
-}) => {
+export const getStripeCheckout = async (
+  options: {
+    customer_email?: string;
+  } = {}
+) => {
   const stripe = new Stripe(
     isDev
       ? process.env.STRIPE_SECRET_KEY_DEV || ""
@@ -27,7 +29,7 @@ export const getStripeCheckout = async (options: {
       },
     ], // <= @todo multi moneda?
     success_url: `${process.env.CURRENT_URL}/player?success=1`,
-    cancel_url: `${process.env.CURRENT_URL}/player?success=0`,
+    cancel_url: `${process.env.CURRENT_URL}/player?videoSlug=primer-animacion-simple`,
     //   ...discounts, // cupones
   });
   return session.url || "/";
