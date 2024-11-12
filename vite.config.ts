@@ -1,7 +1,6 @@
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import formsPlugin from "@tailwindcss/forms";
 
 import commonjs from "vite-plugin-commonjs";
 
@@ -25,6 +24,5 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
-    formsPlugin(),
   ],
 });
