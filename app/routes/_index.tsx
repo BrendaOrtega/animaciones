@@ -1,6 +1,6 @@
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, Location, redirect } from "@remix-run/react";
-import React from "react";
+import React, { useState } from "react";
 import { getStripeCheckout } from "~/.server/stripe";
 import { Animations } from "~/components/Animations";
 import { NavBar } from "~/components/NavBar";
@@ -26,12 +26,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Route({ children }: { children: React.ReactNode }) {
+  const [isLoading, setISLoading] = useState(false);
   return (
     <main id="main" className="  bg-white dark:bg-dark overflow-hidden">
       <NavBar />
       <Hero>
         <Form method="POST">
           <PrimaryButton
+            onClick={() => setISLoading(true)}
+            isLoading={isLoading}
             name="intent"
             value="checkout"
             type="submit"

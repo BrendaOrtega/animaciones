@@ -1,11 +1,10 @@
 import { db } from "./db";
-import jwt, { type JwtPayload } from "jsonwebtoken";
-import { sendMagicLinkEmail } from "./emails";
-import { isValid } from "zod";
+import jwt from "jsonwebtoken";
+import { sendMagicLinkEmail, sendWelcomeEmail } from "./emails";
 import { commitSession, destroySession, getSession } from "~/sessions";
 import { redirect, Session } from "@remix-run/node";
 
-const secret = "pelusina69";
+const secret = "yutuSecret"; // @todo from .env file
 
 // throw redirect
 const throwRedirect = async (redirectURL: string, session: Session) => {
@@ -38,6 +37,10 @@ export const getUserORNull = async (request: Request) => {
   return await db.user.findUnique({ where: { email } });
 };
 
+// confirm account
+export const confirmUser = async (email: string) =>
+  await db.user.update({ where: { email }, data: { confirmed: true } });
+
 // set cookie session
 export const setSessionWithEmailAndRedirect = async (
   email: string,
@@ -59,7 +62,7 @@ export const setSessionWithEmailAndRedirect = async (
 // verify token
 export const verifyToken = (token: string) => {
   try {
-    const decoded = jwt.verify(token, secret);
+    const decoded = jwt.verify(token, secret) as { email: string };
     return {
       success: true,
       decoded,
@@ -70,6 +73,13 @@ export const verifyToken = (token: string) => {
       success: false,
     };
   }
+};
+
+// welcome new purchase
+export const sendWelcome = async (email: string) => {
+  const token = jwt.sign({ email }, secret, { expiresIn: "365d" });
+  await sendWelcomeEmail(email, token);
+  // return { error: false };
 };
 
 // magic link 🪄
@@ -84,7 +94,7 @@ export const sendMagicLink = async (
     },
   });
   if (!user) return { error: "No existe una cuenta con este correo" };
-  const token = jwt.sign({ email }, secret, { expiresIn: "1h" });
+  const token = jwt.sign({ email }, secret, { expiresIn: "365d" });
   await sendMagicLinkEmail(user, token);
   return { error: false };
 };

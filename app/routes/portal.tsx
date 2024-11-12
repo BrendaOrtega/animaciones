@@ -1,9 +1,15 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Link, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { MagicLink } from "~/components/MagicLink";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { z } from "zod";
 import {
+  confirmUser,
+  getUserORNull,
   sendMagicLink,
   setSessionWithEmailAndRedirect,
   verifyToken,
@@ -25,18 +31,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const token = url.searchParams.get("token");
+  const next = url.searchParams.get("next");
   if (token) {
     const verified = verifyToken(token as string);
-    if (!verified.success) return { screen: "wrong_token" };
+    if (!verified.success || !verified.decoded)
+      return { screen: "wrong_token" };
+    const { email } = verified.decoded;
+    // confirm account
+    await confirmUser(email);
     // set cookie
-    return await setSessionWithEmailAndRedirect(verified.decoded.email, {
+    return await setSessionWithEmailAndRedirect(email, {
       request,
+      redirectURL: next || undefined,
     });
   }
-
-  // validate token, and invalidate it
-  // setCookie an eternal one*
-  // return handlePurchaseToken(token) // this will redirect
+  const user = await getUserORNull(request);
+  if (user) {
+    return redirect("/player");
+  }
   return { screen: "login" }; // 'wrong_token', 'welcome?', 'unsiscribe?'
 };
 
@@ -48,8 +60,8 @@ export default function Route() {
       return (
         <article className="flex flex-col items-center h-screen justify-center gap-4 bg-slate-200">
           <h2 className="text-2xl">Este token no sirve más. 👩🏻‍🔧</h2>
-          <Link to="/">
-            <PrimaryButton>Volver al inicio</PrimaryButton>
+          <Link to="/portal">
+            <PrimaryButton>Solicitar uno nuevo</PrimaryButton>
           </Link>
         </article>
       );

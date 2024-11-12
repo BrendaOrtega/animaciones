@@ -1,26 +1,42 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, json } from "@remix-run/node";
 import Stripe from "stripe";
 import { db } from "~/.server/db";
-import { getOrCreateUser } from "~/.server/user";
+import { getOrCreateUser, sendWelcome } from "~/.server/user";
 
-// @todo 1.test in dev mode 2.send emails
+const isDev = process.env.NODE_ENV === "development";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2020-08-27",
-});
+const stripe = new Stripe(
+  isDev
+    ? process.env.STRIPE_SECRET_KEY || ""
+    : process.env.STRIPE_SECRET_KEY_DEV || "",
+  {
+    // apiVersion: "2020-08-27",
+  }
+);
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  if (request.method !== "POST") return; // to not recognize put, patch, delete
-  const webhookSecret = process.env.STRIPE_SIGN || "";
+  // ward to not recognize put, patch, delete
+  if (request.method !== "POST") return json(null, { status: 400 });
+
+  const payload = await request.text();
   const webhookStripeSignatureHeader =
     request.headers.get("stripe-signature") || "";
-  const payload = await request.text();
-  const event = stripe.webhooks.constructEvent(
-    payload,
-    webhookStripeSignatureHeader,
-    webhookSecret
-  );
-  // @todo catch error
+  const endpointSecret =
+    process.env.NODE_ENV === "development"
+      ? process.env.STRIPE_SIGN_DEV || ""
+      : process.env.STRIPE_SIGN || "";
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      payload,
+      webhookStripeSignatureHeader,
+      endpointSecret
+    );
+  } catch (error: unknown) {
+    console.error(`Stripe event construct error: ${error}`);
+    return json(error, { status: 401 });
+  }
+
   switch (event.type) {
     case "checkout.session.async_payment_failed": // @todo send email
     default:
@@ -28,24 +44,32 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "checkout.session.async_payment_succeeded":
     case "checkout.session.completed":
       const session = event.data.object;
+
+      const email = session.customer_email || session.customer_details?.email;
+      const courseId = session.metadata?.courseId || "645d3dbd668b73b34443789c";
+      if (!email || !courseId) {
+        return json(
+          "customer_email or courseId are missing from webhook event",
+          {
+            status: 403,
+          }
+        );
+      }
       const user = await getOrCreateUser({
-        username: session.customer_email || session.customer_details?.email,
-        email: session.customer_email || session.customer_details?.email,
-        displayName: session.customer_details?.name,
+        username: email,
+        email,
+        displayName: session.customer_details?.name || "",
       });
+      const courses = [...new Set([...user.courses, courseId])]; // avoiding repetition
       // assign course
       await db.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          courses: {
-            push: [...new Set([...user.courses, session.metadata?.courseSlug])],
-          },
-        },
+        where: { id: user.id },
+        data: { courses },
       });
-      // @todo send email
+      await sendWelcome(user.email);
       break;
   }
-  return null;
+  return json(null, { status: 200 });
 };
+
+// https://docs.stripe.com/cli/trigger

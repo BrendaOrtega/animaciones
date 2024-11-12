@@ -6,7 +6,6 @@ import { action } from "~/routes/portal"; // this may change if reuse
 export const MagicLink = () => {
   const fetcher = useFetcher<typeof action>();
   const isLoading = fetcher.state !== "idle";
-  // const isLoading = true;
   const error = fetcher.data?.error;
   const success = fetcher.data?.success;
 
@@ -27,7 +26,6 @@ export const MagicLink = () => {
           onSubmit={onSubmit}
           method="POST"
           className="flex justify-center items-start gap-2"
-          // navigate={false} // need to revisit this pattern
         >
           <div>
             <input
@@ -47,10 +45,7 @@ export const MagicLink = () => {
             {error && <p className="text-red-500 mt-2 text-xs">{error}</p>}
           </div>
           <button
-            // onClick={() => setIsLoading(true)}
             disabled={isLoading}
-            // name="intent"
-            // value="magic_link"
             type="submit"
             className={cn(
               "not-disabled:hover:bg-indigo-600 bg-indigo-500 rounded-xl py-2 px-6 text-white not-disabled:active:scale-95 disabled:cursor-not-allowed w-[220px] flex justify-center"

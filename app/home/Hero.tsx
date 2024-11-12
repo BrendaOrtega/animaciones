@@ -1,8 +1,9 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode } from "react";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { TextGenerateEffect } from "../components/text-generate-effect";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Tools } from "./Tools";
+
 const words = `  Aprende animaciones web con React`;
 
 export const Hero = ({ children }: { children?: ReactNode }) => {
@@ -29,17 +30,18 @@ export const Hero = ({ children }: { children?: ReactNode }) => {
 };
 
 export const ScrollReveal = ({ children }: { children: ReactNode }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
   return (
     <motion.div
-      style={{
-        opacity: isInView ? 1 : 0,
-        transition: "all 0.3s cubic-bezier(0.17, 0.55, 0.55, 1) 0.2s",
-        transform: isInView ? "translateY(0)" : "translateY(100px)",
+      whileInView={{
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)",
       }}
-      ref={ref}
+      initial={{
+        y: 100,
+        opacity: 0,
+        filter: "blur(4px)",
+      }}
     >
       {children}
     </motion.div>
