@@ -49,7 +49,24 @@ export default function Route({ children }: { children: React.ReactNode }) {
         <Why />
         <Animations />
         <Testimonials />
-        <Pricing />
+        <Pricing
+          leftButton={
+            <>
+              <Form method="POST">
+                <PrimaryButton
+                  onClick={() => setISLoading(true)}
+                  isLoading={isLoading}
+                  name="intent"
+                  value="cheap_checkout"
+                  type="submit"
+                  className="w-full md:w-auto mx-auto"
+                >
+                  Comprar <img src="/cursor.svg" />
+                </PrimaryButton>
+              </Form>
+            </>
+          }
+        />
         <Teacher />
         <Faq />
       </section>

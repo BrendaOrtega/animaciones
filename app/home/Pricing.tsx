@@ -1,10 +1,10 @@
 import { Button, Tab } from "@headlessui/react";
-import React from "react";
+import React, { ReactNode } from "react";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { ScrollReveal } from "./Hero";
 import { AnimatePresence, motion } from "framer-motion";
 
-export const Pricing = () => {
+export const Pricing = ({ leftButton }: { leftButton?: ReactNode }) => {
   return (
     <ScrollReveal>
       <section className="text-center py-[80px] lg:py-[120px] ">
@@ -14,13 +14,13 @@ export const Pricing = () => {
         <p className="text-lg md:text-2xl text-iron dark:text-metal dark:font-extralight font-light mt-6 mb-16">
           Elige tu pack
         </p>
-        <MyTabs />
+        <MyTabs leftButton={leftButton} />
       </section>
     </ScrollReveal>
   );
 };
 
-const MyTabs = () => {
+const MyTabs = ({ leftButton }: { leftButton?: ReactNode }) => {
   return (
     <Tab.Group>
       <Tab.List className="flex gap-0 md:gap-10 justify-between md:justify-center w-full md:w-[560px] mx-auto">
@@ -83,9 +83,7 @@ const MyTabs = () => {
                 <p>🚀 Actualizaciones futuras del curso</p>
                 <p>🫶🏻 Acceso a la comunidad de Disscord</p>
               </div>
-              <PrimaryButton className=" mt-12 w-full ">
-                Comprar curso <img src="/cursor.svg" />
-              </PrimaryButton>
+              {leftButton}
             </motion.div>
           </Tab.Panel>
         </AnimatePresence>

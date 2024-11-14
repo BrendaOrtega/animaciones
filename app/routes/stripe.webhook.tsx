@@ -1,6 +1,7 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import Stripe from "stripe";
 import { db } from "~/.server/db";
+import { notifyBrendi } from "~/.server/emails";
 import { getOrCreateUser, sendWelcome } from "~/.server/user";
 
 const isDev = process.env.NODE_ENV === "development";
@@ -66,6 +67,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         data: { courses },
       });
       await sendWelcome(user.email);
+      // this query is only because of create a human readable email to brendi.
+      const course = await db.course.findUnique({
+        where: { id: courseId },
+        select: { slug: true, title: true },
+      });
+      await notifyBrendi({
+        user,
+        courseTitle: course?.title || course?.slug || courseId,
+      });
       break;
   }
   return json(null, { status: 200 });
