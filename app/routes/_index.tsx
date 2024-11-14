@@ -1,7 +1,8 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Location, redirect } from "@remix-run/react";
 import React, { useState } from "react";
 import { getStripeCheckout } from "~/.server/stripe";
+import { getUserORNull } from "~/.server/user";
 import { Animations } from "~/components/Animations";
 import { NavBar } from "~/components/NavBar";
 import { PrimaryButton } from "~/components/PrimaryButton";
@@ -21,6 +22,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === "checkout") {
     const url = await getStripeCheckout();
     return redirect(url);
+  }
+  if (intent === "self") {
+    const user = await getUserORNull(request);
+    return { user: { email: user?.email } };
   }
   return null;
 };

@@ -9,11 +9,13 @@ import { PrimaryButton } from "~/components/PrimaryButton";
 import { z } from "zod";
 import {
   confirmUser,
+  getOrCreateUser,
   getUserORNull,
   sendMagicLink,
   setSessionWithEmailAndRedirect,
   verifyToken,
 } from "~/.server/user";
+import { destroySession, getSession } from "~/sessions";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -24,6 +26,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (!parsed.success) return { error: "El email es incorrectoS" };
     const { error } = await sendMagicLink(email);
     return { error, success: !error };
+  }
+  if (intent === "sign-out") {
+    const session = await getSession(request.headers.get("Cookie"));
+    throw redirect("/", {
+      headers: { "Set-Cookie": await destroySession(session) },
+    });
+  }
+  // @todo we could add extra validation with checking on google api
+  if (intent === "google_login") {
+    const data = JSON.parse(formData.get("data") as string);
+    const user = await getOrCreateUser(data);
+    await setSessionWithEmailAndRedirect(user.email, { request });
   }
   return null;
 };

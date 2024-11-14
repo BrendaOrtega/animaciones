@@ -104,7 +104,15 @@ export const getOrCreateUser = async ({
   email,
   displayName,
   username,
+  confirmed,
+  phoneNumber,
+  photoURL,
+  uid,
 }: {
+  confirmed: boolean;
+  phoneNumber: string;
+  photoURL?: string;
+  uid?: string;
   email: string;
   displayName: string;
   username: string;
@@ -115,5 +123,16 @@ export const getOrCreateUser = async ({
     },
   });
   if (exist) return exist;
-  return await db.user.create({ data: { email, displayName, username } });
+  // @todo? we could update existing...
+  return await db.user.create({
+    data: {
+      confirmed,
+      photoURL,
+      phoneNumber,
+      email,
+      displayName,
+      username,
+      uid,
+    },
+  });
 };
