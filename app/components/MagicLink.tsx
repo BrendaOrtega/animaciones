@@ -51,7 +51,7 @@ export const MagicLink = () => {
           >
             <img
               className="w-40 object-cover"
-              src="https://logos-world.net/wp-content/uploads/2020/11/Gmail-Logo-2013-2020.png"
+              src="https://preview.redd.it/u5xicew35ps51.png?auto=webp&s=60d75f170b4b57c4210ed8ccb3f5e5f93350a8d9"
               alt="gmail logo"
             />
             <h3>Inicia sesión con Google</h3>
