@@ -133,36 +133,37 @@ const ListItem = ({
       to={`/player?videoSlug=${slug}`}
       reloadDocument
       className={cn(
-        "text-gray-600 pl-2 flex py-4 hover:bg-gray-900 rounded-2xl hover:text-gray-400 transition-all items-center",
+        "group text-metal/50 overflow-hidden w-[90%] mx-auto relative pl-4 flex py-4  hover:brightness-100 rounded-2xl hover:text-metal/80 transition-all items-center",
         {
-          "bg-gray-800 my-1 hover:text-white text-white hover:bg-gray-800":
-            isCurrent,
+          "bg-[#1B1C20]  hover:text-white text-white ": isCurrent,
           "cursor-pointer": !isLocked,
           "cursor-not-allowed": isLocked,
         }
       )}
     >
+      <div className="absolute w-0 group-hover:w-[120%] transition-all duration-700 bg-[rgba(35,35,44,.3)] h-full rounded-3xl -left-4"></div>
       <span
-        className={cn("text-2xl pl-8", {
+        className={cn("text-2xl ", {
           "text-green-500": isCompleted,
-          "p-2 bg-indigo-500 rounded-full": isCurrent,
+          "p-2 bg-fish w-6 h-6 rounded-full flex items-center justify-center":
+            isCurrent,
         })}
       >
         {isCurrent ? (
-          <FaPlay />
+          <FaPlay className="text-base" />
         ) : isCompleted ? (
           <MdOutlineRadioButtonChecked />
         ) : (
           <MdOutlineRadioButtonUnchecked />
         )}
       </span>
-      <div className="capitalize text-sm pl-8">{title}</div>
+      <div className="capitalize text-sm pl-4 z-20">{title}</div>
       {isLocked ? (
         <span className="ml-auto pr-8">
           <IoMdLock />
         </span>
       ) : (
-        <div className="text-xs pl-auto ml-auto pr-8">{duration}m</div>
+        <div className="text-xs pl-auto ml-auto pr-4">{duration}m</div>
       )}
     </Link>
   );
@@ -189,7 +190,7 @@ const MenuListContainer = ({
         scrollbarWidth: "none",
         maskImage,
       }}
-      className="md:w-[380px] w-[300px] fixed z-10 rounded-xl overflow-y-scroll h-[88%] bg-gray-950 top-0 left-0 pt-20"
+      className="md:w-[380px] w-[300px] fixed z-10 rounded-xl overflow-y-scroll h-[88%] bg-dark top-0 left-0 pt-20"
     >
       {children}
     </motion.div>
@@ -206,16 +207,16 @@ const ModuleHeader = ({
   subtitle?: string;
 }) => {
   return (
-    <header className="text-indigo-600 rounded-lg pl-9 py-3 bg-gray-800 flex items-center gap-4 mb-2">
-      <span className={cn("text-4xl", isCompleted && "text-green-500")}>
+    <header className="text-fish rounded-3xl pl-9 py-3 bg-[#141518] flex items-center gap-4 mb-2">
+      {/* <span className={cn("text-4xl", isCompleted && "text-green-500")}>
         {isCompleted ? (
           <MdOutlineRadioButtonChecked />
         ) : (
           <MdOutlineRadioButtonUnchecked />
         )}
-      </span>
+      </span> */}
       <div>
-        <p className="font-sans capitalize font-extrabold text-white">
+        <p className="font-sans capitalize font-semibold text-white">
           {subtitle}
         </p>
         <h3
@@ -245,7 +246,7 @@ const MenuButton = ({
       style={{ x }}
       onClick={onToggle}
       className={cn(
-        "fixed bg-gray-900 text-4xl text-white top-0 mt-20 p-2 z-50 flex items-center justify-center rounded-r-2xl hover:bg-gray-800",
+        "fixed bg-[#141518] text-4xl w-14 h-14 text-white top-0 mt-20 p-2 z-50 flex items-center justify-center rounded-r-2xl hover:bg-[rgba(35,35,44)]",
         {
           "left-[-80px] md:left-auto": isOpen,
           "rounded-2xl": isOpen,
@@ -269,7 +270,7 @@ const MenuButton = ({
             exit={{ filter: "blur(9px)", opacity: 0 }}
             key="close"
           >
-            <BsMenuButtonWide />
+            <BsMenuButtonWide className="text-3xl " />
           </motion.span>
         )}
       </AnimatePresence>

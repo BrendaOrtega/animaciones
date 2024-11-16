@@ -3,7 +3,7 @@ import { ToggleButton } from "./ToggleButton";
 import { useEffect } from "react";
 import { action } from "~/routes/_index";
 import { cn } from "~/lib/utils";
-import { FaDoorClosed } from "react-icons/fa";
+import { IoMdLogOut } from "react-icons/io";
 
 // @todo show user is logged in?
 export const NavBar = ({
@@ -36,21 +36,24 @@ export const NavBar = ({
     <>
       <nav
         className={cn(
-          "fixed h-16  bg-white/40 dark:bg-dark/40 backdrop-blur-md z-[100] w-full  px-6 md:px-[6%] lg:px-0",
+          "fixed top-0 h-16  bg-white/40 dark:bg-dark/40 backdrop-blur-md z-[80] w-full  px-6 md:px-[6%] lg:px-0",
           {
-            "bg-gray-900": mode === "player",
+            "text-dark": mode === "player",
           },
           className
         )}
       >
         <div className="xl:max-w-7xl justify-between items-center h-16 mx-auto flex">
-          <img className="h-10" src="/Logo.png" alt="logo" />
+          <Link to="/">
+            <img className="h-10" src="/Logo.png" alt="logo" />
+          </Link>
+
           {mode !== "player" && (
             <>
               <Link
                 to="/portal"
                 className={cn(
-                  "transition-all hover:text-gray-900 text-gray-500 ml-auto mr-4",
+                  "transition-all text-dark dark:text-white hover:text-gray-500 ml-auto mr-4",
                   {
                     "font-bold text-fish/80 hover:text-fish": userEmail,
                   }
@@ -62,12 +65,15 @@ export const NavBar = ({
             </>
           )}
           {mode === "player" && (
-            <button
-              onClick={handleSignOut}
-              className="transition-all hover:scale-105 py-1 px-2 rounded-full text-white text-xl active:scale-100"
-            >
-              <FaDoorClosed />
-            </button>
+            <>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 text-base transition-all hover:scale-105 py-1 px-2 rounded-full text-dark dark:text-white  active:scale-100"
+              >
+                Cerrar sesión
+                <IoMdLogOut className="text-xl" />
+              </button>
+            </>
           )}
         </div>
       </nav>

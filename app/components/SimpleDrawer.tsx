@@ -67,14 +67,14 @@ export const Drawer = ({
         animate={{ x: 0 }}
         exit={{ x: "120%" }}
         transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-        className="bg-white lg:w-[40%] md:w-[60%] w-[90%] z-10 h-screen fixed top-0 right-0 shadow-xl rounded-tl-3xl rounded-bl-3xl p-8 flex flex-col"
+        className="bg-white dark:bg-dark lg:w-[40%] md:w-[60%] w-[90%] z-10 h-screen fixed top-0 right-0 shadow-xl rounded-tl-3xl rounded-bl-3xl p-8 flex flex-col"
       >
         {header ? (
           header
         ) : (
           <header className="flex items-start justify-between mb-6">
             <div>
-              <h4 className="fot-bold text-2xl">{title}</h4>
+              <h4 className="text-2xl font-semibold md:text-4xl">{title}</h4>
               <p className="text-brand_gray">{subtitle}</p>
             </div>
             <button
