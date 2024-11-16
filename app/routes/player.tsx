@@ -97,7 +97,7 @@ export default function Route() {
   return (
     <>
       <NavBar mode="player" className="m-0" />
-      <article className="bg-slate-950 relative overflow-x-hidden pt-20">
+      <article className="bg-dark relative overflow-x-hidden pt-20">
         <VideoPlayer
           // @todo visit later
           onClickNextVideo={handleClickEnding}
@@ -124,18 +124,33 @@ export default function Route() {
           <Drawer
             header={<></>}
             cta={<></>}
-            className="z-50"
+            className="z-[100] "
             title="Desbloquea todo el curso"
             isOpen={successIsOpen}
             onClose={() => setSuccessIsOpen(false)}
           >
-            <img src="/Logo.png" alt="logo" className="mx-auto w-lg" />
-            <h2 className="text-3xl text-center pt-20">
-              ¡Has desbloqueado todos los tutoriales! <br /> 🎉 🍾
-            </h2>
-            <p className="mt-20 text-center">
-              Ahora, revisa tu correo para encontrar tu acceso. 🪄
-            </p>
+            <div className=" h-full flex items-center px-[5%]">
+              <div>
+                <img
+                  src="/congrats.png"
+                  alt="logo"
+                  className="mx-auto w-[240px]"
+                />
+                <h2 className="text-2xl text-dark dark:text-white font-semibold md:text-4xl text-center pt-20">
+                  ¡Has desbloqueado todos los tutoriales! 🎉 🍾
+                </h2>
+                <p className="text-lg  dark:text-metal text-center text-iron font-light mt-6">
+                  Nos da gusto que seas parte de este curso, y que al igual que
+                  nosotros seas un entusiasta de las animaciones web. A partir
+                  de hoy, tus sitios web nunca volverán a ser los mismos. <br />
+                  <strong>¡Que empiece la magia! 🧙🏻🪄</strong>
+                </p>
+                <p className="text-sm  dark:text-metal text-iron text-center font-light mt-6">
+                  Pd. Si aún no puedes ver los tutoriales, ve a tu email y da
+                  clic en el link de acceso. 🎯
+                </p>
+              </div>
+            </div>
           </Drawer>
         </>
       )}

@@ -11,12 +11,14 @@ export default {
       colors: {
         dark: "#0E0E11",
         fish: "#5158F6",
+        indie: "#7B80F5",
         iron: "#495466",
         metal: "#989898",
         lightGray: "#E5E5E5",
         tale: "#A9A9A9",
       },
       backgroundImage: {
+        magic: "url('/magic.png')",
         hero: "url('/cover.png')",
         flipWords: "url('/gifs/flip-words.png')",
         flipWordsGif: "url('/gifs/flip-words.gif')",

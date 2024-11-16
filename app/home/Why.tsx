@@ -16,17 +16,19 @@ export const Why = () => {
             Porqué tomar este curso 🎯
           </h2>
           <p className="text-lg  dark:text-metal text-iron font-light mt-6">
-            Aprenderás de forma teórica y práctica desde como elegir tu paleta
-            de color y tipografía, conocer los elementos web y sus casos de uso,
-            tendencias actuales de diseño, hasta como organizar y aplicar
-            pruebas de usabilidad a tu diseño; para al final aplicar todos estos
-            conocimientos.{" "}
+            Aprenderás de forma teórica y práctica a crear componentes de React
+            animados con motion. Y como es característico de cada uno de
+            nuestros cursos, no estarás solo en este proceso, aprenderás los
+            fundamentos de motion, además de una repasadita de los fundamentos
+            de React para después empezar a construir animaciones declarativas y
+            automáticas, sencillas y complejas, vistosas y sutiles para
+            aplicarlas a tus componentes, aprenderás a definir animaciones con
+            scroll o con el mouse, y mucho más.
           </p>
           <p className="text-lg  dark:text-metal text-iron font-light mt-4">
-            Con este curso aprenderás todo lo necesario para tomar decisiones de
-            diseño, sabrás el porqué de las decisiones que tomas y podrás
-            respaldarlas con buenas prácticas, patrones de diseño y experiencia
-            de usuario.
+            Después del curso, tus sitios web no volverán a ser los mismos.
+            Podrás agregar animaciones que le den un toque dinámico y
+            diferenciador.
           </p>
           <div className="flex flex-wrap md:flex-nowrap gap-12 mt-12">
             <div className="w-full md:w-[50%] ">

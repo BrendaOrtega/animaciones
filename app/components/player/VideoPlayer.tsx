@@ -75,7 +75,7 @@ export const VideoPlayer = ({
             key="play_button"
             className="absolute inset-0 bottom-16 flex justify-center items-center cursor-pointer z-10"
           >
-            <span className="border flex items-center justify-center text-6xl text-white rounded-full bg-indigo-500 w-[120px] h-[90px]">
+            <span className=" bg-lightGray/80 backdrop-blur	 flex items-center justify-center text-6xl text-white rounded-full  w-[120px] h-[90px]">
               <FaGooglePlay />
             </span>
           </motion.button>
@@ -98,8 +98,10 @@ export const VideoPlayer = ({
               <IoIosClose />
             </button>
             <div>
-              <p className="text-left text-lg">Siguiente video</p>
-              <h4 className="text-2xl md:w-[280px] md:truncate text-left">
+              <p className="text-left dark:text-metal text-iron">
+                Siguiente video
+              </p>
+              <h4 className="text-2xl text-dark md:w-[280px] md:truncate text-left">
                 {nextVideo.title}
               </h4>
             </div>
