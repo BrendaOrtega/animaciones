@@ -79,7 +79,7 @@ export default function Route() {
   const navigate = useNavigate();
   const { isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
-  console.log("??VIDEO", video);
+
   const [successIsOpen, setSuccessIsOpen] = useState(searchParams.success);
   const [isLoading, setIsLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
