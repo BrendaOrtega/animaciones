@@ -1,6 +1,12 @@
 import { type Video } from "@prisma/client";
-import { Form, json, useFetcher, useLoaderData } from "@remix-run/react";
-import { FormEvent, useState } from "react";
+import {
+  Fetcher,
+  Form,
+  json,
+  useFetcher,
+  useLoaderData,
+} from "@remix-run/react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { db } from "~/.server/db";
 import { PrimaryButton } from "~/components/PrimaryButton";
@@ -10,10 +16,17 @@ import { ActionFunctionArgs } from "@remix-run/node";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import slugify from "slugify";
 import { cn } from "~/lib/utils";
+import { getComboURLs } from "~/.server/tigris";
+import { nanoid } from "nanoid";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+  if (intent === "get_combo_urls") {
+    const storageKey = String(formData.get("storageKey"));
+    // @todo should throw?
+    return await getComboURLs(storageKey);
+  }
   if (intent === "delete_video") {
     const id = String(formData.get("videoId"));
     await db.video.delete({ where: { id } });
@@ -33,6 +46,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
     data.slug = slugify(data.title, { lower: true }); // @todo zod
     data.index = data.index ? Number(data.index) : undefined;
+    data.storageLink = "/videos?storageKey=" + data.storageKey; // video experiment
     // if exists
     if (data.id) {
       const id = data.id;
@@ -41,7 +55,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         where: {
           id,
         },
-        data,
+        data, // data includes storageKey
       });
       return null;
     }
@@ -63,6 +77,8 @@ export const loader = async () => {
   });
   if (!course) throw json(null, { status: 404 });
   const moduleNames = [...new Set(videos.map((video) => video.moduleName))];
+  // const storageKey =  "animations_" + nanoid() + ".mov"; // @todo improve
+  // const [putURL, deleteURL] = await getReadAndDeletePair(storageKey);
   return { course, videos, moduleNames };
 };
 
@@ -139,7 +155,7 @@ export default function Route() {
           setVideo({});
         }}
         isOpen={showVideoDrawer}
-        title="Añadir video"
+        title={video.id ? "Editar video" : "Añadir video"}
         cta={<></>} // remove cancel button
       >
         <VideoForm
@@ -169,11 +185,14 @@ const VideoForm = ({
     handleSubmit,
     register,
     formState: { errors, isValid },
+    setValue,
   } = useForm({
     defaultValues: {
+      storageLink:
+        video.storageLink || "/videos?storageKey=" + video.storageKey,
+      storageKey: video.storageKey || video.id + ".mov",
       title: video.title || "",
       isPublic: video.isPublic || false,
-      storageLink: video.storageLink || "",
       duration: video.duration || "30",
       moduleName: video.moduleName,
       id: video.id,
@@ -196,6 +215,7 @@ const VideoForm = ({
   };
 
   const handleDelete = () => {
+    // @todo: delete video file first
     if (!confirm("¿Seguro que quieres elminar?") || !video.id) return;
     fetcher.submit(
       {
@@ -229,12 +249,14 @@ const VideoForm = ({
           label="Título del video"
           register={register("title", { required: true })}
         />
-        <TextField
-          defaultValue="https://firebasestorage.googleapis.com/v0/b/fixter-67253.appspot.com/o/fixtergeek.com%2Fmicro-cursos%2Fintrocss%2F1_boxModel.mov?alt=media&token=54cc5e8a-0f90-4df8-9c98-cedfeef6c765"
-          placeholder="link del video"
-          label="Fuente del video"
-          register={register("storageLink", { required: true })}
-        />
+        {video.id && (
+          <VideoFileInput
+            video={video}
+            onVideoDuration={(duration: string) =>
+              setValue("duration", String(duration))
+            }
+          />
+        )}
 
         <TextField
           placeholder="poster del video"
@@ -277,6 +299,97 @@ const VideoForm = ({
         </div>
       </Form>
     </>
+  );
+};
+
+const VideoFileInput = ({
+  video,
+  onVideoDuration,
+}: {
+  onVideoDuration?: (arg0: string | number) => void;
+  video: Partial<Video>;
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const fetcher = useFetcher<typeof action>();
+  const fileRef = useRef<File | null>(null);
+  const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
+  const [storageKey, setStorageKey] = useState<string>("");
+
+  // @todo: calculate progress 🤩
+  const updateProgres = () => {
+    new TransformStream({
+      transform() {},
+      flush() {},
+    });
+  };
+
+  const retriveUuid = (extension: string = ".mov") => {
+    // retrive urls (save model?) (send video.id too to update on server)
+    // put file
+    //
+  };
+
+  const handleFileSelection = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    fileRef.current = file;
+    setVideoSrc(URL.createObjectURL(file));
+    const extension = file.name.split(".")[file.name.split(".").length - 1];
+    const sk = video.storageKey || `${video.id}.${extension}`; // @todo improve
+    // get urls
+    fetcher.submit(
+      {
+        intent: "get_combo_urls",
+        storageKey: sk,
+      },
+      { method: "POST" }
+    );
+    setStorageKey(sk);
+  };
+
+  const updateDuration = () => {
+    const duration = videoRef.current ? videoRef.current.duration : 0;
+    onVideoDuration?.(duration);
+  };
+
+  const updateFile = async ({ putURL }: { putURL: string }) => {
+    const file = fileRef.current;
+    if (!file) return console.error("No file present");
+    // put the file
+    if (putURL) {
+      await fetch(putURL, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Length": file.size,
+          "Content-Type": file.type,
+        },
+      }).catch((e) => console.error(e));
+    }
+  };
+
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.deleteURL && fetcher.data.putURL) {
+      updateFile(fetcher.data);
+      updateDuration();
+    }
+  }, [fetcher.data]);
+
+  const src = videoSrc;
+
+  return (
+    <section className="my-4">
+      <input type="hidden" name="storageKey" value={storageKey} />
+      <input type="file" onChange={handleFileSelection} accept="video/*" />;
+      {src && (
+        <video
+          ref={videoRef}
+          src={src}
+          className="border rounded-xl my-2 aspect-video"
+          controls
+        ></video>
+      )}
+    </section>
   );
 };
 
@@ -391,13 +504,15 @@ const Module = ({
           {videos.length < 1 && (
             <p className="text-center py-6">No hay videos</p>
           )}
-          {videos.map((video, index) => (
-            <Video
-              onClick={() => onVideoSelect?.(video)}
-              key={video.id}
-              video={video}
-            />
-          ))}
+          {videos
+            .sort((a, b) => (a.index < b.index ? -1 : 1))
+            .map((video, index) => (
+              <Video
+                onClick={() => onVideoSelect?.(video)}
+                key={video.id}
+                video={video}
+              />
+            ))}
           <PrimaryButton
             onClick={handleAddVideo}
             className="group-hover:visible invisible ml-auto"

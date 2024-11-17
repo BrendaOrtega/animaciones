@@ -39,6 +39,7 @@ model Video {
   description String?
   slug        String  @unique
   storageLink String?
+  storageKey  String?
   isPublic    Boolean @default(false)
   duration    String?
 
