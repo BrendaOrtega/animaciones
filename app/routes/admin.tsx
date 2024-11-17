@@ -134,7 +134,7 @@ export default function Route() {
             Añadir módulo
           </PrimaryButton>
         </form>
-        <section className="my-8 flex gap-8 flex-wrap">
+        <section className="my-8 flex gap-4 flex-wrap">
           {modules.map((moduleTitle, i) => (
             <Module
               index={i}
@@ -201,10 +201,6 @@ const Module = ({
     onAddVideo?.(title);
   };
 
-  const toggleEditTitle = () => {
-    setIsEditing((i) => !i);
-  };
-
   const handleModuleTitleUpdate = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.title.value;
     if (!value) return;
@@ -220,8 +216,8 @@ const Module = ({
   };
 
   return (
-    <article>
-      <section className="bg-slate-600 py-2 px-4 flex justify-between items-center mt-2 w-1/4">
+    <article className="w-64">
+      <section className="bg-slate-600 py-2 px-4 flex justify-between items-center mt-2 ">
         {isEditing ? (
           <form ref={ref} onSubmit={handleModuleTitleUpdate}>
             <input
@@ -282,10 +278,12 @@ const Video = ({ video, onClick }: { onClick?: () => void; video: Video }) => {
       onClick={onClick}
       className={cn(
         "transition-all hover:scale-[1.02] text-left py-1 px-4 rounded",
-        video.isPublic ? "bg-green-500" : "bg-slate-400"
+        video.isPublic ? "bg-green-500" : "bg-slate-400",
+        "flex justify-between"
       )}
     >
-      <p>{video.title}</p>
+      <p className="truncate">{video.title}</p>
+      <span>{video.storageKey ? "✅" : "🫥"}</span>
     </button>
   );
 };

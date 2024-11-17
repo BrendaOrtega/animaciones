@@ -22,7 +22,7 @@ export const VideoForm = ({
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid },
+    formState: { isValid },
     setValue,
   } = useForm({
     defaultValues: {
@@ -96,11 +96,6 @@ export const VideoForm = ({
             register={register}
           />
         )}
-        {/* <TextField
-          placeholder="poster del video"
-          label="Poster del video"
-          register={register("poster", { required: false })}
-        /> */}
         {video.id && (
           <ImageInput
             setValue={setValue}
@@ -126,9 +121,9 @@ export const VideoForm = ({
 
             <TextField
               placeholder="60"
-              type="number"
+              type="text"
               label="Duración del video en minutos"
-              register={register("duration", { required: true })}
+              register={register("duration", { required: false })}
             />
           </>
         )}

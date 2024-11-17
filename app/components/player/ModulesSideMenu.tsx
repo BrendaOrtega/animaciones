@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { BsMenuButtonWide } from "react-icons/bs";
 import { FaPlay } from "react-icons/fa6";
 import { IoMdLock } from "react-icons/io";
@@ -134,10 +134,23 @@ const ListItem = ({
   const formatDuration = (mins: number | string) => {
     return Number(mins).toFixed(0) + "m";
   };
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (isCurrent && ref.current) {
+      ref.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        // inline: "center",
+      });
+    }
+  }, [isCurrent]);
+
   return (
     <Link
+      ref={ref}
       to={`/player?videoSlug=${slug}`}
-      reloadDocument
+      // reloadDocument
       className={cn(
         "group text-metal/50 overflow-hidden w-[90%] mx-auto relative pl-4 flex py-4  hover:brightness-100 rounded-2xl hover:text-metal/80 transition-all items-center",
         {

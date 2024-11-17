@@ -65,6 +65,10 @@ export const ImageInput = ({
 
   const src = preview || defaultValue;
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPreview(e.currentTarget.value);
+  };
+
   return (
     <>
       <section className="w-full">
@@ -72,10 +76,10 @@ export const ImageInput = ({
         <input
           type="text"
           name={name}
-          disabled
           defaultValue={defaultValue}
           className="my-2 w-full rounded-lg disabled:bg-gray-200 text-gray-500"
           {...register(name)}
+          onChange={handleInputChange}
         />
         <button
           type="button"

@@ -2,6 +2,7 @@ import { type Video } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { action } from "~/routes/admin";
+import { Spinner } from "../Spinner";
 
 export const VideoFileInput = ({
   video,
@@ -26,6 +27,7 @@ export const VideoFileInput = ({
   // const fileRef = useRef<File | null>(null);
   const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
   const [storageKey, setStorageKey] = useState<string>("");
+  const [uploading, setUploading] = useState<boolean>(false);
 
   // @todo: calculate progress 🤩
   const updateProgres = () => {
@@ -67,7 +69,9 @@ export const VideoFileInput = ({
   const uploadFile = async (file: File) => {
     // @todo: catch progress
     if (!file || !urls) return console.error("No file, nor urls present");
+
     if (urls.putURL) {
+      setUploading(true);
       await fetch(urls.putURL, {
         method: "PUT",
         body: file,
@@ -75,7 +79,12 @@ export const VideoFileInput = ({
           "Content-Length": file.size,
           "Content-Type": file.type,
         },
-      }).catch((e) => console.error(e));
+      })
+        .catch((e) => {
+          setUploading(false);
+          console.error(e);
+        })
+        .then(() => setUploading(false));
       // improve
       setValue("storageKey", storageKey);
       setValue("storageLink", "/files?storageKey=" + storageKey);
@@ -107,8 +116,7 @@ export const VideoFileInput = ({
         onChange={handleFileSelection}
         accept="video/*"
         className="mb-2"
-      />
-
+      />{" "}
       {videoSrc && (
         <video
           ref={videoRef}
@@ -116,6 +124,11 @@ export const VideoFileInput = ({
           className="border rounded-xl my-2 aspect-video w-full"
           controls
         ></video>
+      )}
+      {uploading && (
+        <div className="flex gap-2">
+          <Spinner /> Subiendo video, no cierre la ventana
+        </div>
       )}
     </section>
   );
