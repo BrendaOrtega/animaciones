@@ -21,7 +21,10 @@ const setCors = async () => {
         {
           AllowedHeaders: ["*"],
           AllowedMethods: ["PUT", "DELETE"],
-          AllowedOrigins: ["http://localhost:3000"],
+          AllowedOrigins: [
+            "http://localhost:3000",
+            "https://animations.fly.dev",
+          ],
           MaxAgeSeconds: 3600,
         },
       ],

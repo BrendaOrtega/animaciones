@@ -18,7 +18,7 @@ const throwRedirect = async (redirectURL: string, session: Session) => {
 // getUserOrRedirect
 export const getUserOrRedirect = async (
   request: Request,
-  { redirectURL = "/" }: { redirectURL?: string }
+  options: { redirectURL?: string } = { redirectURL: "/" }
 ) => {
   const session = await getSession(request.headers.get("Cookie"));
   if (!session.has("userEmail")) {
@@ -27,6 +27,7 @@ export const getUserOrRedirect = async (
   const email = session.get("userEmail");
   const user = await db.user.findUnique({ where: { email } });
   if (!user) throw throwRedirect(redirectURL, session);
+  return user;
 };
 
 // getUserORNull

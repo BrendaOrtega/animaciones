@@ -12,12 +12,16 @@ import { db } from "~/.server/db";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { Drawer } from "~/components/SimpleDrawer";
 import { useForm } from "react-hook-form";
-import { ActionFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import slugify from "slugify";
 import { cn } from "~/lib/utils";
 import { getComboURLs } from "~/.server/tigris";
-import { nanoid } from "nanoid";
+import { getUserOrRedirect } from "~/.server/user";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -64,7 +68,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return null;
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = await getUserOrRedirect(request);
+  if (user.role !== "ADMIN") return redirect("/");
+
   const course = await db.course.findUnique({
     where: { id: "645d3dbd668b73b34443789c" },
   });
