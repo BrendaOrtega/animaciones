@@ -129,6 +129,9 @@ const ListItem = ({
   isCompleted?: boolean;
   title: string;
 }) => {
+  const formatDuration = (mins: number | string) => {
+    return Number(mins).toFixed(0) + "m";
+  };
   return (
     <Link
       to={`/player?videoSlug=${slug}`}
@@ -164,7 +167,9 @@ const ListItem = ({
           <IoMdLock />
         </span>
       ) : (
-        <div className="text-xs pl-auto ml-auto pr-4">{duration}m</div>
+        <div className="text-xs pl-auto ml-auto pr-4">
+          {formatDuration(duration)}
+        </div>
       )}
     </Link>
   );

@@ -64,7 +64,7 @@ export const NavBar = ({
               <ToggleButton />
             </>
           )}
-          {mode === "player" && (
+          {mode === "player" && userEmail && (
             <>
               <button
                 onClick={handleSignOut}

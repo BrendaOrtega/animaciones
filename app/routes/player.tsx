@@ -53,7 +53,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
   const video = await db.video.findUnique({
     where: {
-      slug: searchParams.get("videoSlug") || videos[0].slug,
+      slug: searchParams.get("videoSlug") || "bienvenida-al-curso", // @todo better sorting
     },
   });
   if (!video) throw json(null, { status: 404 });
@@ -79,6 +79,7 @@ export default function Route() {
   const navigate = useNavigate();
   const { isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
+  console.log("??VIDEO", video);
   const [successIsOpen, setSuccessIsOpen] = useState(searchParams.success);
   const [isLoading, setIsLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -99,7 +100,7 @@ export default function Route() {
       <NavBar mode="player" className="m-0" />
       <article className="bg-dark relative overflow-x-hidden pt-20">
         <VideoPlayer
-          // @todo visit later
+          // @todo visit and refactor please
           onClickNextVideo={handleClickEnding}
           type={video.type || undefined}
           src={video.storageLink || undefined}

@@ -7,6 +7,8 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+const isDev = process.env.NODE_ENV === "development";
+
 const S3 = new S3Client({
   region: "auto",
   endpoint: `https://fly.storage.tigris.dev`,
@@ -21,10 +23,9 @@ const setCors = async () => {
         {
           AllowedHeaders: ["*"],
           AllowedMethods: ["PUT", "DELETE"],
-          AllowedOrigins: [
-            "http://localhost:3000",
-            "https://animations.fly.dev",
-          ],
+          AllowedOrigins: isDev
+            ? ["http://localhost:3000"]
+            : ["https://animations.fly.dev"],
           MaxAgeSeconds: 3600,
         },
       ],

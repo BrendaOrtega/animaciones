@@ -41,7 +41,7 @@ export const MagicLink = () => {
   };
 
   return (
-    <article className="bg-white bg-magic bg-no-repeat bg-right dark:bg-dark h-screen flex items-center justify-center  gap-2">
+    <article className="bg-white bg-magic bg-no-repeat bg-right dark:bg-dark h-screen flex pt-[120px] justify-center  gap-2">
       <NavBar />
       <div>
         <img className="w-52 mx-auto" src="/hat.png" alt="logo" />

@@ -1,17 +1,10 @@
 import { type Video } from "@prisma/client";
-import {
-  Fetcher,
-  Form,
-  json,
-  useFetcher,
-  useLoaderData,
-} from "@remix-run/react";
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { json, useFetcher, useLoaderData } from "@remix-run/react";
+import { FormEvent, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { db } from "~/.server/db";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { Drawer } from "~/components/SimpleDrawer";
-import { useForm } from "react-hook-form";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -22,6 +15,7 @@ import slugify from "slugify";
 import { cn } from "~/lib/utils";
 import { getComboURLs } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
+import { VideoForm } from "~/components/admin/VideoForm";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -51,6 +45,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     data.slug = slugify(data.title, { lower: true }); // @todo zod
     data.index = data.index ? Number(data.index) : undefined;
     data.storageLink = "/videos?storageKey=" + data.storageKey; // video experiment
+    console.log("Data a guardar:", data);
     // if exists
     if (data.id) {
       const id = data.id;
@@ -69,7 +64,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await getUserOrRedirect(request);
+  const user = await getUserOrRedirect({ request });
   if (user.role !== "ADMIN") return redirect("/");
 
   const course = await db.course.findUnique({
@@ -139,7 +134,7 @@ export default function Route() {
             Añadir módulo
           </PrimaryButton>
         </form>
-        <section className="my-8">
+        <section className="my-8 flex gap-8 flex-wrap">
           {modules.map((moduleTitle, i) => (
             <Module
               index={i}
@@ -174,262 +169,6 @@ export default function Route() {
     </>
   );
 }
-
-// @todo select moduleName to swap'em
-const VideoForm = ({
-  onSubmit,
-  video,
-  nextIndex,
-}: {
-  nextIndex: number;
-  onSubmit?: (arg0?: Partial<Video>) => void;
-  video: Partial<Video>;
-}) => {
-  const fetcher = useFetcher();
-  const isLoading = fetcher.state !== "idle";
-
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isValid },
-    setValue,
-  } = useForm({
-    defaultValues: {
-      storageLink:
-        video.storageLink || "/videos?storageKey=" + video.storageKey,
-      storageKey: video.storageKey || video.id + ".mov",
-      title: video.title || "",
-      isPublic: video.isPublic || false,
-      duration: video.duration || "30",
-      moduleName: video.moduleName,
-      id: video.id,
-      slug: video.slug,
-      index: String(video.index === 0 ? "0" : video.index || nextIndex),
-      // @todo remove default
-      poster: video.poster || "https://i.imgur.com/GdtxiE9.png",
-    },
-  });
-
-  const onSubmition = (values: Partial<Video>) => {
-    fetcher.submit(
-      {
-        intent: "update_video",
-        data: JSON.stringify(values),
-      },
-      { method: "POST" }
-    );
-    onSubmit?.(values);
-  };
-
-  const handleDelete = () => {
-    // @todo: delete video file first
-    if (!confirm("¿Seguro que quieres elminar?") || !video.id) return;
-    fetcher.submit(
-      {
-        intent: "delete_video",
-        videoId: video.id,
-      },
-      { method: "POST" }
-    );
-    onSubmit?.();
-  };
-
-  return (
-    <>
-      <Form
-        className="flex flex-col h-full"
-        onSubmit={handleSubmit(onSubmition)}
-      >
-        <h3 className="mb-2 text-gray-400 text-xl">
-          Módulo: {video.moduleName}
-        </h3>
-        <h3 className="mb-2 text-gray-400 text-xl">Slug: {video.slug}</h3>
-
-        <TextField
-          type="number"
-          placeholder="lugar en la lista: 0"
-          label="Índice de orden"
-          register={register("index", { required: true })}
-        />
-        <TextField
-          placeholder="Título del nuevo video"
-          label="Título del video"
-          register={register("title", { required: true })}
-        />
-        {video.id && (
-          <VideoFileInput
-            video={video}
-            onVideoDuration={(duration: string) =>
-              setValue("duration", String(duration))
-            }
-          />
-        )}
-
-        <TextField
-          placeholder="poster del video"
-          label="Poster del video"
-          register={register("poster", { required: false })}
-        />
-
-        <label className="flex justify-between cursor-pointer my-4">
-          <span>¿Este video es público?</span>
-          <input
-            {...register("isPublic")}
-            name="isPublic"
-            className="size-4"
-            type="checkbox"
-          />
-        </label>
-        <TextField
-          defaultValue={10}
-          placeholder="60"
-          label="Duración del video en minutos"
-          register={register("duration", { required: true })}
-        />
-        <div className="flex mt-auto gap-4">
-          <PrimaryButton
-            isDisabled={!isValid || isLoading}
-            className="w-full"
-            type="submit"
-          >
-            Guardar
-          </PrimaryButton>
-          {video.id && (
-            <PrimaryButton
-              onClick={handleDelete}
-              className="w-full bg-red-500"
-              type="button"
-            >
-              Eliminar
-            </PrimaryButton>
-          )}
-        </div>
-      </Form>
-    </>
-  );
-};
-
-const VideoFileInput = ({
-  video,
-  onVideoDuration,
-}: {
-  onVideoDuration?: (arg0: string | number) => void;
-  video: Partial<Video>;
-}) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const fetcher = useFetcher<typeof action>();
-  const fileRef = useRef<File | null>(null);
-  const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
-  const [storageKey, setStorageKey] = useState<string>("");
-
-  // @todo: calculate progress 🤩
-  const updateProgres = () => {
-    new TransformStream({
-      transform() {},
-      flush() {},
-    });
-  };
-
-  const retriveUuid = (extension: string = ".mov") => {
-    // retrive urls (save model?) (send video.id too to update on server)
-    // put file
-    //
-  };
-
-  const handleFileSelection = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    fileRef.current = file;
-    setVideoSrc(URL.createObjectURL(file));
-    const extension = file.name.split(".")[file.name.split(".").length - 1];
-    const sk = video.storageKey || `${video.id}.${extension}`; // @todo improve
-    // get urls
-    fetcher.submit(
-      {
-        intent: "get_combo_urls",
-        storageKey: sk,
-      },
-      { method: "POST" }
-    );
-    setStorageKey(sk);
-  };
-
-  const updateDuration = () => {
-    const duration = videoRef.current ? videoRef.current.duration : 0;
-    onVideoDuration?.(duration);
-  };
-
-  const updateFile = async ({ putURL }: { putURL: string }) => {
-    const file = fileRef.current;
-    if (!file) return console.error("No file present");
-    // put the file
-    if (putURL) {
-      await fetch(putURL, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Length": file.size,
-          "Content-Type": file.type,
-        },
-      }).catch((e) => console.error(e));
-    }
-  };
-
-  useEffect(() => {
-    if (fetcher.data && fetcher.data.deleteURL && fetcher.data.putURL) {
-      updateFile(fetcher.data);
-      updateDuration();
-    }
-  }, [fetcher.data]);
-
-  const src = videoSrc;
-
-  return (
-    <section className="my-4">
-      <input type="hidden" name="storageKey" value={storageKey} />
-      <input type="file" onChange={handleFileSelection} accept="video/*" />;
-      {src && (
-        <video
-          ref={videoRef}
-          src={src}
-          className="border rounded-xl my-2 aspect-video"
-          controls
-        ></video>
-      )}
-    </section>
-  );
-};
-
-const TextField = ({
-  error,
-  name,
-  label,
-  placeholder,
-  register,
-  ...props
-}: {
-  register?: any;
-  error?: string;
-  name?: string;
-  label?: string;
-  placeholder?: string;
-  [x: string]: any;
-}) => {
-  return (
-    <label className="flex flex-col gap-2 mb-4">
-      <p className="">{label}</p>
-      <input
-        placeholder={placeholder}
-        className="shadow rounded-md py-2 px-4 border w-full"
-        type="text"
-        name={name}
-        {...props}
-        {...register}
-      />
-      {error && <p>{error}</p>}
-    </label>
-  );
-};
 
 const Module = ({
   title,
@@ -479,8 +218,8 @@ const Module = ({
   };
 
   return (
-    <>
-      <section className="bg-slate-600 py-2 px-4 flex justify-between items-center mt-2">
+    <article>
+      <section className="bg-slate-600 py-2 px-4 flex justify-between items-center mt-2 w-1/4">
         {isEditing ? (
           <form ref={ref} onSubmit={handleModuleTitleUpdate}>
             <input
@@ -528,7 +267,7 @@ const Module = ({
           </PrimaryButton>
         </section>
       )}
-    </>
+    </article>
   );
 };
 

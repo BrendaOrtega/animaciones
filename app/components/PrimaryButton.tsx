@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react";
 import React, { ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -6,16 +7,22 @@ export const PrimaryButton = ({
   children,
   isDisabled,
   isLoading,
+  as,
+  to = "",
   ...props
 }: {
+  as?: "Link";
+  to?: string;
   isLoading?: boolean;
   isDisabled?: boolean;
   className?: string;
   children: ReactNode;
   [x: string]: any;
 }) => {
+  const Element = as === "Link" ? Link : "button";
   return (
-    <button
+    <Element
+      to={to}
       disabled={isDisabled}
       {...props}
       className={twMerge(
@@ -28,6 +35,6 @@ export const PrimaryButton = ({
       {isLoading && (
         <div className="w-6 h-6 rounded-full animate-spin border-4 border-t-indigo-500" />
       )}
-    </button>
+    </Element>
   );
 };
