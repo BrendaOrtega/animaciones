@@ -8,6 +8,7 @@ export const VideoPlayer = ({
   src,
   type = "video/mov",
   onPlay,
+  onPause,
   onClickNextVideo,
   poster,
   onEnd,
@@ -22,6 +23,7 @@ export const VideoPlayer = ({
   type?: string;
   src?: string;
   onPlay?: () => void;
+  onPause?: () => void;
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,7 +43,10 @@ export const VideoPlayer = ({
     // listeners
     controls.onplaying = () => setIsPlaying(true);
     controls.onplay = () => setIsPlaying(true);
-    controls.onpause = () => setIsPlaying(false);
+    controls.onpause = () => {
+      setIsPlaying(false);
+      onPause?.();
+    };
     controls.onended = () => onEnd?.();
     controls.ontimeupdate = () => {
       if (controls.duration - controls.currentTime < 15) {
@@ -80,7 +85,7 @@ export const VideoPlayer = ({
             </span>
           </motion.button>
         )}
-        {nextVideo.index !== 0 && isEnding && (
+        {nextVideo && isEnding && (
           <motion.button
             onClick={onClickNextVideo}
             whileTap={{ scale: 0.99 }}
@@ -112,7 +117,7 @@ export const VideoPlayer = ({
                 e.target.src = poster;
                 e.target.error = false;
               }}
-              className="aspect-video w-40 rounded-xl"
+              className="aspect-video w-40 rounded-xl object-cover"
             />
           </motion.button>
         )}

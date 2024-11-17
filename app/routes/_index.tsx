@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, redirect } from "@remix-run/react";
 import React, { useState } from "react";
 import { getStripeCheckout } from "~/.server/stripe";
@@ -49,7 +49,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
             as="Link"
             to="/player"
             type="button"
-            className="bg-pink-600"
+            className="bg-pink-600 hover:h-16"
           >
             Comenzar a mirar gratis 🪄📺
           </PrimaryButton>

@@ -6,7 +6,13 @@ import { action } from "~/routes/admin";
 export const VideoFileInput = ({
   video,
   setValue,
+  label,
+  name,
+  register,
 }: {
+  register?: any;
+  label?: string;
+  name: string;
   setValue: (arg0: string, arg2: string | number) => void;
   video: Partial<Video>;
 }) => {
@@ -30,7 +36,7 @@ export const VideoFileInput = ({
   };
 
   const getStorageKey = () => {
-    const storageKey = video.id as string; // @todo improve
+    const storageKey = "video-" + video.id; // @todo improve
     // const sk = file.name;
 
     fetcher.submit(
@@ -51,11 +57,10 @@ export const VideoFileInput = ({
     setVideoSrc(URL.createObjectURL(file)); // create preview stream from file
     // const extension = file.name.split(".")[file.name.split(".").length - 1];
     uploadFile(file); // upload
-    updateDuration();
   };
 
   const updateDuration = () => {
-    const duration = videoRef.current ? videoRef.current.duration : 0;
+    const duration = videoRef.current?.duration;
     setValue?.("duration", Number(duration).toFixed(0));
   };
 
@@ -72,34 +77,43 @@ export const VideoFileInput = ({
         },
       }).catch((e) => console.error(e));
       // improve
-      setValue("storageLink", "/videos?storageKey=" + storageKey);
       setValue("storageKey", storageKey);
+      setValue("storageLink", "/files?storageKey=" + storageKey);
+      updateDuration();
     }
   };
 
   useEffect(() => {
     if (fetcher.data) {
       setURLs({ ...fetcher.data });
+      updateDuration();
     } else {
       getStorageKey();
     }
   }, [fetcher.data]);
 
   return (
-    <section className="my-2">
-      <input type="hidden" name="storageKey" value={storageKey} />
+    <section className="my-2 grid gap-2">
+      <p>{label}</p>
+      <input
+        type="text"
+        name={name}
+        className="disabled:pointer-events-none rounded-lg disabled:text-gray-500 disabled:bg-gray-200"
+        disabled
+        {...register(name)}
+      />
       <input
         type="file"
         onChange={handleFileSelection}
         accept="video/*"
         className="mb-2"
       />
-      ;
+
       {videoSrc && (
         <video
           ref={videoRef}
           src={videoSrc}
-          className="border rounded-xl my-2 aspect-video"
+          className="border rounded-xl my-2 aspect-video w-full"
           controls
         ></video>
       )}

@@ -4,6 +4,7 @@ import { PrimaryButton } from "~/components/PrimaryButton";
 import { useForm } from "react-hook-form";
 import { VideoFileInput } from "~/components/admin/VideoFileInput";
 import { cn } from "~/lib/utils";
+import { ImageInput } from "./ImageInput";
 
 // @todo select moduleName to swap'em
 export const VideoForm = ({
@@ -17,7 +18,7 @@ export const VideoForm = ({
 }) => {
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
-
+  const index = video.index === 0 ? 0 : video.index || nextIndex;
   const {
     handleSubmit,
     register,
@@ -27,16 +28,16 @@ export const VideoForm = ({
     defaultValues: {
       storageLink:
         video.storageLink || "/videos?storageKey=" + video.storageKey,
-      storageKey: video.storageKey || video.id + ".mov",
+      storageKey: video.storageKey,
       title: video.title || "",
       isPublic: video.isPublic || false,
-      duration: video.duration || "0",
+      duration: video.duration,
       moduleName: video.moduleName,
       id: video.id,
       slug: video.slug,
-      index: String(video.index === 0 ? "0" : video.index || nextIndex),
+      index,
       // @todo remove default
-      poster: video.poster || "https://i.imgur.com/GdtxiE9.png",
+      poster: video.poster,
     },
   });
 
@@ -77,8 +78,8 @@ export const VideoForm = ({
 
         <TextField
           type="number"
-          placeholder="lugar en la lista: 0"
-          label="Índice de orden"
+          placeholder="posición en la lista"
+          label="Índice"
           register={register("index", { required: true })}
         />
         <TextField
@@ -88,41 +89,49 @@ export const VideoForm = ({
         />
         {video.id && (
           <VideoFileInput
+            label="Link del video"
+            name="storageLink"
             video={video}
             setValue={setValue}
-            onVideoDuration={(duration: string) =>
-              setValue("duration", String(duration))
-            }
+            register={register}
           />
         )}
-        <TextField
-          type="text"
-          label={"Llave de almacenamiento del archivo"}
-          register={register("storageKey", { required: true })}
-          isDisabled
-        />
-
-        <TextField
+        {/* <TextField
           placeholder="poster del video"
           label="Poster del video"
           register={register("poster", { required: false })}
-        />
-
-        <label className="flex justify-between cursor-pointer my-4">
-          <span>¿Este video es público?</span>
-          <input
-            {...register("isPublic")}
-            name="isPublic"
-            className="size-4"
-            type="checkbox"
+        /> */}
+        {video.id && (
+          <ImageInput
+            setValue={setValue}
+            defaultValue={video.poster}
+            name="poster"
+            storageKey={"poster-" + video.id}
+            label="Link del poster"
+            register={register}
           />
-        </label>
-        <TextField
-          placeholder="60"
-          type="number"
-          label="Duración del video en minutos"
-          register={register("duration", { required: true })}
-        />
+        )}
+
+        {video.id && (
+          <>
+            <label className="flex justify-between cursor-pointer my-4">
+              <span>¿Este video es público?</span>
+              <input
+                {...register("isPublic")}
+                name="isPublic"
+                className="size-4"
+                type="checkbox"
+              />
+            </label>
+
+            <TextField
+              placeholder="60"
+              type="number"
+              label="Duración del video en minutos"
+              register={register("duration", { required: true })}
+            />
+          </>
+        )}
         <div className="flex mt-auto gap-4">
           <PrimaryButton
             isDisabled={!isValid || isLoading}
@@ -133,6 +142,7 @@ export const VideoForm = ({
           </PrimaryButton>
           {video.id && (
             <PrimaryButton
+              isDisabled // @todo remove files when delete
               onClick={handleDelete}
               className="w-full bg-red-500"
               type="button"

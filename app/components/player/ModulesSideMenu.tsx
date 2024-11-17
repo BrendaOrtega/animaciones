@@ -109,6 +109,8 @@ export const VideosMenu = ({
             </div>
           );
         })}
+        {/* Esto empuja la lista */}
+        <div className="h-40" />
       </MenuListContainer>
     </>
   );
@@ -226,7 +228,7 @@ const ModuleHeader = ({
           {subtitle}
         </p>
         <h3
-          className={cn("text-2xl font-bold font-sans capitalize", {
+          className={cn("text-2xl font-bold font-sans", {
             "text-green-500": isCompleted,
           })}
         >

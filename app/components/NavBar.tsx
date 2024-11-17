@@ -1,9 +1,9 @@
 import { Link, useFetcher } from "@remix-run/react";
 import { ToggleButton } from "./ToggleButton";
-import { useEffect } from "react";
-import { action } from "~/routes/_index";
+import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { IoMdLogOut } from "react-icons/io";
+import { action } from "~/routes/api";
 
 // @todo show user is logged in?
 export const NavBar = ({
@@ -19,10 +19,10 @@ export const NavBar = ({
       {
         intent: "self",
       },
-      { method: "POST" }
+      { method: "POST", action: "/api" }
     );
   }, []);
-  const userEmail = fetcher.data?.user?.email;
+  const [userEmail, setUserEmail] = useState("");
 
   // sign out
   const handleSignOut = () => {
@@ -31,7 +31,11 @@ export const NavBar = ({
       { method: "DELETE", action: "/portal" }
     );
   };
-
+  useEffect(() => {
+    if (fetcher.data) {
+      setUserEmail(fetcher.data.email);
+    }
+  }, [fetcher.data]);
   return (
     <>
       <nav

@@ -118,7 +118,7 @@ export default function Route() {
 
   return (
     <>
-      <article className="bg-gradient-to-tr from-slate-950 to-indigo-950 h-screen py-20 px-8">
+      <article className="bg-gradient-to-tr from-slate-950 to-indigo-950 min-h-screen py-20 px-8">
         <h1 className="text-gray-50 text-2xl mb-6">{course.title}</h1>
         <form
           onSubmit={handleModuleSubmit}
@@ -176,7 +176,9 @@ const Module = ({
   onAddVideo,
   onVideoSelect,
   onModuleTitleUpdate,
+  index,
 }: {
+  index?: number;
   onModuleTitleUpdate?: (arg0: string, arg1: string) => void;
   onVideoSelect?: (arg0: Partial<Video>) => void;
   onAddVideo?: (arg0?: string) => void;
@@ -231,12 +233,15 @@ const Module = ({
             />
           </form>
         ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-white font-bold capitalize text-left"
-          >
-            {title ? title : "Sin título"}
-          </button>
+          <>
+            <span className="text-gray-400"> {index + 1}</span>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="text-white font-bold capitalize text-left"
+            >
+              {title ? title : "Sin título"}
+            </button>
+          </>
         )}
         <button
           className="flex-grow flex justify-end"

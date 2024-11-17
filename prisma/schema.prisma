@@ -29,7 +29,7 @@ model Video {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   v  Int?   @map("__v")
 
-  index  Int?
+  index  Int
   title  String?
   poster String?
   type   String?
