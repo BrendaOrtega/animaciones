@@ -30,7 +30,7 @@ export const VideoForm = ({
       storageKey: video.storageKey || video.id + ".mov",
       title: video.title || "",
       isPublic: video.isPublic || false,
-      duration: video.duration || "30",
+      duration: video.duration || "0",
       moduleName: video.moduleName,
       id: video.id,
       slug: video.slug,
@@ -118,8 +118,8 @@ export const VideoForm = ({
           />
         </label>
         <TextField
-          defaultValue={10}
           placeholder="60"
+          type="number"
           label="Duración del video en minutos"
           register={register("duration", { required: true })}
         />
@@ -153,8 +153,10 @@ export const TextField = ({
   placeholder,
   register,
   isDisabled,
+  type = "text",
   ...props
 }: {
+  type?: "text" | "number";
   isDisabled?: boolean;
   register?: any;
   error?: string;
@@ -172,7 +174,7 @@ export const TextField = ({
         className={cn("shadow rounded-md py-2 px-4 border w-full", {
           "bg-gray-200 text-gray-500 pointer-events-none": isDisabled,
         })}
-        type="text"
+        type={type}
         name={name}
         {...props}
         {...register}

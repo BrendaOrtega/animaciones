@@ -32,7 +32,7 @@ export const VideoFileInput = ({
   const getStorageKey = () => {
     const storageKey = video.id as string; // @todo improve
     // const sk = file.name;
-    console.log("pidiendo con: ", storageKey);
+
     fetcher.submit(
       {
         intent: "get_combo_urls",
@@ -56,7 +56,7 @@ export const VideoFileInput = ({
 
   const updateDuration = () => {
     const duration = videoRef.current ? videoRef.current.duration : 0;
-    setValue?.("duration", duration);
+    setValue?.("duration", Number(duration).toFixed(0));
   };
 
   const uploadFile = async (file: File) => {
@@ -74,7 +74,6 @@ export const VideoFileInput = ({
       // improve
       setValue("storageLink", "/videos?storageKey=" + storageKey);
       setValue("storageKey", storageKey);
-      console.info("uploaded with:", storageKey);
     }
   };
 
