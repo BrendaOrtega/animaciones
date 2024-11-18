@@ -4,6 +4,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 export const getStripeCheckout = async (
   options: {
+    coupon?: string;
     customer_email?: string;
   } = {}
 ) => {
@@ -30,7 +31,7 @@ export const getStripeCheckout = async (
     ],
     success_url: `${process.env.CURRENT_URL}/player?success=1`,
     cancel_url: `${process.env.CURRENT_URL}/player?videoSlug=bienvenida-al-curso`,
-    //   ...discounts, // cupones
+    discounts: options.coupon ? [{ coupon: options.coupon }] : undefined,
     // <= @todo multi moneda?
   });
   return session.url || "/";
