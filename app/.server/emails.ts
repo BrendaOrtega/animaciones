@@ -63,7 +63,7 @@ export const sendWelcomeEmail = (email: string, token: string) => {
   const url = generateURL({
     pathname: "/portal",
     token,
-    next: "/player?videoSlug=primer-animacion-simple",
+    next: "/player?videoSlug=bienvenida-al-curso",
   });
 
   return sendgridTransport
