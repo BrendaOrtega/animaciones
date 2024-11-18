@@ -136,7 +136,7 @@ model User {
   photoURL    String?
   providerId  String?
   role        String?  @default("GUEST")
-  roles       String[]
+  roles       Roles[]
   salt        String?
   uid         String?
   username    String
@@ -146,4 +146,8 @@ model User {
   videos      Json?
 
   @@map("users")
+}
+
+enum Roles {
+  CAN_SHARE_50_DISCOUNT
 }

@@ -6,6 +6,10 @@ import { redirect, Session } from "@remix-run/node";
 
 const secret = "yutuSecret"; // @todo from .env file
 
+const COURSE_ID = "645d3dbd668b73b34443789c";
+
+const ROLE = "CAN_SHARE_50_DISCOUNT";
+
 // throw redirect
 const throwRedirect = async (redirectURL: string, session: Session) => {
   throw redirect(redirectURL, {
@@ -39,6 +43,37 @@ export const getUserORNull = async (request: Request) => {
   if (!session.has("userEmail")) return null;
   const email = session.get("userEmail");
   return await db.user.findUnique({ where: { email } });
+};
+
+// getAdminUser
+export const getAdminUserOrRedirect = async (
+  request: Request,
+  redirectURL: string = "/"
+) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  if (!session.has("userEmail")) return null;
+  const email = session.get("userEmail");
+  const admin = await db.user.findUnique({ where: { email, role: "ADMIN" } });
+  if (!admin) return throwRedirect(redirectURL, session);
+  return admin;
+};
+
+// getProUserOrNull
+export const getEnrolledUserORNull = async (
+  courseId: string,
+  request: Request
+) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  if (!session.has("userEmail")) return null;
+  const email = session.get("userEmail");
+  return await db.user.findUnique({
+    where: {
+      email,
+      courses: {
+        has: courseId,
+      },
+    },
+  });
 };
 
 // confirm account
@@ -108,25 +143,42 @@ export const getOrCreateUser = async ({
   email,
   displayName,
   username,
-  confirmed,
   phoneNumber,
   photoURL,
   uid,
+  confirmed,
+  role,
+  courseId,
 }: {
-  confirmed: boolean;
-  phoneNumber: string;
+  email: string;
+  role?: string;
+  courseId?: string;
+  confirmed?: boolean;
+  phoneNumber?: string;
   photoURL?: string;
   uid?: string;
-  email: string;
-  displayName: string;
-  username: string;
+  displayName?: string;
+  username?: string;
 }) => {
   const exist = await db.user.findUnique({
     where: {
       email,
     },
   });
-  if (exist) return exist;
+  if (exist) {
+    return await db.user.update({
+      where: { email },
+      data: {
+        confirmed: confirmed,
+        courses: courseId
+          ? { push: courseId }
+          : exist.courses.filter((rol) => COURSE_ID !== rol), // @todo improve
+        roles: role
+          ? { push: role }
+          : exist.roles.filter((rol) => ROLE !== rol), // @todo improve
+      },
+    });
+  }
   // @todo? we could update existing...
   return await db.user.create({
     data: {
@@ -135,8 +187,10 @@ export const getOrCreateUser = async ({
       phoneNumber,
       email,
       displayName,
-      username,
+      username: username || email,
       uid,
+      courses: courseId ? { push: courseId } : undefined,
+      roles: role ? { push: role } : undefined, // @todo improve
     },
   });
 };

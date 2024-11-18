@@ -6,7 +6,7 @@ import {
 import { useLoaderData } from "@remix-run/react";
 import { NavBar } from "~/components/NavBar";
 import { cn } from "~/lib/utils";
-import { getUserORNull } from "~/.server/user";
+import { getEnrolledUserORNull, getUserORNull } from "~/.server/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { getStripeCheckout } from "~/.server/stripe";
 
@@ -65,7 +65,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
   }
   // default
-  const user = await getUserORNull(request);
+  // animaciones course: @todo dynamic?
+  const user = await getEnrolledUserORNull("645d3dbd668b73b34443789c", request);
   if (user?.email) {
     const token = getToken(user.email);
     return {
