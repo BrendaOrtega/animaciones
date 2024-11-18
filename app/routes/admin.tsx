@@ -77,6 +77,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         has: "645d3dbd668b73b34443789c",
       },
     },
+    orderBy: { index: "asc" },
   });
   if (!course) throw json(null, { status: 404 });
   const moduleNames = [...new Set(videos.map((video) => video.moduleName))];
