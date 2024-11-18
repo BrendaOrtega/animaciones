@@ -14,7 +14,7 @@ export const Hero = ({ children }: { children?: ReactNode }) => {
         <div className="w-full lg:w-[70%] mx-auto -mt-8 md:mt-12 ">
           <TextGenerateEffect words={words} />
           <p className="text-iron dark:text-metal text-center text-lg lg:text-2xl font-light dark:font-extralight mt-3 mb-12">
-            Construye 12 componentes animados para tus proyectos web
+            construyendo más de 14 componentes con Motion
           </p>
           {children ? (
             children
