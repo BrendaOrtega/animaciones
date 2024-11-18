@@ -22,7 +22,7 @@ const setCors = async () => {
       CORSRules: [
         {
           AllowedHeaders: ["*"],
-          AllowedMethods: ["PUT", "DELETE"],
+          AllowedMethods: ["PUT", "DELETE", "GET"],
           AllowedOrigins: isDev
             ? ["http://localhost:3000"]
             : ["https://animations.fly.dev"],
@@ -35,8 +35,8 @@ const setCors = async () => {
   return await S3.send(command);
 };
 
-export const getReadURL = async (key: string, expiresIn = 900) => {
-  return await getSignedUrl(
+export const getReadURL = async (key: string, expiresIn = 3600) =>
+  await getSignedUrl(
     S3,
     new GetObjectCommand({
       Bucket: "wild-bird-2039",
@@ -44,7 +44,6 @@ export const getReadURL = async (key: string, expiresIn = 900) => {
     }),
     { expiresIn }
   );
-};
 
 export const getImageURL = async (key: string, expiresIn = 900) =>
   await getSignedUrl(
