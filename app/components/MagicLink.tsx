@@ -41,11 +41,11 @@ export const MagicLink = () => {
   };
 
   return (
-    <article className="bg-white bg-magic bg-no-repeat bg-right dark:bg-dark h-screen flex pt-[120px] justify-center  gap-2">
+    <article className="bg-white bg-magic  bg-no-repeat bg-right dark:bg-dark h-screen flex pt-[120px] justify-center items-center  gap-2">
       <NavBar />
-      <div>
+      <div className="-mt-20 w-[90%] md:w-fit mx-auto">
         <img className="w-52 mx-auto" src="/hat.png" alt="logo" />
-        <h2 className="text-2xl font-semibold md:text-4xl mt-8 ">
+        <h2 className="text-2xl text-center font-semibold md:text-4xl mt-8 ">
           Inicia sesión o crea una cuenta
         </h2>
         <p className="text-lg text-center dark:text-metal text-iron font-light mt-0 mb-8">
@@ -57,7 +57,7 @@ export const MagicLink = () => {
               disabled={isLoading}
               onClick={handleGoogleLogin}
               type="button"
-              className="w-full h-16 rounded-full  bg-white border border-lightGray  my-2 p-2 flex justify-center items-center hover:scale-105 transition-all active:scale-100 hover:shadow-sm disabled:pointer-events-none"
+              className="w-full md:w-[480px] h-16 rounded-full  bg-white border border-lightGray  my-2 p-2 flex justify-center items-center hover:scale-105 transition-all active:scale-100 hover:shadow-sm disabled:pointer-events-none"
             >
               <img
                 className="h-12 object-cover"
@@ -67,7 +67,7 @@ export const MagicLink = () => {
               {/* <h3>Inicia sesión con Google</h3> */}
             </button>
             <hr className="bg-lightGray/30 h-[1px] border-none w-full my-8" />
-            <div className="flex relative w-[480px] gap-2 h-16 rounded-full border border-lightGray  ">
+            <div className="flex relative w-full md:w-[480px] gap-2 h-16 rounded-full border border-lightGray  ">
               <input
                 disabled={isLoading}
                 aria-disabled={isLoading}
@@ -87,7 +87,7 @@ export const MagicLink = () => {
                 disabled={isLoading}
                 type="submit"
                 className={cn(
-                  "absolute right-0 h-full not-disabled:hover:bg-indigo-600 rounded-full bg-indigo-500  py-2 px-6 text-white not-disabled:active:scale-95 disabled:cursor-not-allowed w-[220px] flex justify-center items-center"
+                  "absolute right-0 h-full not-disabled:hover:bg-indigo-600 rounded-full bg-fish  py-2 px-2 md:px-6 text-white not-disabled:active:scale-95 disabled:cursor-not-allowed w-[180px] md:w-[220px] flex justify-center items-center"
                 )}
               >
                 {isLoading ? (
