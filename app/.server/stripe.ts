@@ -29,7 +29,7 @@ export const getStripeCheckout = async (
       },
     ],
     success_url: `${process.env.CURRENT_URL}/player?success=1`,
-    cancel_url: `${process.env.CURRENT_URL}/player?videoSlug=primer-animacion-simple`,
+    cancel_url: `${process.env.CURRENT_URL}/player?videoSlug=bienvenida-al-curso`,
     //   ...discounts, // cupones
     // <= @todo multi moneda?
   });
