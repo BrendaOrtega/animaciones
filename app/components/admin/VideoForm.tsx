@@ -18,7 +18,10 @@ export const VideoForm = ({
 }) => {
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
-  const index = video.index === 0 ? 0 : video.index || nextIndex;
+  const index =
+    video.index === 0 || video.index === "0"
+      ? 0
+      : Number(video.index) || nextIndex;
   const {
     handleSubmit,
     register,
@@ -35,7 +38,7 @@ export const VideoForm = ({
       moduleName: video.moduleName,
       id: video.id,
       slug: video.slug,
-      index,
+      index: index,
       // @todo remove default
       poster: video.poster,
     },
@@ -137,7 +140,6 @@ export const VideoForm = ({
           </PrimaryButton>
           {video.id && (
             <PrimaryButton
-              isDisabled // @todo remove files when delete
               onClick={handleDelete}
               className="w-full bg-red-500"
               type="button"

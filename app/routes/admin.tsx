@@ -13,7 +13,7 @@ import {
 import { useClickOutside } from "~/hooks/useClickOutside";
 import slugify from "slugify";
 import { cn } from "~/lib/utils";
-import { getComboURLs } from "~/.server/tigris";
+import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
 
@@ -28,6 +28,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === "delete_video") {
     const id = String(formData.get("videoId"));
     await db.video.delete({ where: { id } });
+    removeFilesFor(id);
   }
   if (intent === "update_modulename") {
     const oldModuleName = String(formData.get("oldModuleName"));
@@ -84,12 +85,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { course, videos, moduleNames };
 };
 
+const initialVideo = {
+  title: "Nuevo video",
+  moduleName: "",
+};
 export default function Route() {
   const { course, moduleNames, videos } = useLoaderData<typeof loader>();
-  const [video, setVideo] = useState<Partial<Video>>({
-    title: "Nuevo video",
-    moduleName: "",
-  });
+  const [video, setVideo] = useState<Partial<Video>>(initialVideo);
   const [showVideoDrawer, setShowVideoDrawer] = useState(false);
   const [modules, setModules] = useState(moduleNames);
 
@@ -162,7 +164,10 @@ export default function Route() {
       >
         <VideoForm
           nextIndex={videos.length}
-          onSubmit={() => setShowVideoDrawer(false)}
+          onSubmit={() => {
+            setVideo(initialVideo);
+            setShowVideoDrawer(false);
+          }}
           video={video}
         />
       </Drawer>

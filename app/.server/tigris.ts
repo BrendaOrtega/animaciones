@@ -63,7 +63,6 @@ export const getPutFileUrl = async (key: string) => {
     new PutObjectCommand({
       Bucket: "wild-bird-2039",
       Key: "animaciones/" + key, // @TODO: update when prod beta
-      // ContentType: "image/png",
     }),
     { expiresIn: 3600 }
   );
@@ -86,3 +85,12 @@ export const getComboURLs = async (key: string) => ({
   readURL: await getReadURL(key),
   deleteURL: await getRemoveFileUrl(key),
 });
+
+// @todo now is using prefix keys, we can improve
+export const removeFilesFor = async (id: string) => {
+  const posterDelete = await getRemoveFileUrl("poster-" + id);
+  const videoDelete = await getRemoveFileUrl("video-" + id);
+  await await fetch(posterDelete, { method: "DELETE" });
+  await await fetch(videoDelete, { method: "DELETE" });
+  return true;
+};
