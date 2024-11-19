@@ -81,14 +81,14 @@ const MyTabs = ({
               <h4 className="text-dark dark:text-white text-4xl md:text-5xl font-bold	">
                 <span className="line-through	">$999 </span>{" "}
                 <span className=" text-[#FF4B4B] dark:text-[#C8496C] ml-2">
-                  $499{" "}
+                  $599{" "}
                 </span>
                 <span className="text-xl font-normal text-iron dark:text-metal/70 ">
                   / MXN{" "}
                 </span>
               </h4>
               <div className="text-base font-light text-iron dark:text-metal  flex flex-col gap-4 mt-10">
-                <p>📹 12 unidades con tutoriales en video (1 por componente)</p>
+                <p>📹 más de 14 unidades con tutoriales en video</p>
                 <p>💪🏻 Learnings y ejercicios por lección</p>
                 <p>📚 Recursos extra </p>
                 <p>💀 Acceso de por vida</p>
