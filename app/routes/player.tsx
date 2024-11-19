@@ -1,20 +1,8 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import {
-  Form,
-  json,
-  redirect,
-  useLoaderData,
-  useNavigate,
-} from "@remix-run/react";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { Suspense, lazy, useRef, useState } from "react";
-import { FaGooglePlay } from "react-icons/fa6";
-import { IoIosClose } from "react-icons/io";
+import { json, redirect, useLoaderData, useNavigate } from "@remix-run/react";
+import { useState } from "react";
 import { db } from "~/.server/db";
-import { EmojiConfetti } from "~/components/EmojiConfetti";
-import { Drawer } from "~/components/SimpleDrawer";
-import { PrimaryButton } from "~/components/PrimaryButton";
-import { getStripeCheckout } from "~/.server/stripe";
+import { get40Checkout } from "~/.server/stripe";
 import { getUserORNull } from "~/.server/user";
 import { NavBar } from "~/components/NavBar";
 import { VideosMenu } from "~/components/player/ModulesSideMenu";
@@ -28,7 +16,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
   if (intent === "checkout") {
-    const url = await getStripeCheckout();
+    const url = await get40Checkout(); // @todo checkout update
     return redirect(url);
   }
   return null;

@@ -1,7 +1,15 @@
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, redirect } from "@remix-run/react";
 import React, { useState } from "react";
-import { getStripeCheckout } from "~/.server/stripe";
+import {
+  COUPON_40,
+  DEV_COUPON,
+  DEV_PRICE,
+  get40Checkout,
+  getStripeCheckout,
+  PRICE_1499,
+  PRICE_999,
+} from "~/.server/stripe";
 import { getUserORNull } from "~/.server/user";
 import { Animations } from "~/components/Animations";
 import { NavBar } from "~/components/NavBar";
@@ -16,18 +24,25 @@ import { Testimonials } from "~/home/Testimonial";
 import { Why } from "~/home/Why";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const isDev = process.env.NODE_ENV === "development";
   const formData = await request.formData();
   const intent = formData.get("intent");
   if (intent === "cheap_checkout") {
-    const url = await getStripeCheckout(); // @todo apply 40% coupon no shirt
+    const url = await getStripeCheckout({
+      price: isDev ? DEV_PRICE : PRICE_999, // 999
+      coupon: isDev ? DEV_COUPON : COUPON_40,
+    }); // @todo apply 40% coupon no shirt
     throw redirect(url);
   }
   if (intent === "premium_checkout") {
-    const url = await getStripeCheckout(); // @todo apply 40% coupon with shirt
+    const url = await getStripeCheckout({
+      price: isDev ? DEV_PRICE : PRICE_1499, // 1499
+      coupon: isDev ? DEV_COUPON : COUPON_40,
+    }); // @todo apply 40% coupon with shirt
     throw redirect(url);
   }
   if (intent === "checkout") {
-    const url = await getStripeCheckout();
+    const url = await get40Checkout();
     return redirect(url);
   }
   if (intent === "self") {

@@ -14,7 +14,7 @@ import { NavBar } from "~/components/NavBar";
 import { cn } from "~/lib/utils";
 import { getCanShareUserORNull, verifyToken } from "~/.server/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { getStripeCheckout } from "~/.server/stripe";
+import { get50Checkout, getStripeCheckout } from "~/.server/stripe";
 import { FcGoogle } from "react-icons/fc";
 import { PrimaryButton } from "~/components/PrimaryButton";
 
@@ -52,12 +52,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === ROLE) {
     const token = url.searchParams.get("token");
     const result = validateToken(token);
-    const stripeURL = await getStripeCheckout({
-      // coupon: "PAIRPROGRAMMINGXEVER",
-      metadata: {
-        host: result.email,
-      },
-    });
+    const stripeURL = await get50Checkout(result.email);
     return redirect(stripeURL);
   }
   if (intent === "checkout") {
