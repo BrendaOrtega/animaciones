@@ -12,7 +12,7 @@ import { PiLinkSimpleBold } from "react-icons/pi";
 import { twMerge } from "tailwind-merge";
 import { NavBar } from "~/components/NavBar";
 import { cn } from "~/lib/utils";
-import { getCanShareUserORNull } from "~/.server/user";
+import { getCanShareUserORNull, verifyToken } from "~/.server/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { getStripeCheckout } from "~/.server/stripe";
 import { FcGoogle } from "react-icons/fc";
@@ -46,11 +46,17 @@ const validateToken = (token: string) => {
 
 // apply discount
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const url = new URL(request.url);
   const formData = await request.formData();
   const intent = formData.get("intent");
   if (intent === ROLE) {
+    const token = url.searchParams.get("token");
+    const result = validateToken(token);
     const stripeURL = await getStripeCheckout({
       // coupon: "PAIRPROGRAMMINGXEVER",
+      metadata: {
+        host: result.email,
+      },
     });
     return redirect(stripeURL);
   }
@@ -240,7 +246,7 @@ const Sharing = ({ link }: { link: string }) => {
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
         Todos tus amigos obtienen{" "}
         <strong className="font-bold"> 50% de descuento</strong> con tu link.{" "}
-        <br /> De eso se trata la comunidad ¡de compartir 🫂!
+        <br /> De eso se trata la comunidad ¡de compartir! 🫂
       </p>
       <button
         // @todo: copiado toast

@@ -32,8 +32,16 @@ export const SuccessDrawer = ({
               <strong>¡Que empiece la magia! 🧙🏻🪄</strong>
             </p>
             <p className="text-sm  dark:text-metal text-iron text-center font-light mt-6">
-              Pd. Si aún no puedes ver los tutoriales, ve a tu email y da clic
-              en el link de acceso. 🎯
+              Pd. Si aún no puedes ver los tutoriales, ve a tu{" "}
+              <a
+                className="text-blue-500 hover:text-blue-600"
+                rel="noreferrer"
+                target="_blank"
+                href="http://gmail.com"
+              >
+                email
+              </a>{" "}
+              y da clic en el link de acceso. 🎯
             </p>
           </div>
         </div>

@@ -6,7 +6,8 @@ export const getStripeCheckout = async (
   options: {
     coupon?: string;
     customer_email?: string;
-  } = {}
+    metadata?: Record<string, string>;
+  } = { metadata: {} }
 ) => {
   const stripe = new Stripe(
     isDev
@@ -18,6 +19,7 @@ export const getStripeCheckout = async (
   const session = await stripe.checkout.sessions.create({
     metadata: {
       courseId: "645d3dbd668b73b34443789c", // others?
+      ...options.metadata,
     },
     customer_email: options?.customer_email,
     mode: "payment",

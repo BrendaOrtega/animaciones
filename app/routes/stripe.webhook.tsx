@@ -76,6 +76,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         user,
         courseTitle: course?.title || course?.slug || courseId,
       });
+      // stats
+      await db.stat.upsert({
+        where: { name: "share_discount_link", giver: session.metadata.host },
+        create: {
+          name: "share_discount_link",
+          count: 1,
+          giver: session.metadata.host,
+          friends: [user.email],
+        },
+        update: { count: { increment: 1 }, friends: { push: user.email } },
+      });
       break;
   }
   return json(null, { status: 200 });
