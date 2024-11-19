@@ -4,7 +4,13 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { ScrollReveal } from "./Hero";
 import { AnimatePresence, motion } from "framer-motion";
 
-export const Pricing = ({ leftButton }: { leftButton?: ReactNode }) => {
+export const Pricing = ({
+  rightButton,
+  leftButton,
+}: {
+  leftButton?: ReactNode;
+  rightButton?: ReactNode;
+}) => {
   return (
     <ScrollReveal>
       <section className="text-center py-[80px] lg:py-[120px] ">
@@ -14,13 +20,19 @@ export const Pricing = ({ leftButton }: { leftButton?: ReactNode }) => {
         <p className="text-lg md:text-2xl text-iron dark:text-metal dark:font-extralight font-light mt-6 mb-16">
           Elige tu pack
         </p>
-        <MyTabs leftButton={leftButton} />
+        <MyTabs leftButton={leftButton} rightButton={rightButton} />
       </section>
     </ScrollReveal>
   );
 };
 
-const MyTabs = ({ leftButton }: { leftButton?: ReactNode }) => {
+const MyTabs = ({
+  rightButton,
+  leftButton,
+}: {
+  leftButton?: ReactNode;
+  rightButton?: ReactNode;
+}) => {
   return (
     <Tab.Group>
       <Tab.List className="flex gap-0 md:gap-10 justify-between md:justify-center w-full md:w-[560px] mx-auto">
@@ -141,9 +153,7 @@ const MyTabs = ({ leftButton }: { leftButton?: ReactNode }) => {
                 de Fixtergeek
               </p>
             </div>
-            <PrimaryButton className=" mt-12 w-full ">
-              Comprar curso <img src="/cursor.svg" />
-            </PrimaryButton>
+            {rightButton}
           </motion.div>
         </Tab.Panel>
       </Tab.Panels>

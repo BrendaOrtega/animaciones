@@ -185,7 +185,7 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
     );
   };
   return (
-    <section className="flex flex-col items-center h-screen justify-center gap-4">
+    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-gray-900 dark:text-white">
       <img className="w-52 h-auto" src="/congrats.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
         ¡Andas de suerte eh! ☘️

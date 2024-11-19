@@ -1,13 +1,13 @@
 import { Switch } from "@headlessui/react";
 import { useState } from "react";
-import React from "react";
 
 export const ToggleButton = () => {
   const [enabled, setEnabled] = useState(false);
 
   const toggle = () => {
     const val = !enabled;
-    const main = document.querySelector("#main");
+    // const main = document.querySelector("#main");
+    const main = document.documentElement;
     if (val) {
       main?.classList.add("dark");
     } else {

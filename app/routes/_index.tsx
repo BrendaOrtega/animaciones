@@ -18,6 +18,14 @@ import { Why } from "~/home/Why";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+  if (intent === "cheap_checkout") {
+    const url = await getStripeCheckout(); // @todo apply 40% coupon no shirt
+    throw redirect(url);
+  }
+  if (intent === "premium_checkout") {
+    const url = await getStripeCheckout(); // @todo apply 40% coupon with shirt
+    throw redirect(url);
+  }
   if (intent === "checkout") {
     const url = await getStripeCheckout();
     return redirect(url);
@@ -61,6 +69,22 @@ export default function Route({ children }: { children: React.ReactNode }) {
         <Animations />
         <Testimonials />
         <Pricing
+          rightButton={
+            <>
+              <Form method="POST">
+                <PrimaryButton
+                  onClick={() => setISLoading(true)}
+                  isLoading={isLoading}
+                  name="intent"
+                  value="premium_checkout"
+                  type="submit"
+                  className="w-full my-4"
+                >
+                  Comprar <img src="/cursor.svg" />
+                </PrimaryButton>
+              </Form>
+            </>
+          }
           leftButton={
             <>
               <Form method="POST">
@@ -70,7 +94,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
                   name="intent"
                   value="cheap_checkout"
                   type="submit"
-                  className="w-full md:w-auto mx-auto"
+                  className="w-full my-4"
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
