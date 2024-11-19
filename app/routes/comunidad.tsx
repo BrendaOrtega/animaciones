@@ -3,7 +3,7 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 import { Link } from "@remix-run/react";
 import { ReactNode } from "react";
 import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
@@ -20,7 +20,7 @@ import { PrimaryButton } from "~/components/PrimaryButton";
 
 const isDev = process.env.NODE_ENV === "development";
 const secret = "fixtergeek2024" + isDev;
-const ROLE = "CAN_SHARE_50_DISCOUNT";
+export const ROLE = "CAN_SHARE_50_DISCOUNT";
 
 const generateLink = (token: string) =>
   (isDev ? `http://localhost:3000` : `https://animations.fly.dev`) +
@@ -40,7 +40,7 @@ const validateToken = (token: string) => {
   } catch (e) {
     result = { success: false };
   }
-  console.log("result: ", result);
+
   return result;
 };
 
@@ -53,6 +53,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       // coupon: "PAIRPROGRAMMINGXEVER",
     });
     return redirect(stripeURL);
+  }
+  if (intent === "checkout") {
+    const stripeURL = await getStripeCheckout();
+    throw redirect(stripeURL);
   }
   return null;
 };
@@ -113,6 +117,15 @@ export default function Route() {
 }
 
 const BadToken = () => {
+  const fetcher = useFetcher();
+  const handleSubmit = () => {
+    fetcher.submit(
+      {
+        intent: "checkout",
+      },
+      { method: "POST" }
+    );
+  };
   return (
     <section className="flex flex-col items-center h-screen justify-center gap-4">
       <img className="w-52 h-auto" src="/robot-llora.png" />
@@ -130,15 +143,25 @@ const BadToken = () => {
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
         Los tokens solo viven unas horas 😭
       </p>
-      <div className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6">
+      <Form
+        onSubmit={handleSubmit}
+        method="POST"
+        className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6"
+      >
         <PrimaryButton
           // onClick={handleClick}
-          // isDisabled={fetcher.state !== "idle"}
+          isDisabled={fetcher.state !== "idle"}
           className="active:shadow"
+          name="intent"
+          type="submit"
+          value="checkout"
         >
           Comprar de todas formas 🪄
         </PrimaryButton>
-        <button className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-400 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center cursor-not-allowed">
+        <button
+          type="button"
+          className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-400 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center cursor-not-allowed"
+        >
           Reclamar a tu amigo
         </button>
         <Link to="/">
@@ -146,7 +169,7 @@ const BadToken = () => {
             Ver detalle del curso
           </button>
         </Link>
-      </div>
+      </Form>
     </section>
   );
 };

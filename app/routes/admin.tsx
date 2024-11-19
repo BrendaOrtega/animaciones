@@ -46,7 +46,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     data.slug = slugify(data.title, { lower: true }); // @todo zod
     data.index = data.index ? Number(data.index) : undefined;
     data.storageLink = "/videos?storageKey=" + data.storageKey; // video experiment
-    console.log("Data a guardar:", data);
+
     // if exists
     if (data.id) {
       const id = data.id;

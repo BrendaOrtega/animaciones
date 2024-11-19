@@ -30,8 +30,9 @@ export const getStripeCheckout = async (
       },
     ],
     success_url: `${process.env.CURRENT_URL}/player?success=1`,
-    cancel_url: `${process.env.CURRENT_URL}/player?videoSlug=bienvenida-al-curso`,
+    cancel_url: `${process.env.CURRENT_URL}/player?videoIndex=10`,
     discounts: options.coupon ? [{ coupon: options.coupon }] : undefined,
+    allow_promotion_codes: options.coupon ? false : true,
     // <= @todo multi moneda?
   });
   return session.url || "/";

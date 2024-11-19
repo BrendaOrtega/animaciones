@@ -69,9 +69,18 @@ export const getCanShareUserORNull = async (
   return await db.user.findUnique({
     where: {
       email,
-      roles: {
-        has: "CAN_SHARE_50_DISCOUNT",
-      },
+      OR: [
+        {
+          roles: {
+            has: "CAN_SHARE_50_DISCOUNT",
+          },
+        },
+        {
+          courses: {
+            has: COURSE_ID,
+          },
+        },
+      ],
     },
   });
 };

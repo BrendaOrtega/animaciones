@@ -30,7 +30,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const role = formData.get("role") as string;
     const confirmed = Boolean(formData.get("confirmed") as string);
     const courseId = formData.get("courseId") as string;
-    console.log("Por guardar: ", { email, role, confirmed, courseId });
+
     // return null;
     await getOrCreateAndUpdate({ email, confirmed, role, courseId });
     throw redirect("/admin/users?search=" + email);

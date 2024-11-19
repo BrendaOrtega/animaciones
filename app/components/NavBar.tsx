@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 import { IoMdLogOut } from "react-icons/io";
 import { action } from "~/routes/api";
+import { ROLE } from "~/routes/comunidad";
 
 // @todo show user is logged in?
 export const NavBar = ({
@@ -36,6 +37,9 @@ export const NavBar = ({
       setUserEmail(fetcher.data.email);
     }
   }, [fetcher.data]);
+
+  const canShare = fetcher.data?.roles.includes(ROLE);
+
   return (
     <>
       <nav
@@ -48,7 +52,7 @@ export const NavBar = ({
         )}
       >
         <div className="xl:max-w-7xl justify-between items-center h-16 mx-auto flex">
-          <Link to="/">
+          <Link to={canShare ? "/comunidad" : "/"}>
             <img className="h-10" src="/Logo.png" alt="logo" />
           </Link>
 
