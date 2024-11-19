@@ -105,7 +105,12 @@ export default function Route() {
         </>
       );
     case "bad_token":
-      return <BadToken />;
+      return (
+        <>
+          <NavBar />
+          <BadToken />
+        </>
+      );
     default:
       return (
         <>
@@ -127,7 +132,7 @@ const BadToken = () => {
     );
   };
   return (
-    <section className="flex flex-col items-center h-screen justify-center gap-4">
+    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/robot-llora.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
         ¡Hoy no hay suerte! ☘️
@@ -162,7 +167,7 @@ const BadToken = () => {
           type="button"
           className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-400 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center cursor-not-allowed"
         >
-          Reclamar a tu amigo
+          Reclamar a tu amig@
         </button>
         <Link to="/">
           <button className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-600 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center ">
@@ -185,7 +190,7 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
     );
   };
   return (
-    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-gray-900 dark:text-white">
+    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/congrats.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
         ¡Andas de suerte eh! ☘️
@@ -226,7 +231,7 @@ const Sharing = ({ link }: { link: string }) => {
     navigator.clipboard.writeText(link);
   };
   return (
-    <section className="flex flex-col items-center h-screen px-4 md:px-0 justify-center gap-4">
+    <section className="flex flex-col items-center h-screen px-4 md:px-0 justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/like.png" alt="logo " />
       <h2 className="text-3xl md:text-5xl  text-center font-semibold">
         Comparte este súper descuento <br />
