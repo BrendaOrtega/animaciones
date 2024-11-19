@@ -76,13 +76,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         user,
         courseTitle: course?.title || course?.slug || courseId,
       });
-      // stats
+      // stats @todo: improve and move to a function
+      if (!session.metadata?.host) break;
       await db.stat.upsert({
-        where: { name: "share_discount_link", giver: session.metadata.host },
+        where: { name: "share_discount_link", giver: session.metadata?.host },
         create: {
           name: "share_discount_link",
           count: 1,
-          giver: session.metadata.host,
+          giver: session.metadata?.host,
           friends: [user.email],
         },
         update: { count: { increment: 1 }, friends: { push: user.email } },
