@@ -4,11 +4,17 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useFetcher,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
 import { db } from "~/.server/db";
-import { getAdminUserOrRedirect, getOrCreateUser } from "~/.server/user";
+import { getAdminUserOrRedirect, getOrCreateAndUpdate } from "~/.server/user";
 import { cn } from "~/lib/utils";
 
 const COURSE_ID = "645d3dbd668b73b34443789c";
@@ -26,7 +32,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const courseId = formData.get("courseId") as string;
     console.log("Por guardar: ", { email, role, confirmed, courseId });
     // return null;
-    await getOrCreateUser({ email, confirmed, role, courseId });
+    await getOrCreateAndUpdate({ email, confirmed, role, courseId });
     throw redirect("/admin/users?search=" + email);
   }
   return null;
@@ -41,9 +47,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     ? searchParams.get("search")
     : undefined;
 
+  const confirmed = searchParams.has("confirmed") ? true : undefined;
+
   const users = await db.user.findMany({
     where: {
-      // confirmed: true,
+      confirmed,
       email: search ? { contains: search } : undefined,
     },
     take: search ? undefined : 10,
@@ -121,7 +129,7 @@ const AccessTable = ({
                 type="email"
                 name="email"
                 placeholder="escribe el correo"
-                className="col-span-2"
+                className="col-span-2 text-black"
               />
               {/* <textarea
                 className="col-span-2 text-black"
@@ -208,7 +216,11 @@ const AccessTable = ({
           </p>
         </Row>
       ))}
-      <button className="py-2 px-4 border mt-4 ml-auto" disabled>
+      <button
+        // @todo: load all
+        className="py-2 px-4 border mt-4 ml-auto disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+        disabled
+      >
         Cargar todo
       </button>
     </section>
@@ -216,12 +228,24 @@ const AccessTable = ({
 };
 
 const Headers = () => {
+  const [searchParams] = useSearchParams();
   return (
     <header className="grid grid-cols-5">
       <h3 className="col-span-2">Email</h3>
       <h3>Puede compartir descuento</h3>
       <h3>Tiene acceso al curso</h3>
-      <h3>Cuenta confirmada</h3>
+      <Link
+        className={cn("flex items-center justify-center", {
+          "bg-gray-500 ": searchParams.has("confirmed"),
+        })}
+        to={
+          searchParams.has("confirmed")
+            ? `/admin/users`
+            : `/admin/users?confirmed=true`
+        }
+      >
+        <h3>Cuenta confirmada</h3>
+      </Link>
     </header>
   );
 };

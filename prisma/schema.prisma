@@ -136,7 +136,8 @@ model User {
   photoURL    String?
   providerId  String?
   role        String?  @default("GUEST")
-  roles       Roles[]
+  // roles       Roles[]
+  roles       String[]
   salt        String?
   uid         String?
   username    String

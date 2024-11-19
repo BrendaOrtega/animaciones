@@ -147,6 +147,45 @@ export const getOrCreateUser = async ({
   photoURL,
   uid,
   confirmed,
+}: {
+  email: string;
+  confirmed?: boolean;
+  phoneNumber?: string;
+  photoURL?: string;
+  uid?: string;
+  displayName?: string;
+  username?: string;
+}) => {
+  const exist = await db.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (exist) {
+    return exist;
+  }
+  // @todo? we could update existing...
+  return await db.user.create({
+    data: {
+      confirmed,
+      photoURL,
+      phoneNumber,
+      email,
+      displayName,
+      username: username || email,
+      uid,
+    },
+  });
+};
+
+export const getOrCreateAndUpdate = async ({
+  email,
+  displayName,
+  username,
+  phoneNumber,
+  photoURL,
+  uid,
+  confirmed,
   role,
   courseId,
 }: {
