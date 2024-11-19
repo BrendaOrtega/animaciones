@@ -58,8 +58,8 @@ export const getAdminUserOrRedirect = async (
   return admin;
 };
 
-// getProUserOrNull
-export const getEnrolledUserORNull = async (
+// can share discount CAN_SHARE_50_DISCOUNT
+export const getCanShareUserORNull = async (
   courseId: string,
   request: Request
 ) => {
@@ -69,8 +69,8 @@ export const getEnrolledUserORNull = async (
   return await db.user.findUnique({
     where: {
       email,
-      courses: {
-        has: courseId,
+      roles: {
+        has: "CAN_SHARE_50_DISCOUNT",
       },
     },
   });
