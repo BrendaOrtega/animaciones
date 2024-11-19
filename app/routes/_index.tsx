@@ -57,9 +57,9 @@ export default function Route({ children }: { children: React.ReactNode }) {
             as="Link"
             to="/player"
             type="button"
-            className="bg-pink-600 hover:h-16"
+            className="bg-pink-600 enabled:hover:px-8"
           >
-            Comenzar a mirar gratis 🪄📺
+            Comenzar a ver gratis 🪄📺
           </PrimaryButton>
         </Form>
       </Hero>
@@ -78,7 +78,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
                   name="intent"
                   value="premium_checkout"
                   type="submit"
-                  className="w-full my-4"
+                  className="w-full my-4 mt-12"
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
@@ -94,7 +94,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
                   name="intent"
                   value="cheap_checkout"
                   type="submit"
-                  className="w-full my-4"
+                  className="w-full my-4 mt-12"
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
