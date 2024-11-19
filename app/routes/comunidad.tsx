@@ -177,6 +177,9 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
       <p className=" text-xl md:text-3xl text-center mb-12 text-fish">
         Usa el cupón #PAIRPROGRAMMINGXEVER
       </p>
+      <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
+        ¡Apresurate! Recuerda que los tokens solo viven unas horas 🕣
+      </p>
       <div className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6">
         <PrimaryButton
           onClick={handleClick}
