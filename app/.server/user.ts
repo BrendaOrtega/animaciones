@@ -51,7 +51,7 @@ export const getAdminUserOrRedirect = async (
   redirectURL: string = "/"
 ) => {
   const session = await getSession(request.headers.get("Cookie"));
-  if (!session.has("userEmail")) return null;
+  if (!session.has("userEmail")) return throwRedirect(redirectURL, session);
   const email = session.get("userEmail");
   const admin = await db.user.findUnique({ where: { email, role: "ADMIN" } });
   if (!admin) return throwRedirect(redirectURL, session);
