@@ -17,6 +17,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { get50Checkout, getStripeCheckout } from "~/.server/stripe";
 import { FcGoogle } from "react-icons/fc";
 import { PrimaryButton } from "~/components/PrimaryButton";
+import { useToast } from "~/components/Toaster";
+import { PiWhatsappLogoDuotone } from "react-icons/pi";
 
 const isDev = process.env.NODE_ENV === "development";
 const secret = "fixtergeek2024" + isDev;
@@ -228,9 +230,13 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
 };
 
 const Sharing = ({ link }: { link: string }) => {
+  const toast = useToast();
+
   const handleSocialClick = () => {
     navigator.clipboard.writeText(link);
+    toast.success({ text: "Copiado", icon: "🪄" });
   };
+
   return (
     <section className="flex flex-col items-center h-screen px-4 md:px-0 justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/like.png" alt="logo " />
@@ -244,10 +250,7 @@ const Sharing = ({ link }: { link: string }) => {
         <br /> De eso se trata la comunidad ¡de compartir! 🫂
       </p>
       <button
-        // @todo: copiado toast
-        onClick={() => {
-          navigator.clipboard.writeText(link);
-        }}
+        onClick={handleSocialClick}
         className=" bg-lightGray/20  flex relative w-full md:w-[480px] gap-2 h-16 rounded-full border border-lightGray active:scale-95 transition-all"
       >
         <input
@@ -270,32 +273,69 @@ const Sharing = ({ link }: { link: string }) => {
           <PiLinkSimpleBold />
         </SocialMedia>
         <SocialMedia
-          onClick={handleSocialClick}
+          // onClick={handleSocialClick}
           name="Facebook"
           className="bg-[#357BEB] text-[#ffffff] hover:bg-[#357BEB] hover:text-white"
         >
-          <FaFacebookF />
+          <a
+            rel="noreferrer"
+            target="_blank"
+            href={`https://www.facebook.com/sharer/sharer.php?u=${link}`}
+          >
+            <FaFacebookF />
+          </a>
         </SocialMedia>
         <SocialMedia
-          onClick={handleSocialClick}
+          // onClick={handleSocialClick}
           name="X"
           className="bg-[#171717] text-[#ffffff] hover:bg-[#171717] hover:text-white"
         >
-          <FaXTwitter />
+          <a
+            rel="noreferrer"
+            target="_blank"
+            href={`https://twitter.com/intent/tweet?url=${link}&text=¡Te comparto mi link de descuento!`}
+          >
+            <FaXTwitter />
+          </a>
         </SocialMedia>
         <SocialMedia
-          onClick={handleSocialClick}
+          // onClick={handleSocialClick}
           name="Linkedin"
           className="bg-[#2967BC] text-[#ffffff] hover:bg-[#2967BC] hover:text-white"
         >
-          <FaLinkedinIn />
+          <a
+            rel="noreferrer"
+            target="_blank"
+            href={`http://www.linkedin.com/shareArticle?mini=true&url=${link}&title=¡Te comparto mi link de descuento!`}
+          >
+            <FaLinkedinIn />
+          </a>
         </SocialMedia>
         <SocialMedia
-          onClick={handleSocialClick}
+          // onClick={handleSocialClick}
           name="Gmail"
           className="bg-[#73C56B] text-[#171717] hover:bg-[#73C56B] hover:text-white"
         >
-          <FcGoogle />
+          <a
+            rel="noreferrer"
+            target="_blank"
+            href={`https://mail.google.com/mail/?view=cm&fs=1&to=tu_amiga@example.com&su=¡Te comparto mi descueto!&body=Este es mi token: \n ${link}`}
+          >
+            <FcGoogle />
+          </a>
+        </SocialMedia>
+        <SocialMedia
+          // onClick={handleSocialClick}
+          name="Whatsapp"
+          className="bg-[#73C56B] text-[#171717] hover:bg-[#73C56B] hover:text-white"
+        >
+          <a
+            rel="noreferrer"
+            target="_blank"
+            href={`whatsapp://send?text=¡Te comparto mi descuento! ${link}`}
+          >
+            <PiWhatsappLogoDuotone />
+          </a>
         </SocialMedia>
       </div>
     </section>
@@ -317,7 +357,7 @@ const SocialMedia = ({
     <button
       onClick={onClick}
       className={twMerge(
-        "group rounded-full w-12 hover:scale-125 transition-all h-12 text-xl flex items-center justify-center relative",
+        "group rounded-full w-12 hover:scale-125 transition-all h-12 text-xl flex items-center justify-center relative active:scale-95",
         className
       )}
     >
