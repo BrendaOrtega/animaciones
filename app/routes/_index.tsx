@@ -1,3 +1,4 @@
+import { MetaFunction } from "@remix-run/node";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, redirect } from "@remix-run/react";
 import React, { useState } from "react";
@@ -23,6 +24,7 @@ import { ScrollBanner } from "~/home/ScrollBanenr";
 import { Teacher } from "~/home/Teacher";
 import { Testimonials } from "~/home/Testimonial";
 import { Why } from "~/home/Why";
+import { FaRegClock } from "react-icons/fa6";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const isDev = process.env.NODE_ENV === "development";
@@ -53,6 +55,34 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return null;
 };
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Comunidad Fixtergeek" },
+    {
+      property: "og:title",
+      content: "Curso de Animaciones con React",
+    },
+    {
+      name: "description",
+      content:
+        "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      name: "og:image",
+      content: "https://i.imgur.com/kP5Rrjt.png",
+    },
+    {
+      name: "og:description",
+      content:
+        "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      name: "og:url",
+      content: "https://animaciones.fixtergeek.com",
+    },
+  ];
+};
+
 export default function Route({ children }: { children: React.ReactNode }) {
   const [isLoading, setISLoading] = useState(false);
   return (
@@ -79,7 +109,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
           </PrimaryButton>
         </Form> */}
         <DialogButton className="mx-auto">
-          Únete a la lista de espera
+          Únete a la lista de espera <FaRegClock />
         </DialogButton>
       </Hero>
       <ScrollBanner />
@@ -90,7 +120,11 @@ export default function Route({ children }: { children: React.ReactNode }) {
         <Pricing
           rightButton={
             <>
-              <Form method="POST">
+              <DialogButton className="mx-auto mt-12 w-full">
+                Únete a la lista de espera <FaRegClock />
+              </DialogButton>
+
+              {/* <Form method="POST">
                 <PrimaryButton
                   onClick={() => setISLoading(true)}
                   isLoading={isLoading}
@@ -101,12 +135,15 @@ export default function Route({ children }: { children: React.ReactNode }) {
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
-              </Form>
+              </Form> */}
             </>
           }
           leftButton={
             <>
-              <Form method="POST">
+              <DialogButton className="mx-auto mt-12 w-full">
+                Únete a la lista de espera <FaRegClock />
+              </DialogButton>
+              {/* <Form method="POST">
                 <PrimaryButton
                   onClick={() => setISLoading(true)}
                   isLoading={isLoading}
@@ -117,7 +154,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
-              </Form>
+              </Form> */}
             </>
           }
         />
