@@ -1,6 +1,7 @@
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   redirect,
 } from "@remix-run/node";
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
@@ -19,6 +20,32 @@ import { FaGoogle } from "react-icons/fa";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useToast } from "~/components/Toaster";
 import { IoLogoWhatsapp } from "react-icons/io";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Comunidad Fixtergeek" },
+    {
+      property: "og:title",
+      content: "¡Hay un 50% de descuento esperandote!",
+    },
+    {
+      name: "description",
+      content: "Canjea el cupón para el curso de Animaciones con React",
+    },
+    {
+      name: "og:image",
+      content: "https://i.imgur.com/cqJVvjK.png",
+    },
+    {
+      name: "og:description",
+      content: "Canjea el cupón para el curso de Animaciones con React",
+    },
+    {
+      name: "og:url",
+      content: "https://animaciones.fixtergeek.com",
+    },
+  ];
+};
 
 const isDev = process.env.NODE_ENV === "development";
 const secret = "fixtergeek2024" + isDev;
