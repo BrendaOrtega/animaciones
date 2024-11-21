@@ -15,10 +15,10 @@ import { cn } from "~/lib/utils";
 import { getCanShareUserORNull, verifyToken } from "~/.server/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { get50Checkout, getStripeCheckout } from "~/.server/stripe";
-import { FcGoogle } from "react-icons/fc";
+import { FaGoogle } from "react-icons/fa";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useToast } from "~/components/Toaster";
-import { PiWhatsappLogoDuotone } from "react-icons/pi";
+import { IoLogoWhatsapp } from "react-icons/io";
 
 const isDev = process.env.NODE_ENV === "development";
 const secret = "fixtergeek2024" + isDev;
@@ -193,7 +193,7 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
     );
   };
   return (
-    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
+    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/congrats.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
         ¡Andas de suerte eh! ☘️
@@ -206,10 +206,10 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
         </strong>
       </p>
       <p className=" text-xl md:text-3xl text-center mb-12 text-fish">
-        Usa el cupón #PAIRPROGRAMMINGXEVER
+        Usa el cupón COMUNIDAD50
       </p>
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
-        ¡Apresurate! Recuerda que los tokens solo viven unas horas 🕣
+        ¡Apresúrate! Recuerda que los tokens solo viven unas horas 🕣
       </p>
       <div className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6">
         <PrimaryButton
@@ -234,11 +234,11 @@ const Sharing = ({ link }: { link: string }) => {
 
   const handleSocialClick = () => {
     navigator.clipboard.writeText(link);
-    toast.success({ text: "Copiado", icon: "🪄" });
+    toast.success({ text: "Link copiado", icon: "🪄" });
   };
 
   return (
-    <section className="flex flex-col items-center h-screen px-4 md:px-0 justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
+    <section className="flex flex-col items-center h-screen px-4 md:px-0 justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/like.png" alt="logo " />
       <h2 className="text-3xl md:text-5xl  text-center font-semibold">
         Comparte este súper descuento <br />
@@ -251,7 +251,7 @@ const Sharing = ({ link }: { link: string }) => {
       </p>
       <button
         onClick={handleSocialClick}
-        className=" bg-lightGray/20  flex relative w-full md:w-[480px] gap-2 h-16 rounded-full border border-lightGray active:scale-95 transition-all"
+        className="dark:bg-lightGray/5 bg-lightGray/20 dark:border-lightGray/20  flex relative w-full md:w-[480px] gap-2 h-16 rounded-full border border-lightGray active:scale-95 transition-all"
       >
         <input
           defaultValue={link}
@@ -314,27 +314,27 @@ const Sharing = ({ link }: { link: string }) => {
         <SocialMedia
           // onClick={handleSocialClick}
           name="Gmail"
-          className="bg-[#73C56B] text-[#171717] hover:bg-[#73C56B] hover:text-white"
+          className="bg-[#F47353] text-white hover:bg-[#F47353] hover:text-white"
         >
           <a
             rel="noreferrer"
             target="_blank"
             href={`https://mail.google.com/mail/?view=cm&fs=1&to=tu_amiga@example.com&su=¡Te comparto mi descueto!&body=Este es mi token: \n ${link}`}
           >
-            <FcGoogle />
+            <FaGoogle />
           </a>
         </SocialMedia>
         <SocialMedia
           // onClick={handleSocialClick}
           name="Whatsapp"
-          className="bg-[#73C56B] text-[#171717] hover:bg-[#73C56B] hover:text-white"
+          className="bg-[#73C56B] text-white hover:bg-[#73C56B] hover:text-white"
         >
           <a
             rel="noreferrer"
             target="_blank"
             href={`whatsapp://send?text=¡Te comparto mi descuento! ${link}`}
           >
-            <PiWhatsappLogoDuotone />
+            <IoLogoWhatsapp />
           </a>
         </SocialMedia>
       </div>
@@ -364,7 +364,7 @@ const SocialMedia = ({
       {children}
       <span
         className={twMerge(
-          "absolute bg-dark -bottom-6 text-xs text-white px-1 rounded hidden group-hover:block"
+          "absolute bg-dark dark:bg-[#1B1D22] -bottom-8 text-xs text-white px-2 py-1 rounded hidden group-hover:block"
         )}
       >
         {name}

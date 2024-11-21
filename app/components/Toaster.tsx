@@ -6,7 +6,7 @@ export const useToast = () => {
   const setInitial = (toast) => {
     toast.style.transition = "all .3s ease";
     toast.style.position = "fixed";
-    toast.style.top = "80px";
+    toast.style.bottom = "64px";
     toast.style.right = "40px";
     toast.style.transform = "translateY(20px)";
     toast.style.opacity = 0;
@@ -32,8 +32,9 @@ export const useToast = () => {
     const toast = document.createElement("section");
     setInitial(toast);
     toast.innerHTML = `
-    <div class="p-6 bg-green-200 text-green-800 flex items-end justify-center rounded-2xl" >
-    <p class="text-xl"><span>${icon}</span> ${text}</p>
+    <div class="pl-4 pr-4 py-4 h-16 bg-[#ECF2EB]  rounded-full text-green-800 flex items-center justify-center " >
+    <div class="flex items-center gap-3"><span class="w-12 h-12 text-4xl flex items-center justify-center rounded-full">${icon}</span>
+    <p class="text-xl text-[#32472F] "> ${text}</p></div>
     </div>
     `;
     document.body.appendChild(toast);

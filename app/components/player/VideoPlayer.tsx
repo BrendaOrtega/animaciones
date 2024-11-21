@@ -80,7 +80,7 @@ export const VideoPlayer = ({
             key="play_button"
             className="absolute inset-0 bottom-16 flex justify-center items-center cursor-pointer z-10"
           >
-            <span className=" bg-lightGray/80 backdrop-blur	 flex items-center justify-center text-6xl text-white rounded-full  w-[120px] h-[90px]">
+            <span className=" bg-white/10 backdrop-blur	 flex items-center justify-center text-6xl text-white rounded-full  w-[120px] h-[90px]">
               <FaGooglePlay />
             </span>
           </motion.button>

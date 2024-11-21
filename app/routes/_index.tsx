@@ -12,6 +12,7 @@ import {
 } from "~/.server/stripe";
 import { getUserORNull } from "~/.server/user";
 import { Animations } from "~/components/Animations";
+import { DialogButton } from "~/components/DialogButton";
 import { NavBar } from "~/components/NavBar";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { Faq } from "~/home/Faq";
@@ -58,7 +59,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
     <main id="main" className="  bg-white dark:bg-dark overflow-hidden">
       <NavBar />
       <Hero>
-        <Form method="POST" className="flex justify-center gap-2">
+        {/* <Form method="POST" className="flex justify-center gap-2">
           <PrimaryButton
             onClick={() => setISLoading(true)}
             isLoading={isLoading}
@@ -76,7 +77,10 @@ export default function Route({ children }: { children: React.ReactNode }) {
           >
             Comenzar a ver gratis 🪄📺
           </PrimaryButton>
-        </Form>
+        </Form> */}
+        <DialogButton className="mx-auto">
+          Únete a la lista de espera
+        </DialogButton>
       </Hero>
       <ScrollBanner />
       <section className="w-full px-6 md:px-[6%] xl:px-0 xl:max-w-7xl mx-auto ">
