@@ -17,8 +17,7 @@ export default function App() {
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-          <script
+          {/* <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-BN504Z5FBK"
           ></script>
@@ -32,7 +31,7 @@ export default function App() {
 
       gtag("config", "G-BN504Z5FBK");
       `}
-          </script>
+          </script> */}
           <Meta />
           <Links />
         </head>
