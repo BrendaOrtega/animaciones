@@ -24,7 +24,7 @@ const setCors = async () => {
           AllowedMethods: ["PUT", "DELETE", "GET"],
           AllowedOrigins: isDev
             ? ["http://localhost:3000"]
-            : ["https://animations.fly.dev"],
+            : ["https://animaciones.fixtergeek.com"],
           MaxAgeSeconds: 3600,
         },
       ],

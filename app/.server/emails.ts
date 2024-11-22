@@ -12,7 +12,7 @@ const generateURL = (options: {
   const uri = new URL(
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
-      : "http://animations.fly.dev"
+      : "https://animaciones.fixtergeek.com"
   );
   uri.pathname = options.pathname || "";
   options.token && uri.searchParams.set("token", options.token);
@@ -24,7 +24,7 @@ export const sendMagicLinkEmail = (user: User, token: string) => {
   const url = new URL(
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
-      : "http://animations.fly.dev"
+      : "https://animaciones.fixtergeek.com"
   );
   url.pathname = "/portal";
   url.searchParams.set("token", token);
