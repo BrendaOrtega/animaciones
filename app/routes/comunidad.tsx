@@ -52,7 +52,7 @@ const secret = "fixtergeek2024" + isDev;
 export const ROLE = "CAN_SHARE_50_DISCOUNT";
 
 const generateLink = (token: string) =>
-  (isDev ? `http://localhost:3000` : `https://animations.fly.dev`) +
+  (isDev ? `http://localhost:3000` : `https://animaciones.fixtergeek.com`) +
   "/comunidad?token=" +
   token;
 
