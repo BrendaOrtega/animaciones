@@ -58,7 +58,7 @@ export const Drawer = ({
       <motion.button
         onClick={onClose}
         id="overlay"
-        className="fixed inset-0 bg-slate-200/20 z-10"
+        className="fixed inset-0 bg-dark/60  z-10"
         animate={{ backdropFilter: "blur(4px)" }}
         exit={{ backdropFilter: "blur(0)", opacity: 0 }}
       />
@@ -67,7 +67,7 @@ export const Drawer = ({
         animate={{ x: 0 }}
         exit={{ x: "120%" }}
         transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-        className="bg-white dark:bg-dark lg:w-[40%] md:w-[60%] w-[90%] z-10 h-screen fixed top-0 right-0 shadow-xl rounded-tl-3xl rounded-bl-3xl p-8 flex flex-col"
+        className="bg-dark border border-white/10 lg:w-[40%] md:w-[60%] w-[90%] z-10 h-screen fixed top-0 right-0 shadow-xl rounded-tl-3xl rounded-bl-3xl py-8 px-12 flex flex-col"
       >
         {header ? (
           header

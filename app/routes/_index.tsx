@@ -59,13 +59,13 @@ export const meta: MetaFunction = () => {
   return [
     { title: "Curso de Animaciones | Fixtergeek" },
     {
-      property: "og:title",
-      content: "Curso de Animaciones con React",
-    },
-    {
       name: "description",
       content:
         "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      property: "og:title",
+      content: "Curso de Animaciones con React",
     },
     {
       name: "og:image",
@@ -78,6 +78,23 @@ export const meta: MetaFunction = () => {
     },
     {
       name: "og:url",
+      content: "https://animaciones.fixtergeek.com",
+    },
+    {
+      property: "twitter:card",
+      content: "summary_large_image",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      name: "twitter:title",
+      content: "Curso de Animaciones con React",
+    },
+    {
+      name: "twitter:image",
       content: "https://animaciones.fixtergeek.com",
     },
   ];

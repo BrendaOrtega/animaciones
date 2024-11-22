@@ -23,7 +23,7 @@ export default {
         flipWords: "url('/gifs/flip-words.png')",
         flipWordsGif: "url('/gifs/flip-words.gif')",
         cards: "url('/gifs/card.png')",
-        cardsGif: "url('/gifs/3dcard.gif')",
+        cardsGif: "url('/gifs/3dcard2.gif')",
         draggable: "url('/gifs/draggable.png')",
         draggableGif: "url('/gifs/draggable.gif')",
         highlightGif: "url('/gifs/hero-highlight.gif')",

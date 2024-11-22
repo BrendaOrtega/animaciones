@@ -44,6 +44,22 @@ export const meta: MetaFunction = () => {
       name: "og:url",
       content: "https://animaciones.fixtergeek.com",
     },
+    {
+      property: "twitter:card",
+      content: "summary_large_image",
+    },
+    {
+      name: "twitter:description",
+      content: "Este es mi link de descuento para el curso de Animaciones",
+    },
+    {
+      name: "twitter:title",
+      content: "¡Hay un 50% de descuento esperándote!",
+    },
+    {
+      name: "twitter:image",
+      content: "https://animaciones.fixtergeek.com",
+    },
   ];
 };
 
@@ -291,6 +307,7 @@ const Sharing = ({ link }: { link: string }) => {
           )}
         />
       </button>
+
       <div className="flex gap-3 mt-3">
         <SocialMedia
           onClick={handleSocialClick}
@@ -302,67 +319,43 @@ const Sharing = ({ link }: { link: string }) => {
         <SocialMedia
           // onClick={handleSocialClick}
           name="Facebook"
+          link={`https://www.facebook.com/sharer/sharer.php?u=${link}`}
           className="bg-[#357BEB] text-[#ffffff] hover:bg-[#357BEB] hover:text-white"
         >
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href={`https://www.facebook.com/sharer/sharer.php?u=${link}`}
-          >
-            <FaFacebookF />
-          </a>
+          <FaFacebookF />
         </SocialMedia>
         <SocialMedia
           // onClick={handleSocialClick}
           name="X"
+          link={`https://twitter.com/intent/tweet?url=${link}&text=¡Te comparto mi link de descuento!`}
           className="bg-[#171717] text-[#ffffff] hover:bg-[#171717] hover:text-white"
         >
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href={`https://twitter.com/intent/tweet?url=${link}&text=¡Te comparto mi link de descuento!`}
-          >
-            <FaXTwitter />
-          </a>
+          <FaXTwitter />
         </SocialMedia>
         <SocialMedia
           // onClick={handleSocialClick}
           name="Linkedin"
+          link={`http://www.linkedin.com/shareArticle?mini=true&url=${link}&title=¡Te comparto mi link de descuento!`}
           className="bg-[#2967BC] text-[#ffffff] hover:bg-[#2967BC] hover:text-white"
         >
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href={`http://www.linkedin.com/shareArticle?mini=true&url=${link}&title=¡Te comparto mi link de descuento!`}
-          >
-            <FaLinkedinIn />
-          </a>
+          <FaLinkedinIn />
         </SocialMedia>
         <SocialMedia
           // onClick={handleSocialClick}
           name="Gmail"
+          link={`https://mail.google.com/mail/?view=cm&fs=1&to=tu_amiga@example.com&su=¡Te comparto mi descueto!&body=Este es mi link de descuento para el curso de Animaciones con React: \n ${link}`}
           className="bg-[#F47353] text-white hover:bg-[#F47353] hover:text-white"
         >
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href={`https://mail.google.com/mail/?view=cm&fs=1&to=tu_amiga@example.com&su=¡Te comparto mi descueto!&body=Este es mi token: \n ${link}`}
-          >
-            <FaGoogle />
-          </a>
+          <FaGoogle />
         </SocialMedia>
         <SocialMedia
           // onClick={handleSocialClick}
+          // link={`whatsapp://send?text=¡Te comparto mi descuento! ${link}`}
+          link={`https://api.whatsapp.com/send/?text=¡Te+comparto+mi+link+de+descuento!${link}&type=phone_number&app_absent=0`}
           name="Whatsapp"
           className="bg-[#73C56B] text-white hover:bg-[#73C56B] hover:text-white"
         >
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href={`whatsapp://send?text=¡Te comparto mi descuento! ${link}`}
-          >
-            <IoLogoWhatsapp />
-          </a>
+          <IoLogoWhatsapp />
         </SocialMedia>
       </div>
     </section>
@@ -373,29 +366,33 @@ const SocialMedia = ({
   className,
   children,
   name,
+  link,
   onClick,
 }: {
   className: string;
   children: ReactNode;
   name?: string;
   onClick?: () => void;
+  link?: string;
 }) => {
   return (
-    <button
-      onClick={onClick}
-      className={twMerge(
-        "group rounded-full w-12 hover:scale-125 transition-all h-12 text-xl flex items-center justify-center relative active:scale-95",
-        className
-      )}
-    >
-      {children}
-      <span
+    <a rel="noreferrer" target="_blank" href={link}>
+      <button
+        onClick={onClick}
         className={twMerge(
-          "absolute bg-dark dark:bg-[#1B1D22] -bottom-8 text-xs text-white px-2 py-1 rounded hidden group-hover:block"
+          "group rounded-full w-12 hover:scale-125 transition-all h-12 text-xl flex items-center justify-center relative active:scale-95",
+          className
         )}
       >
-        {name}
-      </span>
-    </button>
+        {children}
+        <span
+          className={twMerge(
+            "absolute bg-dark dark:bg-[#1B1D22] -bottom-8 text-xs text-white px-2 py-1 rounded hidden group-hover:block"
+          )}
+        >
+          {name}
+        </span>
+      </button>
+    </a>
   );
 };
