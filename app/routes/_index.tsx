@@ -57,7 +57,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Comunidad Fixtergeek" },
+    { title: "Curso de Animaciones | Fixtergeek" },
     {
       property: "og:title",
       content: "Curso de Animaciones con React",
