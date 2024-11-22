@@ -35,20 +35,18 @@ export const TextGenerateEffect = ({
       <motion.div ref={scope}>
         {wordsArray.map((word, idx) => {
           return (
-            <>
-              <motion.span
-                key={word + idx}
-                className={twMerge(
-                  "text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-dark dark:text-white gabarito-extrabold md:gabarito-bold leading-[110%]",
-                  className
-                )}
-                style={{
-                  filter: filter ? "blur(10px)" : "none",
-                }}
-              >
-                {word}{" "}
-              </motion.span>
-            </>
+            <motion.span
+              key={word + idx}
+              className={twMerge(
+                "text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-dark dark:text-white gabarito-extrabold md:gabarito-bold leading-[110%]",
+                className
+              )}
+              style={{
+                filter: filter ? "blur(10px)" : "none",
+              }}
+            >
+              {word}{" "}
+            </motion.span>
           );
         })}
       </motion.div>

@@ -87,9 +87,9 @@ const Comment = ({
           />
 
           <CardItem as="p" translateZ="100">
-            <p className="text-base md:text-lg text-iron dark:text-metal font-light mt-8 md:mt-12 xl:mt-16">
+            <span className="text-base md:text-lg text-iron dark:text-metal font-light mt-8 md:mt-12 xl:mt-16">
               "{comment}"
-            </p>
+            </span>
           </CardItem>
 
           <CardItem

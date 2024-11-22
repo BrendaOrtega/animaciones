@@ -86,7 +86,7 @@ export const meta: MetaFunction = () => {
 export default function Route({ children }: { children: React.ReactNode }) {
   const [isLoading, setISLoading] = useState(false);
   return (
-    <main id="main" className="  bg-white dark:bg-dark overflow-hidden">
+    <section id="main" className="  bg-white dark:bg-dark overflow-hidden">
       <NavBar />
       <Hero>
         {/* <Form method="POST" className="flex justify-center gap-2">
@@ -163,6 +163,6 @@ export default function Route({ children }: { children: React.ReactNode }) {
       </section>
       <Footer />
       {children}
-    </main>
+    </section>
   );
 }

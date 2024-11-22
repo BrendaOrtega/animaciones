@@ -85,7 +85,6 @@ export const NavBar = ({
                 Cerrar sesión
                 <IoMdLogOut className="text-xl" />
               </button>
-              {/* <ToggleButton /> */}
             </div>
           )}
         </div>
