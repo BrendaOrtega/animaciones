@@ -109,8 +109,7 @@ export const Flipper = ({
       // onMouseLeave={handleMouseLeave}
       // onMouseEnter={handleMouseEnter}
       className={cn(
-        "p-0 rounded-3xl aspect-video relative w-[420px] h-[320px]",
-        bgColor
+        "p-0 rounded-3xl aspect-video bg-white dark:bg-dark relative w-[420px] h-[320px]"
       )}
       style={{
         // perspective: 5000,
@@ -145,7 +144,7 @@ export const Flipper = ({
       </motion.div>
       <hr
         className={cn(
-          "w-full absolute border !border-white dark:border-dark border-px top-[49.9%] z-30 left-0",
+          "w-full absolute border !border-white dark:!border-dark border-px top-[49.9%] z-30 left-0",
           borderColor
         )}
       />
