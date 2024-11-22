@@ -9,7 +9,8 @@ export const Animations = () => {
           ¿Qué componentes vamos a construir? 🎨
         </h2>
         <p className="text-iron dark:text-metal font-light text-lg md:text-xl lg:text-2xl  text-center mt-4">
-          A lo largo de 12 unidades y más de 20 lecciones, construirás
+          A lo largo de 14 unidades y más de 20 lecciones, construirás más de 12
+          componentes
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-16 mt-12 md:mt-20">
           <Card

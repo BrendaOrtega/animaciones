@@ -241,7 +241,7 @@ const ModuleHeader = ({
           {subtitle}
         </p>
         <h3
-          className={cn("text-2xl font-bold font-sans", {
+          className={cn("text-lg md:text-2xl font-bold font-sans", {
             "text-green-500": isCompleted,
           })}
         >

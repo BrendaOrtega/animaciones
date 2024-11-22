@@ -1,3 +1,4 @@
+import { MetaFunction } from "@remix-run/node";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, redirect } from "@remix-run/react";
 import React, { useState } from "react";
@@ -12,6 +13,7 @@ import {
 } from "~/.server/stripe";
 import { getUserORNull } from "~/.server/user";
 import { Animations } from "~/components/Animations";
+import { DialogButton } from "~/components/DialogButton";
 import { NavBar } from "~/components/NavBar";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { Faq } from "~/home/Faq";
@@ -22,6 +24,7 @@ import { ScrollBanner } from "~/home/ScrollBanenr";
 import { Teacher } from "~/home/Teacher";
 import { Testimonials } from "~/home/Testimonial";
 import { Why } from "~/home/Why";
+import { FaRegClock } from "react-icons/fa6";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const isDev = process.env.NODE_ENV === "development";
@@ -52,13 +55,41 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return null;
 };
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Comunidad Fixtergeek" },
+    {
+      property: "og:title",
+      content: "Curso de Animaciones con React",
+    },
+    {
+      name: "description",
+      content:
+        "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      name: "og:image",
+      content: "https://i.imgur.com/kP5Rrjt.png",
+    },
+    {
+      name: "og:description",
+      content:
+        "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      name: "og:url",
+      content: "https://animaciones.fixtergeek.com",
+    },
+  ];
+};
+
 export default function Route({ children }: { children: React.ReactNode }) {
   const [isLoading, setISLoading] = useState(false);
   return (
     <main id="main" className="  bg-white dark:bg-dark overflow-hidden">
       <NavBar />
       <Hero>
-        <Form method="POST" className="flex justify-center gap-2">
+        {/* <Form method="POST" className="flex justify-center gap-2">
           <PrimaryButton
             onClick={() => setISLoading(true)}
             isLoading={isLoading}
@@ -76,7 +107,10 @@ export default function Route({ children }: { children: React.ReactNode }) {
           >
             Comenzar a ver gratis 🪄📺
           </PrimaryButton>
-        </Form>
+        </Form> */}
+        <DialogButton className="mx-auto">
+          Únete a la lista de espera <FaRegClock />
+        </DialogButton>
       </Hero>
       <ScrollBanner />
       <section className="w-full px-6 md:px-[6%] xl:px-0 xl:max-w-7xl mx-auto ">
@@ -86,7 +120,11 @@ export default function Route({ children }: { children: React.ReactNode }) {
         <Pricing
           rightButton={
             <>
-              <Form method="POST">
+              <DialogButton className="mx-auto mt-12 w-full">
+                Únete a la lista de espera <FaRegClock />
+              </DialogButton>
+
+              {/* <Form method="POST">
                 <PrimaryButton
                   onClick={() => setISLoading(true)}
                   isLoading={isLoading}
@@ -97,12 +135,15 @@ export default function Route({ children }: { children: React.ReactNode }) {
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
-              </Form>
+              </Form> */}
             </>
           }
           leftButton={
             <>
-              <Form method="POST">
+              <DialogButton className="mx-auto mt-12 w-full">
+                Únete a la lista de espera <FaRegClock />
+              </DialogButton>
+              {/* <Form method="POST">
                 <PrimaryButton
                   onClick={() => setISLoading(true)}
                   isLoading={isLoading}
@@ -113,7 +154,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
-              </Form>
+              </Form> */}
             </>
           }
         />

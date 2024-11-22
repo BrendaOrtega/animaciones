@@ -5,6 +5,7 @@ import { cn } from "~/lib/utils";
 import { IoMdLogOut } from "react-icons/io";
 import { action } from "~/routes/api";
 import { ROLE } from "~/routes/comunidad";
+import { LuTicket } from "react-icons/lu";
 
 // @todo show user is logged in?
 export const NavBar = ({
@@ -44,15 +45,15 @@ export const NavBar = ({
     <>
       <nav
         className={cn(
-          "fixed top-0 h-16  bg-white/40 dark:bg-dark/40 backdrop-blur-md z-[80] w-full  px-6 md:px-[6%] lg:px-0",
+          "fixed top-0 h-16  bg-white/40 dark:bg-dark/40 backdrop-blur-md z-[20] w-full  px-6 md:px-[6%] lg:px-0",
           {
-            "text-dark": mode === "player",
+            "text-white bg-dark": mode === "player",
           },
           className
         )}
       >
         <div className="xl:max-w-7xl justify-between items-center h-16 mx-auto flex">
-          <Link to={canShare ? "/comunidad" : "/"}>
+          <Link to="/">
             <img className="h-10" src="/Logo.png" alt="logo" />
           </Link>
 
@@ -73,15 +74,19 @@ export const NavBar = ({
             </>
           )}
           {mode === "player" && userEmail && (
-            <>
+            <div className="flex items-center gap-6">
+              <Link to={canShare ? "/comunidad" : "/"}>
+                <LuTicket className="text-2xl hover:scale-110" />
+              </Link>
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-2 text-base transition-all hover:scale-105 py-1 px-2 rounded-full text-dark dark:text-white  active:scale-100"
+                className="flex items-center gap-2 text-base transition-all hover:scale-105 py-1 px-2 rounded-full text-white  active:scale-100"
               >
                 Cerrar sesión
                 <IoMdLogOut className="text-xl" />
               </button>
-            </>
+              {/* <ToggleButton /> */}
+            </div>
           )}
         </div>
       </nav>
