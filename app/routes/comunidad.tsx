@@ -26,11 +26,11 @@ export const meta: MetaFunction = () => {
     { title: "Comunidad Fixtergeek" },
     {
       property: "og:title",
-      content: "¡Hay un 50% de descuento esperandote!",
+      content: "¡Hay un 50% de descuento esperándote!",
     },
     {
       name: "description",
-      content: "Canjea el cupón para el curso de Animaciones con React",
+      content: "Este es mi link de descuento para el curso de Animaciones",
     },
     {
       name: "og:image",
@@ -38,7 +38,7 @@ export const meta: MetaFunction = () => {
     },
     {
       name: "og:description",
-      content: "Canjea el cupón para el curso de Animaciones con React",
+      content: "Este es mi link de descuento para el curso de Animaciones",
     },
     {
       name: "og:url",
