@@ -1,5 +1,4 @@
 import "./App.css";
-import React from "react";
 import {
   Links,
   Meta,
@@ -10,9 +9,11 @@ import {
 
 import "./tailwind.css";
 import useGoogleTM from "./lib/useGoogleTM";
+import useHotjar from "./lib/useHotjar";
 
 export default function App() {
   useGoogleTM();
+  useHotjar();
   return (
     <>
       <html suppressHydrationWarning>
