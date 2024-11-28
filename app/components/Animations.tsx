@@ -62,7 +62,7 @@ const Card = ({
     <section className="col-span-1 group emoji">
       <div
         className={twMerge(
-          "bg-cover bg-center w-full h-[240px] md:h-[280px] rounded-lg transition-all  dark:border dark:border-lightGray/10",
+          "bg-cover bg-center bg-dark w-full h-[240px] md:h-[280px] rounded-lg transition-all  dark:border dark:border-lightGray/10",
           className
         )}
       ></div>

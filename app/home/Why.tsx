@@ -11,7 +11,7 @@ export const Why = () => {
           src="https://images.pexels.com/photos/7437487/pexels-photo-7437487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
         />
 
-        <div>
+        <div className="w-[58%]">
           <h2 className="dark:text-white  text-3xl md:text-4xl lg:text-5xl	text-dark font-bold">
             Porqué tomar este curso 🎯
           </h2>

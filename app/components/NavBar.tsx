@@ -45,7 +45,7 @@ export const NavBar = ({
     <>
       <nav
         className={cn(
-          "fixed top-0 h-16  bg-white/40 dark:bg-dark/40 backdrop-blur-md z-[20] w-full  px-6 md:px-[6%] lg:px-0",
+          "fixed top-0 h-16  bg-white/10 dark:bg-dark/40 backdrop-blur-md z-[20] w-full  px-6 md:px-[6%] lg:px-0",
           {
             "text-white bg-dark": mode === "player",
           },
@@ -85,7 +85,6 @@ export const NavBar = ({
                 Cerrar sesión
                 <IoMdLogOut className="text-xl" />
               </button>
-              {/* <ToggleButton /> */}
             </div>
           )}
         </div>

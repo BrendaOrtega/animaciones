@@ -59,13 +59,13 @@ export const meta: MetaFunction = () => {
   return [
     { title: "Curso de Animaciones | Fixtergeek" },
     {
-      property: "og:title",
-      content: "Curso de Animaciones con React",
-    },
-    {
       name: "description",
       content:
         "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      property: "og:title",
+      content: "Curso de Animaciones con React",
     },
     {
       name: "og:image",
@@ -80,13 +80,30 @@ export const meta: MetaFunction = () => {
       name: "og:url",
       content: "https://animaciones.fixtergeek.com",
     },
+    {
+      property: "twitter:card",
+      content: "summary_large_image",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "Crea tus propios componentes animados con React y Framer motion",
+    },
+    {
+      name: "twitter:title",
+      content: "Curso de Animaciones con React",
+    },
+    {
+      name: "twitter:image",
+      content: "https://animaciones.fixtergeek.com",
+    },
   ];
 };
 
 export default function Route({ children }: { children: React.ReactNode }) {
   const [isLoading, setISLoading] = useState(false);
   return (
-    <main id="main" className="  bg-white dark:bg-dark overflow-hidden">
+    <section id="main" className="  bg-white dark:bg-dark overflow-hidden">
       <NavBar />
       <Hero>
         {/* <Form method="POST" className="flex justify-center gap-2">
@@ -163,6 +180,6 @@ export default function Route({ children }: { children: React.ReactNode }) {
       </section>
       <Footer />
       {children}
-    </main>
+    </section>
   );
 }
