@@ -35,12 +35,16 @@ const setCors = async () => {
   return await S3.send(command);
 };
 
-export const getReadURL = async (key: string, expiresIn = 3600) =>
+export const getReadURL = async (
+  key: string,
+  expiresIn = 3600,
+  isAnimations: boolean = true
+) =>
   await getSignedUrl(
     S3,
     new GetObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: "animaciones/" + key,
+      Key: isAnimations ? "animaciones/" + key : key,
     }),
     { expiresIn }
   );
@@ -56,15 +60,6 @@ export const getImageURL = async (key: string, expiresIn = 900) =>
   );
 
 // borrame
-export const getGetVideoExperiment = async (key: string, expiresIn = 3600) =>
-  await getSignedUrl(
-    S3,
-    new GetObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
-      Key: "videos_experiment/" + key, // @TODO: update when prod beta
-    }),
-    { expiresIn }
-  );
 
 export const getPutVideoExperiment = async () => {
   const key = "videos_experiment/" + uuidv4();
@@ -79,13 +74,16 @@ export const getPutVideoExperiment = async () => {
   );
 };
 
-export const getPutFileUrl = async (key: string) => {
+export const getPutFileUrl = async (
+  key: string,
+  isAnimations: boolean = true
+) => {
   await setCors();
   return await getSignedUrl(
     S3,
     new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: "animaciones/" + key, // @TODO: update when prod beta
+      Key: isAnimations ? "animaciones/" + key : key,
     }),
     { expiresIn: 3600 }
   );

@@ -68,10 +68,25 @@ export const VideoForm = ({
     onSubmit?.();
   };
 
+  const handleGenerateVersions = () => {
+    if (!confirm("Esta operación gasta recursos, ¿estás segura de continuar?"))
+      return;
+    // soy flojo como pa definir muchs fetchers con tipos distintos U_U
+    if (!video.id || !video.storageKey) return alert("No existe video");
+    fetcher.submit(
+      {
+        intent: "generate_video_versions",
+        videoId: video.id,
+        storageKey: video.storageKey,
+      },
+      { method: "POST", action: "/api" }
+    );
+  };
+
   return (
     <>
       <Form
-        className="flex flex-col h-full"
+        className="flex flex-col h-full text-white"
         onSubmit={handleSubmit(onSubmition)}
       >
         <h3 className="mb-2 text-gray-400 text-xl">
@@ -99,6 +114,24 @@ export const VideoForm = ({
             register={register}
           />
         )}
+        {video.storageKeys && video.storageKeys.length > 0 && (
+          <div className="text-white dark:text-black mb-2">
+            <p>Otras versiones:</p>
+            {video.storageKeys?.map((k) => (
+              <p key={k}>{k}</p>
+            ))}
+          </div>
+        )}
+        {video.storageKey && (
+          <button
+            onClick={handleGenerateVersions}
+            type="button"
+            className="dark:text-black text-white border rounded-md py-2 active:bg-gray-800 mb-4"
+          >
+            Generar Todas las Versiones
+          </button>
+        )}
+
         {video.id && (
           <ImageInput
             setValue={setValue}
