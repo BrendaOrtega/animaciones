@@ -4,11 +4,7 @@ import ffmpeg from "fluent-ffmpeg";
 // import chp from "child_process";
 import fetch from "node-fetch";
 import fs from "fs";
-import {
-  getGetVideoExperiment,
-  getPutVideoExperiment,
-  getReadURL,
-} from "~/.server/tigris";
+import { getPutVideoExperiment } from "~/.server/tigris";
 import { Worker } from "worker_threads";
 
 const videoURL =
@@ -39,7 +35,7 @@ export const loader = async () => {
   command.clone().save(outputPath.replace("small", "original"));
   const file = fs.readFileSync(outputPath);
   // const putURL = await getPutVideoExperiment();
-  const cpu = require("os").cpus().length;
+  // const cpu = require("os").cpus().length;
   // console.log("cores?", cpu);
   const putURL = await getPutVideoExperiment();
   const worker = new Worker("./conversiones/resizeAndUpload.js", {
