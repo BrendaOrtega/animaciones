@@ -17,6 +17,10 @@ import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
 
+// experiment
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { fetchFile, createFFmpeg } from "@ffmpeg/util";
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
@@ -45,7 +49,47 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
     data.slug = slugify(data.title, { lower: true }); // @todo zod
     data.index = data.index ? Number(data.index) : undefined;
-    data.storageLink = "/videos?storageKey=" + data.storageKey; // video experiment
+    data.storageLink = "/videos?storageKey=" + data.storageKey; // experiment?
+
+    // experiment
+    // const ffmpegInstance = new FFmpeg();
+    // let ffmpegLoadingPromise = ffmpegInstance.load();
+    // async function getFFmpeg() {
+    //   if (ffmpegLoadingPromise) {
+    //     await ffmpegLoadingPromise;
+    //     ffmpegLoadingPromise = undefined;
+    //   }
+
+    //   return ffmpegInstance;
+    // }
+    // const ffmpeg = await getFFmpeg();
+    // const inputFileName = `input-video`;
+    // const outputFileName = `output-image.gif`;
+    // let outputData = null;
+    // ffmpeg.FS(
+    //   "writeFile",
+    //   inputFileName,
+    //   await fetchFile("/videos?storageKey=" + data.storageKey)
+    // );
+
+    // await ffmpeg.run(
+    //   "-y",
+    //   "-t",
+    //   "3",
+    //   "-i",
+    //   inputFileName,
+    //   "-filter_complex",
+    //   "fps=5,scale=720:-1:flags=lanczos[x];[x]split[x1][x2];[x1]palettegen[p];[x2][p]paletteuse",
+    //   "-f",
+    //   "gif",
+    //   outputFileName
+    // );
+
+    // outputData = ffmpeg.FS("readFile", outputFileName);
+    // ffmpeg.FS("unlink", inputFileName);
+    // ffmpeg.FS("unlink", outputFileName);
+
+    // console.log("LA DATA:", outputData);
 
     // if exists
     if (data.id) {

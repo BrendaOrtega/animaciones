@@ -6,6 +6,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { v4 as uuidv4 } from "uuid";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -53,6 +54,30 @@ export const getImageURL = async (key: string, expiresIn = 900) =>
     }),
     { expiresIn }
   );
+
+// borrame
+export const getGetVideoExperiment = async (key: string, expiresIn = 3600) =>
+  await getSignedUrl(
+    S3,
+    new GetObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: "videos_experiment/" + key, // @TODO: update when prod beta
+    }),
+    { expiresIn }
+  );
+
+export const getPutVideoExperiment = async () => {
+  const key = "videos_experiment/" + uuidv4();
+  await setCors();
+  return await getSignedUrl(
+    S3,
+    new PutObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: key,
+    }),
+    { expiresIn: 3600 }
+  );
+};
 
 export const getPutFileUrl = async (key: string) => {
   await setCors();

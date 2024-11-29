@@ -4,6 +4,9 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { action } from "~/routes/admin";
 import { Spinner } from "../Spinner";
 
+// import { FFmpeg } from "@ffmpeg/ffmpeg";
+// import { toBlobURL } from "@ffmpeg/util";
+
 export const VideoFileInput = ({
   video,
   setValue,
@@ -28,6 +31,10 @@ export const VideoFileInput = ({
   const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
   const [storageKey, setStorageKey] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
+
+  // experiment
+  // const ffmpegRef = useRef();
+  // const previewRef = useRef<HTMLImageElement>(null);
 
   // @todo: calculate progress 🤩
   const updateProgres = () => {
@@ -66,7 +73,41 @@ export const VideoFileInput = ({
     setValue?.("duration", Number(duration).toFixed(0));
   };
 
+  // experiment
+  // const experiment = async (file: File) => {
+  //   const outputFileName = "output.gif";
+  //   const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
+  //   const ffmpeg = ffmpegRef.current;
+  //   await ffmpeg.load({
+  //     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+  //     wasmURL: await toBlobURL(
+  //       `${baseURL}/ffmpeg-core.wasm`,
+  //       "application/wasm"
+  //     ),
+  //   });
+  //   const blob = URL.createObjectURL(file);
+  //   await ffmpeg.writeFile(file.name, blob);
+  //   await ffmpeg.exec([
+  //     "-y",
+  //     "-t",
+  //     "3",
+  //     "-i",
+  //     file.name,
+  //     "-filter_complex",
+  //     "fps=5,scale=720:-1:flags=lanczos[x];[x]split[x1][x2];[x1]palettegen[p];[x2][p]paletteuse",
+  //     "-f",
+  //     "gif",
+  //     outputFileName,
+  //   ]);
+  //   const data = await ffmpeg.readFile(outputFileName);
+  //   previewRef.current.src = URL.createObjectURL(
+  //     new Blob(data, { type: "image/gif" })
+  //   );
+  // };
+
   const uploadFile = async (file: File) => {
+    // experiment(file);
+    // return;
     // @todo: catch progress
     if (!file || !urls) return console.error("No file, nor urls present");
 
@@ -125,6 +166,7 @@ export const VideoFileInput = ({
           controls
         ></video>
       )}
+      {/* <img ref={previewRef} src="" alt="preview" /> */}
       {uploading && (
         <div className="flex gap-2">
           <Spinner /> Subiendo video, no cierre la ventana

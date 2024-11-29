@@ -5,6 +5,7 @@ ARG NODE_VERSION=23.1.0
 FROM node:${NODE_VERSION}-slim as base
 # Install openssl for Prisma
 RUN apt-get update && apt-get install -y openssl
+RUN apt-get install -y ffmpeg
 # Remix app lives here
 LABEL fly_launch_runtime="Remix"
 WORKDIR /app

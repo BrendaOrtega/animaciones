@@ -2,9 +2,9 @@ import { type Video } from "@prisma/client";
 import { Form, useFetcher } from "@remix-run/react";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useForm } from "react-hook-form";
-import { VideoFileInput } from "~/components/admin/VideoFileInput";
 import { cn } from "~/lib/utils";
 import { ImageInput } from "./ImageInput";
+import { VideoFileInput } from "./VideoFileInput";
 
 // @todo select moduleName to swap'em
 export const VideoForm = ({
