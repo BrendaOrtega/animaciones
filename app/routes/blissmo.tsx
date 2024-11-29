@@ -1,24 +1,30 @@
 import { SimpleDragger } from "~/components/SimpleHover";
 import path from "path";
 import ffmpeg from "fluent-ffmpeg";
-import chp from "child_process";
+// import chp from "child_process";
 import fetch from "node-fetch";
 import fs from "fs";
-import { getGetVideoExperiment, getPutVideoExperiment } from "~/.server/tigris";
+import {
+  getGetVideoExperiment,
+  getPutVideoExperiment,
+  getReadURL,
+} from "~/.server/tigris";
+import { Worker } from "worker_threads";
 
 const videoURL =
-  "https://wild-bird-2039.fly.storage.tigris.dev/courses/animations/bolita.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=tid_wwTNvYmQACiTfuBlYMWtzrMlJdflLKbdvbMcBqYDcqFKujEpOl%2F20241129%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20241129T032730Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=4b41e805a3995e58beab2096ef1f61394c81928e3e564460a4b61e59b5879d1c";
-// "https://cdn.pixabay.com/video/2022/10/30/137088-765727914_large.mp4";
+  "https://cdn.pixabay.com/video/2022/10/30/137088-765727914_large.mp4";
 
 export const loader = async () => {
-  const videoURL = await getGetVideoExperiment(
-    "2873666c-cbd4-44ce-934f-c803894c3263"
-  );
-  const tempPath = path.join("./conversiones", "perro.mp4");
+  // const videoURL = await getReadURL("video-673b52243699b4f81b671523");
+  const tempPath = path.join("./conversiones", "temp");
   const outputPath = path.join("./conversiones", "small.mp4");
-  const downloadFile = async (fileURL: string, thePath = tempPath) => {
+  let contentLength = null;
+  let contentType = null;
+  const downloadFile = async (fileURL: string) => {
     const res = await fetch(fileURL);
-    const fileStream = fs.createWriteStream(thePath);
+    contentLength = res.headers.get("content-length");
+    contentType = res.headers.get("content-type");
+    const fileStream = fs.createWriteStream(tempPath);
     await new Promise((resolve, reject) => {
       res.body.pipe(fileStream);
       res.body.on("error", reject);
@@ -29,28 +35,43 @@ export const loader = async () => {
 
   // feed it to the ffmpeg
   const command = ffmpeg(tempPath).videoCodec("libx264").format("mp4");
-  command.clone().size("320x200").save(outputPath);
-  // command.clone().save(outputPath);
+  command.clone().size("320x200").save(outputPath); // @todo bitrates etc.
+  command.clone().save(outputPath.replace("small", "original"));
   const file = fs.readFileSync(outputPath);
+  // const putURL = await getPutVideoExperiment();
+  const cpu = require("os").cpus().length;
+  // console.log("cores?", cpu);
   const putURL = await getPutVideoExperiment();
+  const worker = new Worker("./conversiones/resizeAndUpload.js", {
+    workerData: { file, contentLength, contentType, putURL },
+  });
+  worker.on("message", (da) => console.log("MESSAGE: ", da));
+  worker.on("error", (e) => console.error(e));
+  worker.on("exit", (code) => {
+    console.log("Exit Code: ", code);
+  });
+
+  // const childProcess = chp.fork(
+  //   path.join("./conversiones", "resizeAndUpload.js")
+  // );
+
+  // childProcess.send();
+  // childProcess.on("message", (message) => {
+  //   console.log("Terminó", message);
+  // });
+
+  return null;
+
   await fetch(putURL, {
     method: "PUT",
     body: file,
     headers: {
-      "Content-Length": "1258291.2",
-      "Content-Type": "video/mp4",
+      "Content-Length": String(contentLength),
+      "Content-Type": contentType,
     },
   })
     .then((r) => console.log("Uploaded to S3: ", r.ok))
     .catch((e) => console.error(e));
-
-  // const command = ffmpeg(path.join(url))
-  //   // .audioCodec("libfaac")
-  //   .videoCodec("libx264")
-  //   .format("mp4");
-
-  // command.clone().size("320x200").save("../../public/videos/small.mp4");
-  // command.clone().save("../../public/videos/output.mp4");
 
   return null;
 };
