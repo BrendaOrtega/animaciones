@@ -5,8 +5,8 @@ import { randomUUID } from "crypto";
 import { db } from "./db";
 import { finished } from "stream/promises";
 import { Readable } from "stream";
-import { replaceLinks } from "~/routes/playlist.$storageKey.$segment";
 import { redirect } from "@remix-run/node";
+import { replaceLinks } from "./replaceM3U8Links";
 
 // @chunk it out with forks @todo
 type VideoFetched = {
