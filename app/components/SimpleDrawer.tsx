@@ -72,15 +72,17 @@ export const Drawer = ({
         {header ? (
           header
         ) : (
-          <header className="flex items-start justify-between mb-6">
+          <header className="flex items-start justify-between mb-6 ">
             <div>
-              <h4 className="text-2xl font-semibold md:text-4xl">{title}</h4>
+              <h4 className="text-2xl font-semibold md:text-4xl text-white">
+                {title}
+              </h4>
               <p className="text-brand_gray">{subtitle}</p>
             </div>
             <button
               tabIndex={0}
               onClick={onClose}
-              className="text-2xl bg-gray-200 rounded-full p-1 active:scale-95"
+              className="text-2xl bg-gray-200 round-full p-1 active:scale-95"
             >
               <IoClose />
             </button>

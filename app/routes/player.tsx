@@ -100,10 +100,13 @@ export default function Route() {
       <NavBar mode="player" className="m-0" />
       <article className="bg-dark relative overflow-x-hidden pt-20">
         <VideoPlayer
+          video={video}
           // @todo visit and refactor please
           onClickNextVideo={handleClickEnding}
-          type={video.type || undefined}
-          src={video.storageLink || undefined}
+          // type={video.type || undefined}
+          // src={video.storageLink || undefined}
+          src={"/playlist/" + video.storageKey + "/index.m3u8"}
+          type={"application/x-mpegURL"}
           poster={video.poster || undefined}
           nextVideo={nextVideo || undefined}
           slug={video.slug}

@@ -1,11 +1,15 @@
 import { Video } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 
+import videojs from "video.js";
+import "video.js/dist/video-js.css";
+
 export const VideoPlayer = ({
   src,
+  video,
   type = "video/mov",
   onPlay,
   onPause,
@@ -15,6 +19,7 @@ export const VideoPlayer = ({
   nextVideo,
   slug,
 }: {
+  video?: Partial<Video>;
   slug: string;
   nextVideo?: Partial<Video>;
   poster?: string;
@@ -25,6 +30,7 @@ export const VideoPlayer = ({
   onPlay?: () => void;
   onPause?: () => void;
 }) => {
+  const containerRef = useRef<HTMLVideoElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
@@ -67,8 +73,38 @@ export const VideoPlayer = ({
     localStorage.setItem("watched", JSON.stringify(list));
   };
 
+  useEffect(() => {
+    // if (!videoRef.current) return;
+    // const videoElement = videoRef.current;
+    // videoElement.classList.add("vjs-big-play-centered");
+    // // containerRef.current?.appendChild(videoElement);
+    // videojs(videoElement, {
+    //   sources: [
+    //     {
+    //       src: `/playlist/${video?.storageKey}/index.m3u8`,
+    //       type: "application/x-mpegURL",
+    //     },
+    //   ],
+    // });
+    if (!videoRef.current) return;
+    const hlsSupport = (videoNode: HTMLVideoElement) =>
+      videoNode.canPlayType("application/vnd.apple.mpegURL");
+    console.log(
+      hlsSupport(videoRef.current)
+        ? `HLS :: ${hlsSupport(videoRef.current)}`
+        : "HLS Not supported"
+    );
+    if (hlsSupport(videoRef.current)) {
+    } else {
+      videoRef.current.src = video?.storageLink;
+    }
+  }, []);
+
   return (
-    <section className="h-[calc(100vh-80px)] relative overflow-x-hidden">
+    <section
+      className="h-[calc(100vh-80px)] relative overflow-x-hidden"
+      ref={containerRef}
+    >
       <AnimatePresence>
         {!isPlaying && (
           <motion.button
@@ -128,7 +164,7 @@ export const VideoPlayer = ({
         ref={videoRef}
         className="w-full h-full"
         controls
-        src={src}
+        // src={src}
       >
         <track kind="captions" />
         <source src={src} type={type} />

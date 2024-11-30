@@ -75,7 +75,8 @@ export const VideoForm = ({
     if (!video.id || !video.storageKey) return alert("No existe video");
     fetcher.submit(
       {
-        intent: "generate_video_versions",
+        // intent: "generate_video_versions",
+        intent: "generate_hsl", // HSL experiment
         videoId: video.id,
         storageKey: video.storageKey,
       },
@@ -113,6 +114,14 @@ export const VideoForm = ({
             setValue={setValue}
             register={register}
           />
+        )}
+        {fetcher.data?.playListURL && (
+          <video controls className="aspect-video">
+            <source
+              src={fetcher.data.playListURL}
+              type="application/x-mpegURL"
+            />
+          </video>
         )}
         {video.storageKeys && video.storageKeys.length > 0 && (
           <div className="text-white dark:text-black mb-2">
