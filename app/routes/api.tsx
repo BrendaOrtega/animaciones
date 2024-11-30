@@ -27,14 +27,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     // // medium
     // createVideoVersion(storageKey, "3480x2160"); // 4k
-    createVideoVersion(storageKey, "1920x?"); // full_hd
+    // createVideoVersion(storageKey, "1920x?"); // full_hd
     // createVideoVersion(storageKey, "1280x?"); // hd
     createVideoVersion(storageKey, "640x?"); // sd
     createVideoVersion(storageKey, "320x?"); // sd
 
     return null;
+    // @todo notify how? - webhook? to update db?
     console.log("TOOOODO para: ", newStorageKeys, "funciona!");
-    // @todo notify how? - maybe, a list of notifications [{text,viewed}]
     // update db
     await db.video.update({
       where: { id: videoId },

@@ -153,7 +153,14 @@ const putObject = async ({
     },
   }).catch((e) => console.error(e));
   console.log("FILE_UPLOADED_TO_S3", storageKey, response.ok);
+  console.log("CLEANING_UP", filePath);
+  cleanUp(filePath);
 };
+
+const updateVideoInDB = () => {
+  // @todo, need to pass videoId from the beginning
+};
+
 const detached_generateVideoVersion = async (storageKey, size = "320x?") => {
   if (!storageKey) return console.log("ABORTED", storageKey);
 
@@ -162,7 +169,7 @@ const detached_generateVideoVersion = async (storageKey, size = "320x?") => {
   const __dirname = dirname(tempPath);
   // se necesita la extensión para que no se confunda con un folder 🤯
   const outputFilePath = [__dirname, "/", randomUUID(), ".mp4"].join("");
-  console.log("CREATING_TEMP_FILE_FROM::", tempPath);
+  console.log("CREATING_TEMP_FILE_FOR_SIZE::", size);
   const command = Ffmpeg(tempPath).videoCodec("libx264").audioCodec("aac");
   await command
     .clone()
@@ -176,6 +183,8 @@ const detached_generateVideoVersion = async (storageKey, size = "320x?") => {
         contentType,
         storageKey: `animaciones/${storageKey}_${size}`,
       }); // async
+      console.log("CLEANING_UP", tempPath);
+      cleanUp(tempPath);
     })
     .save(outputFilePath);
 };
