@@ -5,8 +5,10 @@ import { randomUUID } from "crypto";
 import { db } from "./db";
 import { finished } from "stream/promises";
 import { Readable } from "stream";
-import { redirect } from "@remix-run/node";
 import { replaceLinks } from "./replaceM3U8Links";
+import { fork } from "child_process";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 // @chunk it out with forks @todo
 type VideoFetched = {
@@ -16,6 +18,71 @@ type VideoFetched = {
   tempPath: string;
   fileStream: WriteStream;
 };
+
+export const forkChild = (
+  scriptPath: string,
+  args: string[] = [],
+  cb?: (arg0: unknown) => void
+) => {
+  // const __filename = fileURLToPath(import.meta.url);
+  // const __dirname = dirname(__filename);
+
+  const child = fork(scriptPath, ["niño", ...args]);
+  child.on("error", (e) => console.error(e));
+  child.on("exit", (exit) => {
+    console.log("Terminó", exit);
+    cb?.(exit);
+  });
+};
+
+export const experiment = async (storageKey: string, data: any = {}) => {
+  const { fileStream } = await fetchVideo(storageKey);
+  console.log("SIZE: ", fileStream.bytesWritten / 1_024 / 1_024 + "mb");
+  forkChild("./child_process/experiment.js", [JSON.stringify(data)], (exit) =>
+    console.log("FORK_FINISHED_WITH_EXIT_CODE::", exit)
+  );
+};
+
+export const createFolderIfDoesntExist = (folder: string) => {
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder, { recursive: true });
+  }
+};
+
+export const detached_generateVideoVersion = async ({
+  // for ref only, this function should be placed in child_process folder
+  storageKey,
+  size = "800x600",
+}: {
+  storageKey: string;
+  size?: "800x600";
+}) => {
+  const { tempPath } = await fetchVideo(storageKey);
+  const __dirname = dirname(tempPath);
+  const outputFilePath = path.join(__dirname, "temp.mp4");
+  createFolderIfDoesntExist(__dirname);
+  const command = Ffmpeg(tempPath).videoCodec("libx264").audioCodec("aac");
+  await command.clone().size(size).save(outputFilePath);
+  // the uploads
+  console.log(
+    "FILE_SIZE::",
+    fs.statSync(outputFilePath).size / 1024 / 1024 + "mb"
+  );
+};
+
+export const getVideoFileSizedTo = async (
+  size: "SD" | "HD" = "SD",
+  tempPath: string
+) => {
+  const outputFilePath = `./conversiones/temp.mp4`;
+  if (!fs.existsSync("conversiones")) {
+    fs.mkdirSync("conversiones", { recursive: true }); // this is gold
+  }
+  const command = Ffmpeg(tempPath).videoCodec("libx264").audioCodec("aac");
+  await command.clone().size("320x?").save(outputFilePath); // espera!
+  return fs.readFileSync(outputFilePath); // @todo can we do streams? instead of sync.
+};
+
 export const fetchVideo = async (
   storageKey: string,
   isPlaylist: boolean = false
@@ -81,7 +148,7 @@ export const uploadHLS = async ({
   contentType: string;
 }) => {
   const path = `./conversiones/playlist/${storageKey}/`;
-  const hslPath = `${path}index.m3u8`;
+  // const hslPath = `${path}index.m3u8`;
   const files = fs.readdirSync(path).map((fileName) => path + fileName);
   console.log("THE FILES: ", files);
   const fetchPromises = files.map(async (path) => {
@@ -141,6 +208,7 @@ export const generateHSL = async (storageKey: string) => {
   });
 };
 
+// @todo This should accept streams
 export const convertToHLS = async (tempPath: string, storageKey: string) => {
   if (!fs.existsSync(`./conversiones/playlist/${storageKey}/`)) {
     fs.mkdirSync(`./conversiones/playlist/${storageKey}/`, { recursive: true });
@@ -181,16 +249,6 @@ export const convertToHLS = async (tempPath: string, storageKey: string) => {
 
   return await command.clone().save(hslPath); // espera!
   // return fs.readFileSync(outputPath); // @todo can we do streams? instead of sync.
-};
-
-export const getVideoFileSizedTo = async (
-  size: "SD" | "HD" = "SD",
-  tempPath: string
-) => {
-  const outputPath = `./conversiones/temp`;
-  const command = Ffmpeg(tempPath).videoCodec("libx264").audioCodec("aac");
-  await command.clone().size("320x?").save(outputPath); // espera!
-  return fs.readFileSync(outputPath); // @todo can we do streams? instead of sync.
 };
 
 export const createVideoVersions = async ({
@@ -264,4 +322,18 @@ export const uploadVideos = async ({
       );
     })
   ); // returns storageKeys
+};
+
+// DETACHED FUNCTIONS
+export const createVideoVersion = async (
+  storageKey: string,
+  size: string = "320x?"
+) => {
+  return forkChild("./child_process/experiment.js", [
+    "detached_generateVideoVersion",
+    JSON.stringify({
+      storageKey,
+      size,
+    }),
+  ]);
 };

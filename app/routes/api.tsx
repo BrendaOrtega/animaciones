@@ -1,7 +1,7 @@
 import { ActionFunctionArgs } from "@remix-run/node";
 import { db } from "~/.server/db";
 import { getUserORNull } from "~/.server/user";
-import { createVideoVersions, generateHSL } from "~/.server/videoProcessing";
+import { createVideoVersion, generateHSL } from "~/.server/videoProcessing";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -20,12 +20,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (intent === "generate_video_versions") {
     const videoId = String(formData.get("videoId"));
-    const originalKey = String(formData.get("storageKey"));
-    if (!originalKey || !videoId) return null;
-    console.log("Generating... for", originalKey);
-    const newStorageKeys = await createVideoVersions({
-      originalKey,
-    });
+    const storageKey = String(formData.get("storageKey"));
+    if (!storageKey || !videoId) return null;
+
+    console.log("Generating multiple versions... for", storageKey);
+
+    // // medium
+    // createVideoVersion(storageKey, "3480x2160"); // 4k
+    createVideoVersion(storageKey, "1920x?"); // full_hd
+    // createVideoVersion(storageKey, "1280x?"); // hd
+    createVideoVersion(storageKey, "640x?"); // sd
+    createVideoVersion(storageKey, "320x?"); // sd
+
+    return null;
     console.log("TOOOODO para: ", newStorageKeys, "funciona!");
     // @todo notify how? - maybe, a list of notifications [{text,viewed}]
     // update db

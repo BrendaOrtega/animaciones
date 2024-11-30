@@ -75,8 +75,8 @@ export const VideoForm = ({
     if (!video.id || !video.storageKey) return alert("No existe video");
     fetcher.submit(
       {
-        // intent: "generate_video_versions",
-        intent: "generate_hsl", // HSL experiment
+        intent: "generate_video_versions",
+        // intent: "generate_hsl", // HSL experiment
         videoId: video.id,
         storageKey: video.storageKey,
       },
