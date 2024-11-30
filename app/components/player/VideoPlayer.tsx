@@ -86,6 +86,8 @@ export const VideoPlayer = ({
     //     },
     //   ],
     // });
+
+    // detecting HLS support
     if (!videoRef.current) return;
     const hlsSupport = (videoNode: HTMLVideoElement) =>
       videoNode.canPlayType("application/vnd.apple.mpegURL");
