@@ -8,7 +8,8 @@ import { Readable } from "stream";
 import { replaceLinks } from "./replaceM3U8Links";
 import { fork } from "child_process";
 import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import { sendWelcome } from "./user";
+// import { fileURLToPath } from "url";
 
 // @chunk it out with forks @todo
 type VideoFetched = {
@@ -19,6 +20,7 @@ type VideoFetched = {
   fileStream: WriteStream;
 };
 
+// EXPERIMENTS 🚧
 export const forkChild = (
   scriptPath: string,
   args: string[] = [],
@@ -35,13 +37,93 @@ export const forkChild = (
   });
 };
 
-export const experiment = async (storageKey: string, data: any = {}) => {
+export const print_detached = (text: string = "Blissmo") => {
+  const worker = spawnWorker(
+    (arg) => {
+      // Aquí podemos hacer lo que sea (DB) 🤓
+      setTimeout(() => {
+        console.log(arg || "BLISSMO_EXPERIMENT", " delay: 3s");
+      }, 3000);
+    },
+    // arg === [text]
+    [text]
+  );
+  console.log("Spawnded! :: ", worker);
+};
+
+const spawnWorker = (
+  arg: Promise<() => void | string> | (() => void | string),
+  args = [],
+  options: {
+    cwd: string;
+    onerror?: unknown;
+    onmessage?: unknown;
+  } = {
+    cwd: process.cwd(),
+    onerror: () => 1,
+    onmessage: () => 0,
+  }
+) => {
+  const worker = path.join("./child_process", "worker.js"); // use a cdn?
+  let isfn = typeof arg === "function";
+  let input = isfn ? arg.toString() : arg; // 🪄
+  if (!options.cwd) {
+    options.cwd = process.cwd();
+  }
+  // @todo. testing & debug stuff?
+  // Aquí comienza el truco 🎩🐰
+  const child = fork(worker, args, options);
+  child.on("error", (err) => options.onerror?.(err));
+  child.on("message", (msg: string) => {
+    const message = JSON.parse(msg);
+    // @ts-ignore
+    message.error ? onerror?.(new Error(message.error)) : undefined;
+    !message.error ? options.onmessage?.(message) : undefined;
+  });
+  // @todo aborting?
+  child.on("exit", (code) => options.onerror?.("Interupted::" + code));
+  // finally! ✨ sending to the worker 👷🏼‍♂️
+  child.send({
+    input,
+    isfn,
+    cwd: options.cwd,
+    esm: options.esm,
+    args,
+  });
+  // methods
+  return {
+    terminate() {
+      child.kill("SIGINT");
+      // @todo update onerror listeners
+    },
+    // onmessage(data: Record<string, unknown>) {
+    //   child.send(JSON.stringify({ data }, null, 0));
+    // },
+    // addEventListener(event, fn) {
+    //   if (EventSource.test(event)) {
+    //     options["on" + event] = fn;
+    //   }
+    // },
+  };
+};
+
+export const experiment = (
+  storageKey: string,
+  data: Record<string, unknown> = {}
+) => {};
+
+export const experiment__legacy = async (
+  storageKey: string,
+  data: any = {}
+) => {
   const { fileStream } = await fetchVideo(storageKey);
   console.log("SIZE: ", fileStream.bytesWritten / 1_024 / 1_024 + "mb");
   forkChild("./child_process/experiment.js", [JSON.stringify(data)], (exit) =>
     console.log("FORK_FINISHED_WITH_EXIT_CODE::", exit)
   );
 };
+
+// EXPERIMENTS 🚧
 
 export const createFolderIfDoesntExist = (folder: string) => {
   if (!fs.existsSync(folder)) {

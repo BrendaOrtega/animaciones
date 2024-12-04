@@ -69,6 +69,12 @@ export const VideoForm = ({
   };
 
   const handleGenerateVersions = () => {
+    // Kidnaped du an experiment 🚧
+    return fetcher.submit(
+      { intent: "experiment", storageKey: video.storageKey },
+      { method: "POST" }
+    );
+
     if (!confirm("Esta operación gasta recursos, ¿estás segura de continuar?"))
       return;
     // soy flojo como pa definir muchs fetchers con tipos distintos U_U

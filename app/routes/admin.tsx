@@ -16,11 +16,23 @@ import { cn } from "~/lib/utils";
 import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
-import { createVideoVersions } from "~/.server/videoProcessing";
+import {
+  createVideoVersions,
+  print_detached,
+  updateDBSomeHow,
+} from "~/.server/videoProcessing";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+
+  if (intent === "experiment") {
+    console.log("Estudiando mientras construyo 😌");
+    print_detached("Hola blissmo 🥸");
+    console.log("RESPONSE_SENT_TO_CLIENT::");
+    return null;
+  }
+
   if (intent === "generate_video_versions") {
     const videoId = String(formData.get("videoId"));
     const originalKey = String(formData.get("storageKey"));
