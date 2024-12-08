@@ -67,7 +67,7 @@ process.once("message", (obj) => {
 
   // The real trick 🎩
   if (typeof expesssion === "function") {
-    expesssion(...args);
+    expesssion(args);
   } else {
     vm.createScript(expesssion).runInThisContext(); // 😍
   }

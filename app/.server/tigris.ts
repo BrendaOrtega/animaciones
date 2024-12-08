@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   PutBucketCorsCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
@@ -33,6 +34,24 @@ const setCors = async () => {
   };
   const command = new PutBucketCorsCommand(input);
   return await S3.send(command);
+};
+
+export const fileExist = async (
+  key: string,
+  expiresIn = 3600,
+  isAnimations: boolean = true
+) => {
+  return await S3.send(
+    new HeadObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: isAnimations ? "animaciones/" + key : key,
+    })
+  )
+    .then(() => true)
+    .catch((err) => {
+      console.error(err);
+      return false;
+    });
 };
 
 export const getReadURL = async (

@@ -17,7 +17,10 @@ import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
 import {
+  createHLS360Chunks,
+  createHLSChunks,
   createVideoVersions,
+  experiment,
   print_detached,
   updateDBSomeHow,
 } from "~/.server/videoProcessing";
@@ -27,9 +30,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const intent = formData.get("intent");
 
   if (intent === "experiment") {
-    console.log("Estudiando mientras construyo 😌");
-    print_detached("Hola blissmo 🥸");
     console.log("RESPONSE_SENT_TO_CLIENT::");
+    const storageKey = String(formData.get("storageKey"));
+    experiment(storageKey);
     return null;
   }
 

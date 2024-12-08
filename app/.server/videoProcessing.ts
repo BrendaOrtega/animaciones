@@ -1,5 +1,5 @@
 import fs, { WriteStream } from "fs";
-import { getPutFileUrl, getReadURL } from "./tigris";
+import { fileExist, getPutFileUrl, getReadURL } from "./tigris";
 import Ffmpeg from "fluent-ffmpeg";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -17,7 +17,7 @@ type VideoFetched = {
   contentType: string;
   ok: boolean;
   tempPath: string;
-  fileStream: WriteStream;
+  fileStream?: WriteStream;
 };
 
 // EXPERIMENTS 🚧
@@ -39,21 +39,24 @@ export const forkChild = (
 
 export const print_detached = (text: string = "Blissmo") => {
   const worker = spawnWorker(
-    (arg) => {
+    async (args) => {
+      console.log("Inside child", args.db);
+      const u = await db.user.findFirst();
+      console.log("USER: ", user);
       // Aquí podemos hacer lo que sea (DB) 🤓
       setTimeout(() => {
-        console.log(arg || "BLISSMO_EXPERIMENT", " delay: 3s");
+        console.log("BLISSMO_EXPERIMENT", " delay: 3s");
       }, 3000);
     },
     // arg === [text]
-    [text]
+    { text }
   );
   console.log("Spawnded! :: ", worker);
 };
 
 const spawnWorker = (
   arg: Promise<() => void | string> | (() => void | string),
-  args = [],
+  args = {},
   options: {
     cwd: string;
     onerror?: unknown;
@@ -107,10 +110,42 @@ const spawnWorker = (
   };
 };
 
-export const experiment = (
-  storageKey: string,
-  data: Record<string, unknown> = {}
-) => {};
+export const uploadHLS = async ({
+  contentType,
+  storageKey,
+}: {
+  storageKey?: string;
+  contentLength?: string;
+  contentType: string;
+}) => {
+  const path = `./conversiones/playlist/${storageKey}/`;
+  // const hslPath = `${path}index.m3u8`;
+  const files = fs.readdirSync(path).map((fileName) => path + fileName);
+
+  const fetchPromises = files.map(async (path) => {
+    const arr = path.split("/");
+    const fileName = arr[arr.length - 1];
+    const newStorageKey = `${storageKey}/${fileName}`;
+    if (fileName.split(".").reverse()[0] === "m3u8") {
+      console.log("New Key Asigned", newStorageKey);
+    }
+    const putURL = await getPutFileUrl(newStorageKey);
+    const file = fs.readFileSync(path);
+    return await put({
+      file,
+      contentType: "application/x-mpegURL",
+      contentLength: Buffer.byteLength(file).toString(),
+      putURL,
+    });
+  });
+  await Promise.all(fetchPromises);
+  // return m3u8 getURL
+  // return await getReadURL(`${storageKey}/index.m3u8`);
+  const link = await replaceLinks(storageKey as string);
+  return link;
+
+  // cleanUp(storageKey); // @todo not working
+};
 
 export const experiment__legacy = async (
   storageKey: string,
@@ -169,6 +204,17 @@ export const fetchVideo = async (
   storageKey: string,
   isPlaylist: boolean = false
 ): Promise<VideoFetched> => {
+  const existPath = `./conversiones/${storageKey}`;
+  if (fs.existsSync(existPath)) {
+    const f = fs.readFileSync(existPath);
+    console.log("File existed");
+    return Promise.resolve({
+      contentLength: Buffer.byteLength(f).toString(),
+      contentType: "video/mp4",
+      ok: true,
+      tempPath: existPath,
+    });
+  }
   const getURL = await getReadURL(storageKey, 3600);
   const response = await fetch(getURL).catch((e) => console.error(e));
   console.log("File fetched: ", storageKey, response.ok);
@@ -221,43 +267,6 @@ export const cleanUp = async (storageKey: string) => {
   } catch (e) {}
 };
 
-export const uploadHLS = async ({
-  contentType,
-  storageKey,
-}: {
-  storageKey?: string;
-  contentLength?: string;
-  contentType: string;
-}) => {
-  const path = `./conversiones/playlist/${storageKey}/`;
-  // const hslPath = `${path}index.m3u8`;
-  const files = fs.readdirSync(path).map((fileName) => path + fileName);
-  console.log("THE FILES: ", files);
-  const fetchPromises = files.map(async (path) => {
-    const arr = path.split("/");
-    const fileName = arr[arr.length - 1];
-    const newStorageKey = `${storageKey}/${fileName}`;
-    if (fileName.split(".").reverse()[0] === "m3u8") {
-      console.log("New Key Asigned", newStorageKey);
-    }
-    const putURL = await getPutFileUrl(newStorageKey);
-    const file = fs.readFileSync(path);
-    return await put({
-      file,
-      contentType: "application/x-mpegURL",
-      contentLength: Buffer.byteLength(file).toString(),
-      putURL,
-    });
-  });
-  await Promise.all(fetchPromises);
-  // return m3u8 getURL
-  // return await getReadURL(`${storageKey}/index.m3u8`);
-  const link = await replaceLinks(storageKey as string);
-  return link;
-
-  // cleanUp(storageKey); // @todo not working
-};
-
 function put({
   file,
   contentLength,
@@ -290,14 +299,147 @@ export const generateHSL = async (storageKey: string) => {
   });
 };
 
+// Dic 2024
+export const experiment = (
+  storageKey: string,
+  data: Record<string, unknown> = {}
+) => {
+  // @todo: update DB with success state
+  createHLSChunks({
+    sizeName: "1080p",
+    storageKey,
+    cb: uploadChunks,
+    checkExistance: true,
+    when: "in 1 second",
+  }); // this is detached
+  createHLSChunks({
+    sizeName: "720p",
+    storageKey,
+    cb: uploadChunks,
+    checkExistance: true,
+    when: "in 2 seconds",
+  });
+  createHLSChunks({
+    sizeName: "480p",
+    storageKey,
+    cb: uploadChunks,
+    checkExistance: true,
+    when: "in 3 seconds",
+  });
+  createHLSChunks({
+    sizeName: "360p",
+    storageKey,
+    cb: uploadChunks,
+    checkExistance: true,
+    when: "in 4 seconds",
+  });
+};
+
+import { Agenda } from "@hokify/agenda";
+// first version 360p
+export const createHLSChunks = async ({
+  sizeName = "1080p",
+  storageKey,
+  cb,
+  checkExistance,
+  when = "in 1 second",
+}: {
+  when: string;
+  checkExistance?: boolean;
+  sizeName: "360p" | "480p" | "720p" | "1080p";
+  storageKey: string;
+  cb: (playListPath: string) => void;
+}) => {
+  if (checkExistance) {
+    // will avoid everything if exists
+    // but we want to check for the m3u8 playlist
+    const listPath = path.join(storageKey, sizeName, `${sizeName}.m3u8`);
+    console.log("List: ", listPath);
+    const exist = await fileExist(listPath);
+    if (exist) {
+      console.log("Avoiding generation", listPath, `exist:${exist}`);
+      return;
+    }
+  }
+  const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
+  // define
+  agenda.define("generate_hls_chunks", async (job) => {
+    const size =
+      sizeName === "360p"
+        ? "640x360"
+        : sizeName === "480p"
+        ? "800x480"
+        : sizeName === "720p"
+        ? "1280x720"
+        : "1920x1080";
+    const { storageKey } = job.attrs.data;
+    console.log("Generando hls::", storageKey);
+    const outputPath = `${storageKey}/${sizeName}`;
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(outputPath, { recursive: true }); // this is gold
+    }
+    const hlsSegmentFilename = `${outputPath}/${sizeName}_%03d.ts`;
+    const playListPath = `${outputPath}/${sizeName}.m3u8`;
+    const { tempPath } = await fetchVideo(storageKey);
+    const command = Ffmpeg(tempPath, { timeout: 432000 })
+      .size(size)
+      .addOption("-profile:v", "baseline")
+      .addOption("-level", "3.0")
+      .addOption("-start_number", "0")
+      .addOption("-hls_list_size", "0")
+      .addOption("-f", "hls")
+      .addOption(`-hls_segment_filename ${hlsSegmentFilename}`);
+
+    return await command
+      .clone()
+      .on("error", function (err) {
+        console.log("an error happened: " + err.message);
+      })
+      .on("end", function () {
+        console.log(`Version ${sizeName} created`);
+        // update main file?
+        cb?.(outputPath);
+      })
+      .save(playListPath);
+  }); // defined
+
+  await agenda.start();
+  await agenda.schedule(when, "generate_hls_chunks", { storageKey });
+};
+
+export const uploadChunks = async (folderPath: string) => {
+  console.log("Uploading:", folderPath);
+  if (!fs.existsSync(folderPath)) {
+    return console.error("Folder not found:", folderPath);
+  }
+  const chunkPaths = fs
+    .readdirSync(folderPath)
+    .map((fileName) => path.join(folderPath, fileName));
+
+  for await (let chunkPath of chunkPaths) {
+    // @todo, try/catch
+    const putURL = await getPutFileUrl(chunkPath);
+    const file = fs.readFileSync(chunkPath);
+    await put({
+      file,
+      contentType: "application/x-mpegURL",
+      contentLength: Buffer.byteLength(file).toString(),
+      putURL,
+    });
+  }
+  console.log(
+    `All ${
+      folderPath.split("/")[folderPath.split("/").length - 1]
+    }p chunks uploaded total: ${chunkPaths.length}`
+  );
+};
+
 // @todo This should accept streams
 export const convertToHLS = async (tempPath: string, storageKey: string) => {
   if (!fs.existsSync(`./conversiones/playlist/${storageKey}/`)) {
     fs.mkdirSync(`./conversiones/playlist/${storageKey}/`, { recursive: true });
   }
-
   const outputPath = `./conversiones/playlist/${storageKey}`;
-
   // const outputPath = "./conversiones";
   const hslSegmentFilename = `${outputPath}/segment%03d.ts`;
   const hslPath = `${outputPath}/index.m3u8`;
