@@ -1,4 +1,5 @@
 import fs, { WriteStream } from "fs";
+import { Agenda } from "@hokify/agenda";
 import { fileExist, getPutFileUrl, getReadURL } from "./tigris";
 import Ffmpeg from "fluent-ffmpeg";
 import { randomUUID } from "crypto";
@@ -8,8 +9,6 @@ import { Readable } from "stream";
 import { replaceLinks } from "./replaceM3U8Links";
 import { fork } from "child_process";
 import path, { dirname } from "path";
-import { sendWelcome } from "./user";
-// import { fileURLToPath } from "url";
 
 // @chunk it out with forks @todo
 type VideoFetched = {
@@ -204,10 +203,10 @@ export const fetchVideo = async (
   storageKey: string,
   isPlaylist: boolean = false
 ): Promise<VideoFetched> => {
-  const existPath = `./conversiones/${storageKey}`;
+  const existPath = `conversiones/${storageKey}`;
   if (fs.existsSync(existPath)) {
     const f = fs.readFileSync(existPath);
-    console.log("File existed");
+    console.log("File exists");
     return Promise.resolve({
       contentLength: Buffer.byteLength(f).toString(),
       contentType: "video/mp4",
@@ -269,13 +268,11 @@ export const cleanUp = async (storageKey: string) => {
 
 function put({
   file,
-  contentLength,
-  contentType,
+  contentType = "application/x-mpegURL",
   putURL,
 }: {
   file: Buffer<ArrayBufferLike>;
-  contentLength?: string;
-  contentType: string;
+  contentType?: string;
   putURL: string;
 }) {
   return fetch(putURL, {
@@ -300,42 +297,61 @@ export const generateHSL = async (storageKey: string) => {
 };
 
 // Dic 2024
-export const experiment = (
-  storageKey: string,
-  data: Record<string, unknown> = {}
-) => {
+const generateMasterFile = async (storageKey: string) => {
+  const content = `#EXTM3U\n
+  #EXT-X-STREAM-INF:BANDWIDTH=375000,RESOLUTION=640x360\n
+  /playlist/${storageKey}/360.m3u8\n
+  #EXT-X-STREAM-INF:BANDWIDTH=750000,RESOLUTION=854x480\n
+  /playlist/${storageKey}/480.m3u8\n
+  #EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\n
+  /playlist/${storageKey}/720.m3u8\n
+  #EXT-X-STREAM-INF:BANDWIDTH=3500000,RESOLUTION=1920x1080\n
+  /playlist/${storageKey}/1080.m3u8`;
+  const masterFilePath = `chunks/${storageKey}/index.m3u8`;
+  const masterFileStorageKey = `chunks/${storageKey}/index.m3u8`;
+  if (!fs.existsSync(`chunks/${storageKey}`)) {
+    fs.mkdirSync(`chunks/${storageKey}`, { recursive: true });
+  }
+  fs.writeFileSync(masterFilePath, content);
+  // const file = fs.readFileSync(masterFilePath);
+  // const putURL = await getPutFileUrl(masterFileStorageKey);
+  // await put({
+  //   file,
+  //   putURL,
+  // });
+  // console.log("MASTER_FILE::UPLOADED ✅");
+};
+
+export const experiment = (storageKey: string) => {
   // @todo: update DB with success state
+  generateMasterFile(storageKey);
   createHLSChunks({
-    sizeName: "1080p",
     storageKey,
-    cb: uploadChunks,
-    checkExistance: true,
-    when: "in 1 second",
-  }); // this is detached
+    when: "in 4 seconds",
+    cb: uploadChunks, // @todo wait hours?
+  });
   createHLSChunks({
     sizeName: "720p",
     storageKey,
-    cb: uploadChunks,
-    checkExistance: true,
-    when: "in 2 seconds",
-  });
-  createHLSChunks({
-    sizeName: "480p",
-    storageKey,
-    cb: uploadChunks,
     checkExistance: true,
     when: "in 3 seconds",
   });
   createHLSChunks({
+    sizeName: "480p",
+    storageKey,
+    checkExistance: true,
+    when: "in 2 seconds",
+  });
+  createHLSChunks({
     sizeName: "360p",
     storageKey,
-    cb: uploadChunks,
+    // cb: uploadChunks,
     checkExistance: true,
-    when: "in 4 seconds",
+    when: "in 1 seconds",
   });
+  // @todo add only successful
 };
 
-import { Agenda } from "@hokify/agenda";
 // first version 360p
 export const createHLSChunks = async ({
   sizeName = "1080p",
@@ -346,18 +362,18 @@ export const createHLSChunks = async ({
 }: {
   when: string;
   checkExistance?: boolean;
-  sizeName: "360p" | "480p" | "720p" | "1080p";
+  sizeName?: "360p" | "480p" | "720p" | "1080p";
   storageKey: string;
-  cb: (playListPath: string) => void;
+  cb?: (playListPath: string) => void;
 }) => {
   if (checkExistance) {
     // will avoid everything if exists
     // but we want to check for the m3u8 playlist
-    const listPath = path.join(storageKey, sizeName, `${sizeName}.m3u8`);
-    console.log("List: ", listPath);
+    const listPath = path.join(storageKey, `${sizeName}.m3u8`);
     const exist = await fileExist(listPath);
+    console.log(`EXIST_LIST::${sizeName}::`, exist);
     if (exist) {
-      console.log("Avoiding generation", listPath, `exist:${exist}`);
+      console.log("Avoiding::", sizeName);
       return;
     }
   }
@@ -373,13 +389,13 @@ export const createHLSChunks = async ({
         ? "1280x720"
         : "1920x1080";
     const { storageKey } = job.attrs.data;
-    console.log("Generando hls::", storageKey);
-    const outputPath = `${storageKey}/${sizeName}`;
-    if (!fs.existsSync(outputPath)) {
-      fs.mkdirSync(outputPath, { recursive: true }); // this is gold
+    console.log("HLS::", storageKey);
+    const outputFolder = `chunks/${storageKey}`; // @todo more segmented?
+    if (!fs.existsSync(outputFolder)) {
+      fs.mkdirSync(outputFolder, { recursive: true }); // this is gold
     }
-    const hlsSegmentFilename = `${outputPath}/${sizeName}_%03d.ts`;
-    const playListPath = `${outputPath}/${sizeName}.m3u8`;
+    const hlsSegmentFilename = `${outputFolder}/${sizeName}_%03d.ts`;
+    const playListPath = `${outputFolder}/${sizeName}.m3u8`;
     const { tempPath } = await fetchVideo(storageKey);
     const command = Ffmpeg(tempPath, { timeout: 432000 })
       .size(size)
@@ -398,7 +414,7 @@ export const createHLSChunks = async ({
       .on("end", function () {
         console.log(`Version ${sizeName} created`);
         // update main file?
-        cb?.(outputPath);
+        cb?.(outputFolder);
       })
       .save(playListPath);
   }); // defined
@@ -407,31 +423,33 @@ export const createHLSChunks = async ({
   await agenda.schedule(when, "generate_hls_chunks", { storageKey });
 };
 
-export const uploadChunks = async (folderPath: string) => {
-  console.log("Uploading:", folderPath);
-  if (!fs.existsSync(folderPath)) {
-    return console.error("Folder not found:", folderPath);
+export const uploadChunks = async (
+  tempFolder: string,
+  cleanUp: boolean = true
+) => {
+  if (!fs.existsSync(tempFolder)) {
+    return console.error("Folder not found:", tempFolder);
   }
   const chunkPaths = fs
-    .readdirSync(folderPath)
-    .map((fileName) => path.join(folderPath, fileName));
-
+    .readdirSync(tempFolder)
+    .map((fileName) => path.join(tempFolder, fileName));
+  console.log("UPLOADING_FILES::", chunkPaths);
   for await (let chunkPath of chunkPaths) {
     // @todo, try/catch
     const putURL = await getPutFileUrl(chunkPath);
     const file = fs.readFileSync(chunkPath);
-    await put({
+    const r = await put({
       file,
       contentType: "application/x-mpegURL",
-      contentLength: Buffer.byteLength(file).toString(),
       putURL,
     });
+    console.log("chunk uploaded::", r.ok);
   }
-  console.log(
-    `All ${
-      folderPath.split("/")[folderPath.split("/").length - 1]
-    }p chunks uploaded total: ${chunkPaths.length}`
-  );
+  console.log(`All chunks uploaded total: ${chunkPaths.length}`);
+  if (cleanUp) {
+    fs.rmSync("conversiones", { recursive: true, force: true });
+    fs.rmSync("chunks", { recursive: true, force: true });
+  }
 };
 
 // @todo This should accept streams
