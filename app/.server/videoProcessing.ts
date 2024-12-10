@@ -258,7 +258,6 @@ const generateMasterFile = async (storageKey: string) => {
   // });
   // console.log("MASTER_FILE::UPLOADED ✅");
 };
-
 export const experiment = (storageKey: string) => {
   // @todo: update DB with success state
   createHLSChunks({
@@ -286,7 +285,6 @@ export const experiment = (storageKey: string) => {
     cb: uploadChunks, // uploading at the end
   });
 };
-
 export const createHLSChunks = async ({
   sizeName = "1080p",
   storageKey,
@@ -356,7 +354,6 @@ export const createHLSChunks = async ({
   await agenda.start();
   await agenda.schedule(when, "generate_hls_chunks", { storageKey });
 };
-
 export const uploadChunks = async (
   tempFolder: string,
   cleanUp: boolean = true
@@ -388,6 +385,7 @@ export const uploadChunks = async (
     // fs.rmSync(dirname(chunkPaths[0]), { recursive: true, force: true });
   }
 };
+// DIC 2024
 
 // @todo This should accept streams
 export const convertToHLS = async (tempPath: string, storageKey: string) => {
