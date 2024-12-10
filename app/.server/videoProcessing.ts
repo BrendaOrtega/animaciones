@@ -287,7 +287,6 @@ export const experiment = (storageKey: string) => {
   });
 };
 
-// first version 360p
 export const createHLSChunks = async ({
   sizeName = "1080p",
   storageKey,
