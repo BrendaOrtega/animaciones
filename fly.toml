@@ -11,5 +11,5 @@ primary_region = 'qro'
   processes = ['app']
 
 [[vm]]
-  size = 'shared-1x'
+  size = 'shared-cpu-2x'
   memory = "1024mb"

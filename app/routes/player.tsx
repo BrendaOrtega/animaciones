@@ -77,6 +77,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Route() {
   const navigate = useNavigate();
+
   const { nextVideo, isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
 
@@ -91,8 +92,10 @@ export default function Route() {
     const url = new URL(location.href);
     url.pathname = "/player";
     url.searchParams.set("videoSlug", nextVideo.slug);
-    navigate(url.pathname + url.search);
-    setIsMenuOpen(true);
+    // @todo: fix it (change for a link)
+    // setIsMenuOpen(true);
+    // navigate(url.pathname + url.search, { replace: true, flushSync: true });
+    location.href = url.toString();
   };
 
   return (
