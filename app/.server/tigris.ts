@@ -49,7 +49,7 @@ export const fileExist = async (
   )
     .then(() => true)
     .catch((err) => {
-      console.error(err);
+      console.error("FILE_MAY_NOT_EXIST", key, err.message);
       return false;
     });
 };

@@ -30,7 +30,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const intent = formData.get("intent");
 
   if (intent === "experiment") {
-    console.log("RESPONSE_SENT_TO_CLIENT::");
+    console.log("::EXPERIMENT_VERSIONS_GENERATION::");
     const storageKey = String(formData.get("storageKey"));
     experiment(storageKey);
     return null;

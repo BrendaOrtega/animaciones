@@ -74,31 +74,20 @@ export const VideoPlayer = ({
   };
 
   useEffect(() => {
-    // if (!videoRef.current) return;
-    // const videoElement = videoRef.current;
-    // videoElement.classList.add("vjs-big-play-centered");
-    // // containerRef.current?.appendChild(videoElement);
-    // videojs(videoElement, {
-    //   sources: [
-    //     {
-    //       src: `/playlist/${video?.storageKey}/index.m3u8`,
-    //       type: "application/x-mpegURL",
-    //     },
-    //   ],
-    // });
+    if (!videoRef.current) return;
 
     // detecting HLS support
-    if (!videoRef.current) return;
     const hlsSupport = (videoNode: HTMLVideoElement) =>
       videoNode.canPlayType("application/vnd.apple.mpegURL");
     console.log(
       hlsSupport(videoRef.current)
-        ? `HLS :: ${hlsSupport(videoRef.current)}`
-        : "HLS Not supported"
+        ? `HLS Supported ✅:: ${hlsSupport(videoRef.current)}`
+        : "HLS Not supported 📵"
     );
     if (hlsSupport(videoRef.current)) {
     } else {
       videoRef.current.src = video?.storageLink;
+      console.log("Fallbacking to storageLink::", video?.storageLink);
     }
   }, []);
 
@@ -166,7 +155,6 @@ export const VideoPlayer = ({
         ref={videoRef}
         className="w-full h-full"
         controls
-        // src={src}
       >
         <track kind="captions" />
         <source src={src} type={type} />

@@ -1,23 +1,16 @@
-import fs, { WriteStream } from "fs";
+import fs from "fs";
 import { Agenda } from "@hokify/agenda";
-import { fileExist, getPutFileUrl, getReadURL } from "./tigris";
+import { fileExist, getPutFileUrl } from "./tigris";
 import Ffmpeg from "fluent-ffmpeg";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { finished } from "stream/promises";
-import { Readable } from "stream";
 import { replaceLinks } from "./replaceM3U8Links";
 import { fork } from "child_process";
 import path, { dirname } from "path";
+import { fetchVideo } from "./fetchVideo";
+import { TbRuler2 } from "react-icons/tb";
 
-// @chunk it out with forks @todo
-type VideoFetched = {
-  contentLength: string;
-  contentType: string;
-  ok: boolean;
-  tempPath: string;
-  fileStream?: WriteStream;
-};
+export const CHUNKS_FOLDER = "chunks";
 
 // EXPERIMENTS 🚧
 export const forkChild = (
@@ -199,62 +192,6 @@ export const getVideoFileSizedTo = async (
   return fs.readFileSync(outputFilePath); // @todo can we do streams? instead of sync.
 };
 
-export const fetchVideo = async (
-  storageKey: string,
-  isPlaylist: boolean = false
-): Promise<VideoFetched> => {
-  const existPath = `conversiones/${storageKey}`;
-  if (fs.existsSync(existPath)) {
-    const f = fs.readFileSync(existPath);
-    console.log("File exists");
-    return Promise.resolve({
-      contentLength: Buffer.byteLength(f).toString(),
-      contentType: "video/mp4",
-      ok: true,
-      tempPath: existPath,
-    });
-  }
-  const getURL = await getReadURL(storageKey, 3600);
-  const response = await fetch(getURL).catch((e) => console.error(e));
-  console.log("File fetched: ", storageKey, response.ok);
-  if (!response?.body) {
-    return {
-      contentLength: "",
-      contentType: "",
-      ok: false,
-      tempPath: "",
-      fileStream: new WriteStream(), // XD
-    }; // @todo use invariant
-  }
-  //  save file temp
-  // let tempPath = "./conversiones/" + directory + (storageKey || randomUUID());
-  if (!fs.existsSync(`./conversiones/`)) {
-    fs.mkdirSync(`./conversiones/`, { recursive: true });
-  }
-  const uuid = randomUUID();
-  if (isPlaylist) {
-    if (!fs.existsSync(`./conversiones/${uuid}`)) {
-      fs.mkdirSync(`./conversiones/${uuid}`, { recursive: true });
-    }
-  }
-
-  const tempPath = isPlaylist
-    ? `./conversiones/${uuid}/index.m3u8`
-    : `./conversiones/${storageKey}`;
-
-  // @todo try with a Buffer
-  const fileStream = fs.createWriteStream(tempPath); // la cajita (en disco) puede ser un Buffer 🧐
-  await finished(Readable.fromWeb(response.body).pipe(fileStream));
-  // console.log("FILE STATS: ", fs.statSync(tempPath));
-  return {
-    contentLength: response.headers.get("content-length") || "",
-    contentType: response.headers.get("content-type") || "",
-    ok: response.ok,
-    tempPath,
-    fileStream, // @todo no files?
-  };
-};
-
 export const cleanUp = async (storageKey: string) => {
   const path = `./conversiones/${storageKey}`;
   //@todo remove temp files (child process)
@@ -324,17 +261,11 @@ const generateMasterFile = async (storageKey: string) => {
 
 export const experiment = (storageKey: string) => {
   // @todo: update DB with success state
-  generateMasterFile(storageKey);
-  createHLSChunks({
-    storageKey,
-    when: "in 4 seconds",
-    cb: uploadChunks, // @todo wait hours?
-  });
   createHLSChunks({
     sizeName: "720p",
     storageKey,
     checkExistance: true,
-    when: "in 3 seconds",
+    when: "in 1 seconds",
   });
   createHLSChunks({
     sizeName: "480p",
@@ -345,11 +276,15 @@ export const experiment = (storageKey: string) => {
   createHLSChunks({
     sizeName: "360p",
     storageKey,
-    // cb: uploadChunks,
     checkExistance: true,
-    when: "in 1 seconds",
+    when: "in 3 seconds",
   });
-  // @todo add only successful
+  createHLSChunks({
+    storageKey,
+    checkExistance: false,
+    when: "in 4 seconds",
+    cb: uploadChunks, // uploading at the end
+  });
 };
 
 // first version 360p
@@ -369,11 +304,10 @@ export const createHLSChunks = async ({
   if (checkExistance) {
     // will avoid everything if exists
     // but we want to check for the m3u8 playlist
-    const listPath = path.join(storageKey, `${sizeName}.m3u8`);
+    const listPath = path.join(CHUNKS_FOLDER, storageKey, `${sizeName}.m3u8`);
     const exist = await fileExist(listPath);
-    console.log(`EXIST_LIST::${sizeName}::`, exist);
     if (exist) {
-      console.log("Avoiding::", sizeName);
+      console.log("AVOIDING_VERSION::", sizeName);
       return;
     }
   }
@@ -389,8 +323,8 @@ export const createHLSChunks = async ({
         ? "1280x720"
         : "1920x1080";
     const { storageKey } = job.attrs.data;
-    console.log("HLS::", storageKey);
-    const outputFolder = `chunks/${storageKey}`; // @todo more segmented?
+    console.log(`HLS::${sizeName}::`, storageKey);
+    const outputFolder = `media/${CHUNKS_FOLDER}/${storageKey}`;
     if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true }); // this is gold
     }
@@ -403,6 +337,7 @@ export const createHLSChunks = async ({
       .addOption("-level", "3.0")
       .addOption("-start_number", "0")
       .addOption("-hls_list_size", "0")
+      // .addOption("-hls_time", "3") we need to force keyframes
       .addOption("-f", "hls")
       .addOption(`-hls_segment_filename ${hlsSegmentFilename}`);
 
@@ -412,9 +347,9 @@ export const createHLSChunks = async ({
         console.log("an error happened: " + err.message);
       })
       .on("end", function () {
-        console.log(`Version ${sizeName} created`);
+        console.log(`::VERSION_${sizeName}_CREATED::`);
         // update main file?
-        cb?.(outputFolder);
+        cb?.(outputFolder); // chunks/:storageKey
       })
       .save(playListPath);
   }); // defined
@@ -428,7 +363,7 @@ export const uploadChunks = async (
   cleanUp: boolean = true
 ) => {
   if (!fs.existsSync(tempFolder)) {
-    return console.error("Folder not found:", tempFolder);
+    return console.error("FOLDER_NOT_FOUND::", tempFolder);
   }
   const chunkPaths = fs
     .readdirSync(tempFolder)
@@ -436,7 +371,7 @@ export const uploadChunks = async (
   console.log("UPLOADING_FILES::", chunkPaths);
   for await (let chunkPath of chunkPaths) {
     // @todo, try/catch
-    const putURL = await getPutFileUrl(chunkPath);
+    const putURL = await getPutFileUrl(chunkPath.replace("media/", "")); // bridge
     const file = fs.readFileSync(chunkPath);
     const r = await put({
       file,
@@ -444,11 +379,14 @@ export const uploadChunks = async (
       putURL,
     });
     console.log("chunk uploaded::", r.ok);
+    if (cleanUp) {
+      fs.rmSync(chunkPath, { recursive: true, force: true });
+    }
   }
   console.log(`All chunks uploaded total: ${chunkPaths.length}`);
   if (cleanUp) {
-    fs.rmSync("conversiones", { recursive: true, force: true });
-    fs.rmSync("chunks", { recursive: true, force: true });
+    // @todo: use uuid for unique folder
+    // fs.rmSync(dirname(chunkPaths[0]), { recursive: true, force: true });
   }
 };
 
