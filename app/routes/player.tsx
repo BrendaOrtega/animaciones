@@ -1,5 +1,11 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect, useLoaderData, useNavigate } from "@remix-run/react";
+import {
+  json,
+  MetaFunction,
+  redirect,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import { useState } from "react";
 import { db } from "~/.server/db";
 import { get40Checkout } from "~/.server/stripe";
@@ -9,8 +15,15 @@ import { VideosMenu } from "~/components/player/ModulesSideMenu";
 import { VideoPlayer } from "~/components/player/VideoPlayer";
 import { SuccessDrawer } from "~/components/player/SuccessDrawer";
 import { PurchaseDrawer } from "~/components/player/PurchaseDrawer";
+import { getMetaTags } from "~/utils/getMetaTags";
 
 const courseId = "645d3dbd668b73b34443789c";
+
+export const meta: MetaFunction = () =>
+  getMetaTags({
+    title: "Visualizador del curso de animaciones con React",
+    description: "Mira todos los videos del curso en alta definición.",
+  });
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();

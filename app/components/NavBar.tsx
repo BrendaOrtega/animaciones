@@ -59,7 +59,7 @@ export const NavBar = ({
 
           {mode !== "player" && (
             <>
-              {/* <Link
+              <Link
                 to="/portal"
                 className={cn(
                   "transition-all text-dark dark:text-white hover:text-gray-500 ml-auto mr-4",
@@ -69,7 +69,7 @@ export const NavBar = ({
                 )}
               >
                 {userEmail ? "Seguir viendo" : "Iniciar sesión"}
-              </Link> */}
+              </Link>
               <ToggleButton />
             </>
           )}

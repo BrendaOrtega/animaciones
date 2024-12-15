@@ -13,55 +13,21 @@ import { PiLinkSimpleBold } from "react-icons/pi";
 import { twMerge } from "tailwind-merge";
 import { NavBar } from "~/components/NavBar";
 import { cn } from "~/lib/utils";
-import { getCanShareUserORNull, verifyToken } from "~/.server/user";
+import { getCanShareUserORNull } from "~/.server/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { get50Checkout, getStripeCheckout } from "~/.server/stripe";
 import { FaGoogle } from "react-icons/fa";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useToast } from "~/components/Toaster";
 import { IoLogoWhatsapp } from "react-icons/io";
+import { getMetaTags } from "~/utils/getMetaTags";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Comunidad Fixtergeek" },
-    {
-      property: "og:title",
-      content: "¡Hay un 50% de descuento esperándote!",
-    },
-    {
-      name: "description",
-      content: "Este es mi link de descuento para el curso de Animaciones",
-    },
-    {
-      name: "og:image",
-      content: "https://i.imgur.com/cqJVvjK.png",
-    },
-    {
-      name: "og:description",
-      content: "Este es mi link de descuento para el curso de Animaciones",
-    },
-    {
-      name: "og:url",
-      content: "https://animaciones.fixtergeek.com",
-    },
-    {
-      property: "twitter:card",
-      content: "summary_large_image",
-    },
-    {
-      name: "twitter:description",
-      content: "Este es mi link de descuento para el curso de Animaciones",
-    },
-    {
-      name: "twitter:title",
-      content: "¡Hay un 50% de descuento esperándote!",
-    },
-    {
-      name: "twitter:image",
-      content: "https://animaciones.fixtergeek.com",
-    },
-  ];
-};
+export const meta: MetaFunction = () =>
+  getMetaTags({
+    title: "Andas de suerte ¡eh! 🍀",
+    description: "Te comparto mi descuento del 50%",
+    image: "https://i.imgur.com/cqJVvjK.png",
+  });
 
 const isDev = process.env.NODE_ENV === "development";
 const secret = "fixtergeek2024" + isDev;
@@ -181,7 +147,7 @@ const BadToken = () => {
     <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark/90 bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/robot-llora.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
-        ¡Hoy no hay suerte! ☘️
+        ¡Hoy no hay suerte!
       </h2>
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
         Tu amig@ te ha compartido un descuento del 50% para un curso,
@@ -239,7 +205,7 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
     <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white">
       <img className="w-52 h-auto" src="/congrats.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
-        ¡Andas de suerte eh! ☘️
+        ¡Andas de suerte eh! 🍀
       </h2>
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
         Tu amig@ te ha compartido un descuento del

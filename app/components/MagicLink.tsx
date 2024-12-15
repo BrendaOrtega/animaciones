@@ -101,10 +101,10 @@ export const MagicLink = () => {
         )}
 
         {success && (
-          <section className="text-white text-lg text-center">
+          <section className="text-lg text-center text-iron">
             <p>Ya te hemos enviado el token de acceso a tu cuenta. ✅</p>
             <p>
-              Checa tu{" "}
+              Revisa tu{" "}
               <a
                 rel="noreferrer"
                 target="_blank"

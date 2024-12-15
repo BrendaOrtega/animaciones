@@ -15,7 +15,6 @@ import { getUserORNull } from "~/.server/user";
 import { Animations } from "~/components/Animations";
 import { DialogButton } from "~/components/DialogButton";
 import { NavBar } from "~/components/NavBar";
-import { PrimaryButton } from "~/components/PrimaryButton";
 import { Faq } from "~/home/Faq";
 import { Footer } from "~/home/Footer";
 import { Hero } from "~/home/Hero";
@@ -25,6 +24,7 @@ import { Teacher } from "~/home/Teacher";
 import { Testimonials } from "~/home/Testimonial";
 import { Why } from "~/home/Why";
 import { FaRegClock } from "react-icons/fa6";
+import { PrimaryButton } from "~/components/PrimaryButton";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const isDev = process.env.NODE_ENV === "development";
@@ -68,16 +68,16 @@ export const meta: MetaFunction = () => {
       content: "Curso de Animaciones con React",
     },
     {
-      name: "og:image",
+      property: "og:image",
       content: "https://i.imgur.com/kP5Rrjt.png",
     },
     {
-      name: "og:description",
+      property: "og:description",
       content:
         "Crea tus propios componentes animados con React y Framer motion",
     },
     {
-      name: "og:url",
+      property: "og:url",
       content: "https://animaciones.fixtergeek.com",
     },
     {
@@ -85,16 +85,16 @@ export const meta: MetaFunction = () => {
       content: "summary_large_image",
     },
     {
-      name: "twitter:description",
+      property: "twitter:description",
       content:
         "Crea tus propios componentes animados con React y Framer motion",
     },
     {
-      name: "twitter:title",
+      property: "twitter:title",
       content: "Curso de Animaciones con React",
     },
     {
-      name: "twitter:image",
+      property: "twitter:image",
       content: "https://animaciones.fixtergeek.com",
     },
   ];
@@ -106,7 +106,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
     <section id="main" className="  bg-white dark:bg-dark overflow-hidden">
       <NavBar />
       <Hero>
-        {/* <Form method="POST" className="flex justify-center gap-2">
+        <Form method="post" className="flex justify-center gap-2">
           <PrimaryButton
             onClick={() => setISLoading(true)}
             isLoading={isLoading}
@@ -124,10 +124,10 @@ export default function Route({ children }: { children: React.ReactNode }) {
           >
             Comenzar a ver gratis 🪄📺
           </PrimaryButton>
-        </Form> */}
-        <DialogButton className="mx-auto">
+        </Form>
+        {/* <DialogButton className="mx-auto">
           Únete a la lista de espera <FaRegClock />
-        </DialogButton>
+        </DialogButton> */}
       </Hero>
       <ScrollBanner />
       <section className="w-full px-6 md:px-[6%] xl:px-0 xl:max-w-7xl mx-auto ">
