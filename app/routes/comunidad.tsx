@@ -63,7 +63,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === ROLE) {
     const token = url.searchParams.get("token");
     const result = validateToken(token);
-    if (!result.email) return null;
     const stripeURL = await get50Checkout(result.email);
     return redirect(stripeURL);
   }
@@ -227,7 +226,7 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
           isDisabled={fetcher.state !== "idle"}
           className="active:shadow"
         >
-          Reclamar cupón: $498 mxn
+          Reclamar cupón: $499.50 mxn
         </PrimaryButton>
         <Link to="/">
           <button className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-600 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center ">

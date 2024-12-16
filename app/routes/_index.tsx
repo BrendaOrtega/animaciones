@@ -137,11 +137,11 @@ export default function Route({ children }: { children: React.ReactNode }) {
         <Pricing
           rightButton={
             <>
-              <DialogButton className="mx-auto mt-12 w-full">
+              {/* <DialogButton className="mx-auto mt-12 w-full">
                 Únete a la lista de espera <FaRegClock />
-              </DialogButton>
+              </DialogButton> */}
 
-              {/* <Form method="POST">
+              <Form method="POST">
                 <PrimaryButton
                   onClick={() => setISLoading(true)}
                   isLoading={isLoading}
@@ -152,15 +152,15 @@ export default function Route({ children }: { children: React.ReactNode }) {
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
-              </Form> */}
+              </Form>
             </>
           }
           leftButton={
             <>
-              <DialogButton className="mx-auto mt-12 w-full">
+              {/* <DialogButton className="mx-auto mt-12 w-full">
                 Únete a la lista de espera <FaRegClock />
-              </DialogButton>
-              {/* <Form method="POST">
+              </DialogButton> */}
+              <Form method="POST">
                 <PrimaryButton
                   onClick={() => setISLoading(true)}
                   isLoading={isLoading}
@@ -171,7 +171,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
                 >
                   Comprar <img src="/cursor.svg" />
                 </PrimaryButton>
-              </Form> */}
+              </Form>
             </>
           }
         />
