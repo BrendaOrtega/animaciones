@@ -1,5 +1,6 @@
 import {
   ActionFunctionArgs,
+  json,
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
@@ -36,6 +37,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // @todo we could add extra validation with checking on google api
   if (intent === "google_login") {
     const data = JSON.parse(formData.get("data") as string);
+    // @todo validarla
+    if (!data.email) return json("Esta cuenta no tiene email", { status: 404 });
     const user = await getOrCreateUser(data);
     await setSessionWithEmailAndRedirect(user.email, { request });
   }
