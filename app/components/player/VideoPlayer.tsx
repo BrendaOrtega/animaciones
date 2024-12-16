@@ -65,9 +65,9 @@ export const VideoPlayer = ({
 
   const updateWatchedList = () => {
     if (typeof window === "undefined") return;
-    let list = localStorage.getItem("watched") || "[]";
-    list = JSON.parse(list);
-    list = [...new Set([...list, video.slug])];
+    let list: string | string[] = localStorage.getItem("watched") || "[]";
+    list = JSON.parse(list) as string[];
+    list = [...new Set([...list, video?.slug])] as string[];
     localStorage.setItem("watched", JSON.stringify(list));
   };
 
@@ -86,15 +86,10 @@ export const VideoPlayer = ({
         type: "application/x-mpegURL",
       });
     } else {
-      // videoRef.current.src = video?.storageLink;
       console.log(
         "HLS Not supported. 😢 Fallbacking to storageLink::",
         video?.storageLink
       );
-      // setSource({
-      //   src: video.storageLink as string,
-      //   type: "video/mp4",
-      // });
     }
   }, [video]);
 

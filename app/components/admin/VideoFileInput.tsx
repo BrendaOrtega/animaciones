@@ -6,7 +6,7 @@ import { Spinner } from "../Spinner";
 import { cn } from "~/lib/utils";
 
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
-// import { toBlobURL } from "@ffmpeg/util";
+// import { toBlobURL } from "@ffmpeg/util"; @TODO experiment
 
 export const VideoFileInput = ({
   video,
@@ -15,7 +15,9 @@ export const VideoFileInput = ({
   name,
   register,
   className,
+  onVideoLoads,
 }: {
+  onVideoLoads?: () => void;
   className?: string;
   register?: any;
   label?: string;
@@ -30,14 +32,9 @@ export const VideoFileInput = ({
   } | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const fetcher = useFetcher<typeof action>();
-  // const fileRef = useRef<File | null>(null);
   const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
   const [storageKey, setStorageKey] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
-
-  // experiment
-  // const ffmpegRef = useRef();
-  // const previewRef = useRef<HTMLImageElement>(null);
 
   // @todo: calculate progress 🤩
   const updateProgres = () => {
@@ -49,8 +46,6 @@ export const VideoFileInput = ({
 
   const getStorageKey = () => {
     const storageKey = "video-" + video.id; // @todo improve
-    // const sk = file.name;
-
     fetcher.submit(
       {
         intent: "get_combo_urls",
@@ -65,52 +60,11 @@ export const VideoFileInput = ({
   const handleFileSelection = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return console.error("No file selected");
-    // fileRef.current = file; // saving file
     setVideoSrc(URL.createObjectURL(file)); // create preview stream from file
-    // const extension = file.name.split(".")[file.name.split(".").length - 1];
     uploadFile(file); // upload
   };
 
-  const updateDuration = () => {
-    const duration = videoRef.current?.duration;
-    setValue?.("duration", Number(duration).toFixed(0));
-  };
-
-  // experiment
-  // const experiment = async (file: File) => {
-  //   const outputFileName = "output.gif";
-  //   const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
-  //   const ffmpeg = ffmpegRef.current;
-  //   await ffmpeg.load({
-  //     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-  //     wasmURL: await toBlobURL(
-  //       `${baseURL}/ffmpeg-core.wasm`,
-  //       "application/wasm"
-  //     ),
-  //   });
-  //   const blob = URL.createObjectURL(file);
-  //   await ffmpeg.writeFile(file.name, blob);
-  //   await ffmpeg.exec([
-  //     "-y",
-  //     "-t",
-  //     "3",
-  //     "-i",
-  //     file.name,
-  //     "-filter_complex",
-  //     "fps=5,scale=720:-1:flags=lanczos[x];[x]split[x1][x2];[x1]palettegen[p];[x2][p]paletteuse",
-  //     "-f",
-  //     "gif",
-  //     outputFileName,
-  //   ]);
-  //   const data = await ffmpeg.readFile(outputFileName);
-  //   previewRef.current.src = URL.createObjectURL(
-  //     new Blob(data, { type: "image/gif" })
-  //   );
-  // };
-
   const uploadFile = async (file: File) => {
-    // experiment(file);
-    // return;
     // @todo: catch progress
     if (!file || !urls) return console.error("No file, nor urls present");
 
@@ -129,17 +83,16 @@ export const VideoFileInput = ({
           console.error(e);
         })
         .then(() => setUploading(false));
-      // improve
+      //@todo improve
       setValue("storageKey", storageKey);
       setValue("storageLink", "/files?storageKey=" + storageKey);
-      updateDuration();
     }
   };
 
   useEffect(() => {
+    // @todo why?
     if (fetcher.data) {
       setURLs({ ...fetcher.data });
-      updateDuration();
     } else {
       getStorageKey();
     }
@@ -163,13 +116,13 @@ export const VideoFileInput = ({
       />{" "}
       {videoSrc && (
         <video
+          onCanPlay={(event) => onVideoLoads?.(videoRef, event)} // shulada 🥰
           ref={videoRef}
           src={videoSrc}
           className="border rounded-xl my-2 aspect-video w-full"
           controls
         ></video>
       )}
-      {/* <img ref={previewRef} src="" alt="preview" /> */}
       {uploading && (
         <div className="flex gap-2">
           <Spinner /> Subiendo video, no cierre la ventana

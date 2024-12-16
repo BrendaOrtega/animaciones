@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { cn } from "~/lib/utils";
 import { ImageInput } from "./ImageInput";
 import { VideoFileInput } from "./VideoFileInput";
+import { Ref } from "react";
 
 // @todo select moduleName to swap'em
 export const VideoForm = ({
@@ -43,6 +44,14 @@ export const VideoForm = ({
       poster: video.poster,
     },
   });
+
+  // puente para la duración
+  const handleVideoLoad = (videoRef: Ref<HTMLVideoElement>) => {
+    console.log("AVERS:", videoRef);
+    setValue("duration", String(Number(videoRef.current.duration) / 60));
+  };
+
+  console.log("Video: ", video.duration);
 
   const onSubmition = (values: Partial<Video>) => {
     fetcher.submit(
@@ -120,6 +129,7 @@ export const VideoForm = ({
             video={video}
             setValue={setValue}
             register={register}
+            onVideoLoads={handleVideoLoad}
           />
         )}
         {fetcher.data?.playListURL && (

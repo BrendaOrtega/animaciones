@@ -132,7 +132,12 @@ const ListItem = ({
   title: string;
 }) => {
   const formatDuration = (mins: number | string) => {
-    return Number(mins).toFixed(0) + "m";
+    const duration = String(mins).split(".");
+    const m = duration[0];
+    const s = duration[1]
+      ? `.${Math.floor(Number(`.${duration[1]}`) * 60)}` // pinches puntitos 🥶
+      : "";
+    return m + s + "m";
   };
   const ref = useRef<HTMLAnchorElement>(null);
 
