@@ -24,7 +24,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === "magic_link") {
     const email = String(formData.get("email"));
     const parsed = z.string().email().safeParse(email);
-    if (!parsed.success) return { error: "El email es incorrectoS" };
+    if (!parsed.success) return { error: "El email es incorrecto" };
     const { error } = await sendMagicLink(email);
     return { error, success: !error };
   }
@@ -38,7 +38,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === "google_login") {
     const data = JSON.parse(formData.get("data") as string);
     // @todo validarla
-    if (!data.email) return json("Esta cuenta no tiene email", { status: 404 });
+    if (!data.email)
+      return {
+        error:
+          "Google no quiere compartirnos tu correo. 🙃 Intenta con el magic link",
+      };
     const user = await getOrCreateUser(data);
     await setSessionWithEmailAndRedirect(user.email, { request });
   }

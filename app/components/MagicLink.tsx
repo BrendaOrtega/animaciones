@@ -1,9 +1,10 @@
 import { Form, useFetcher } from "@remix-run/react";
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { googleLogin } from "~/lib/firebase";
 import { cn } from "~/lib/utils";
 import { action } from "~/routes/portal"; // this may change if reuse
 import { NavBar } from "./NavBar";
+import { useToast } from "./Toaster";
 
 export const MagicLink = () => {
   const fetcher = useFetcher<typeof action>();
@@ -21,6 +22,13 @@ export const MagicLink = () => {
     );
   };
 
+  const toast = useToast();
+  useEffect(() => {
+    if (fetcher.data?.error) {
+      toast.error({ text: fetcher.data.error });
+    }
+  }, [fetcher]);
+
   const handleGoogleLogin = async () => {
     const user = await googleLogin();
     const data = {
@@ -31,7 +39,7 @@ export const MagicLink = () => {
       photoURL: user.photoURL,
       uid: user.uid,
     };
-    console.log("USER: ", user);
+
     fetcher.submit(
       {
         intent: "google_login",
@@ -47,7 +55,7 @@ export const MagicLink = () => {
       <div className="-mt-20 w-[90%] md:w-fit mx-auto">
         <img className="w-52 mx-auto" src="/hat.png" alt="logo" />
         <h2 className="text-2xl text-center font-semibold md:text-4xl mt-8 ">
-          Inicia sesión o crea una cuenta
+          Inicia sesión
         </h2>
         <p className="text-lg text-center dark:text-metal text-iron font-light mt-0 mb-8">
           Continua con tu cuenta de Google o con Magic link
@@ -78,7 +86,7 @@ export const MagicLink = () => {
                 className={cn(
                   " py-2 px-6 w-full h-full bg-transparent rounded-full border-none focus:border-none focus:ring-indigo-500",
                   {
-                    "ring-red-500 ring-4": error,
+                    "ring-fish ring-4": error,
                     "disabled:bg-lightGray/30": isLoading,
                   }
                 )}

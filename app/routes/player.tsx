@@ -127,7 +127,7 @@ export default function Route() {
           nextVideo={nextVideo || undefined}
           slug={video.slug}
           onPause={() => {
-            setIsMenuOpen(true);
+            // setIsMenuOpen(true);
           }}
         />
 

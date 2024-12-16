@@ -100,8 +100,8 @@ export const VideoPlayer = ({
         {!isPlaying && (
           <motion.button
             onClick={togglePlay}
-            initial={{ backdropFilter: "blur(4px)" }}
-            animate={{ backdropFilter: "blur(4px)" }}
+            initial={{ backdropFilter: "blur(9px)" }}
+            animate={{ backdropFilter: "blur(0px)" }}
             exit={{ backdropFilter: "blur(0px)", opacity: 0 }}
             transition={{ duration: 0.2 }}
             key="play_button"

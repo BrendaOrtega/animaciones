@@ -46,7 +46,34 @@ export const useToast = () => {
       toast.remove();
     }, 3000);
   };
+
+  const error = async ({
+    text,
+    icon = "😰",
+  }: {
+    text: ReactNode;
+    icon?: ReactNode;
+  }) => {
+    const toast = document.createElement("section");
+    setInitial(toast);
+    toast.innerHTML = `
+    <div class="pl-4 pr-4 py-4 h-16 bg-red-300  rounded-full text-red-900 flex items-center justify-center " >
+    <div class="flex items-center gap-3"><span class="w-12 h-12 text-4xl flex items-center justify-center rounded-full">${icon}</span>
+    <p class="text-xl text-[#32472F] "> ${text}</p></div>
+    </div>
+    `;
+    document.body.appendChild(toast);
+    await sleep(0.01);
+    setAnimate(toast);
+    setTimeout(async () => {
+      setExit(toast);
+      await sleep(0.3);
+      toast.remove();
+    }, 10000);
+  };
+
   return {
     success,
+    error,
   };
 };
