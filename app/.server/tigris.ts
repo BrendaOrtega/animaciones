@@ -38,18 +38,35 @@ const setCors = async () => {
   return await S3.send(command);
 };
 
-// EXPERIMENTING with parts
-export const uploadWithMultiPart = (storageKey: string) => {
-  // @todo return
-  // createMultipartUploadCommand(
-  //   {
-  //     Bucket: process.env.BUCKET_NAME,
-  //     Key: PREFIX + storageKey,
-  //   },
-  //   (err, data) => {
-  //     console.log("Multipart worked", data, err);
-  //   }
-  // );
+// EXPERIMENTING with parts @todo Asign ACL?
+
+export const getMultipartURLs = ({
+  UploadId,
+  numberOfParts,
+  storageKey,
+}: {
+  storageKey: string;
+  UploadId: string;
+  numberOfParts: number;
+}) => {
+  const promises = [];
+  for (let i = 0; i < numberOfParts; i += 1) {
+    const promise = getPutFileUrl(storageKey, {
+      PartNumber: i,
+      UploadId,
+    });
+    promises.push(promise);
+  }
+  return Promise.all(promises);
+};
+
+export const getUploadWithMultiPart = async (storageKey: string) => {
+  return await S3.send(
+    new CreateMultipartUploadCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: PREFIX + storageKey,
+    })
+  ).catch((e) => console.error(e));
 };
 
 export const fileExist = async (
@@ -111,14 +128,17 @@ export const getPutVideoExperiment = async () => {
 
 export const getPutFileUrl = async (
   key: string,
-  isAnimations: boolean = true
+  options: { UploadId: string; PartNumber: number }
 ) => {
+  const { UploadId, PartNumber } = options || {};
   await setCors();
   return await getSignedUrl(
     S3,
     new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: isAnimations ? "animaciones/" + key : key,
+      Key: PREFIX + key,
+      UploadId,
+      PartNumber,
     }),
     { expiresIn: 3600 }
   );

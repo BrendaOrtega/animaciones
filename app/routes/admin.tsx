@@ -13,12 +13,19 @@ import {
 import { useClickOutside } from "~/hooks/useClickOutside";
 import slugify from "slugify";
 import { cn } from "~/lib/utils";
-import { getComboURLs, removeFilesFor } from "~/.server/tigris";
+import {
+  getComboURLs,
+  getMultipartURLs,
+  getUploadWithMultiPart,
+  removeFilesFor,
+} from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
 import { createVideoVersions, experiment } from "~/.server/videoProcessing";
 import { motion, LayoutGroup, useDragControls } from "motion/react";
 import { GrDrag } from "react-icons/gr";
+
+const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -57,9 +64,32 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
     console.log("TOOOODO para: ", newStorageKeys, "funciona?");
   }
+
+  if (intent === "get_multipart_upload") {
+    const storageKey = String(formData.get("storageKey"));
+    const numberOfParts = formData.has("numberOfParts")
+      ? Number(formData.get("numberOfParts"))
+      : 0;
+    // @todo should throw?
+    const { UploadId }: { UploadId: string } = await getUploadWithMultiPart(
+      "multipart_testing"
+    );
+
+    // @todo get all presignedURls
+    const uploadPayload = {
+      storageKey,
+      UploadId,
+      numberOfParts,
+      chunkSize: MAX_CHUNK_SIZE,
+      presignedUrls: [] as string[],
+    };
+    const presignedUrls = await getMultipartURLs(uploadPayload);
+    uploadPayload.presignedUrls = presignedUrls;
+    console.log("MULTIPART_UPLOAD_REQUESTED", uploadPayload);
+    return uploadPayload;
+  }
   if (intent === "get_combo_urls") {
     const storageKey = String(formData.get("storageKey"));
-    // @todo should throw?
     return await getComboURLs(storageKey);
   }
   if (intent === "delete_video") {
@@ -227,6 +257,7 @@ export default function Route() {
             setShowVideoDrawer(false);
           }}
           video={video}
+          videosLength={videos.length}
         />
       </Drawer>
     </>

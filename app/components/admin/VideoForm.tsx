@@ -11,7 +11,9 @@ import { Ref } from "react";
 export const VideoForm = ({
   onSubmit,
   video,
+  videosLength,
 }: {
+  videosLength?: number;
   onSubmit?: (arg0?: Partial<Video>) => void;
   video: Partial<Video>;
 }) => {
@@ -35,7 +37,7 @@ export const VideoForm = ({
       moduleName: video.moduleName,
       id: video.id,
       slug: video.slug,
-      index: Number(video.index),
+      index: Number(video.index) || videosLength,
       // @todo remove default
       poster: video.poster,
     },

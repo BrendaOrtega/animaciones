@@ -5,6 +5,8 @@ import { action } from "~/routes/admin";
 import { Spinner } from "../Spinner";
 import { cn } from "~/lib/utils";
 
+const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
+
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
 // import { toBlobURL } from "@ffmpeg/util"; @TODO experiment
 
@@ -58,6 +60,7 @@ export const VideoFileInput = ({
   };
 
   const handleFileSelection = async (e: ChangeEvent<HTMLInputElement>) => {
+    //  params.set('totalChunks', Math.ceil(file.size / chunkSize));
     const file = e.target.files?.[0];
     if (!file) return console.error("No file selected");
     setVideoSrc(URL.createObjectURL(file)); // create preview stream from file
@@ -100,7 +103,9 @@ export const VideoFileInput = ({
 
   //@todo revisit max-w
   return (
-    <section className={cn("my-2 grid gap-2 max-w-[50vw]", className)}>
+    <section
+      className={cn("my-2 grid gap-2 max-w-[50vw] md:max-w-[30vw]", className)}
+    >
       <p>{label}</p>
       <input
         type="text"
