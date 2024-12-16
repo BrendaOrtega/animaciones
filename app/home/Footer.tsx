@@ -45,7 +45,7 @@ export const Footer = () => {
             />
           </a>
           <a
-            href="https://www.facebook.com/fixterme"
+            href="https://www.instagram.com/fixtergeek/"
             target="_blank "
             rel="noreferrer"
           >
