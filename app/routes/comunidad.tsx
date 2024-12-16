@@ -63,6 +63,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === ROLE) {
     const token = url.searchParams.get("token");
     const result = validateToken(token);
+    if (!result.email) return null;
     const stripeURL = await get50Checkout(result.email);
     return redirect(stripeURL);
   }

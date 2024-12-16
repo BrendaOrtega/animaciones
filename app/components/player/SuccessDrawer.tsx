@@ -28,7 +28,7 @@ export const SuccessDrawer = ({
             </h2>
             <p className="md:max-w-xl text-lg text-metal dark:text-metal text-center font-light mt-6">
               Nos da gusto que seas parte de este curso. <br />A partir de hoy,
-              tus páginas web nunca volverán a ser los mismos. <br />
+              tus páginas web nunca volverán a ser las mismas. <br />
               <strong>¡Que comience la magia! 🧙🏻🪄</strong>
             </p>
             <p className="text-sm  dark:text-metal text-metal text-center font-light mt-6">

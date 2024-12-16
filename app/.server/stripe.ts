@@ -18,6 +18,7 @@ export const get40Checkout = async () => {
 
 export const get50Checkout = async (tokenEmail: string) => {
   return await getStripeCheckout({
+    // price: PRICE_999,
     coupon: isDev ? DEV_COUPON : COUPON_50, // -50%
     metadata: {
       host: tokenEmail,
@@ -53,7 +54,7 @@ export const getStripeCheckout = async (
           ? options.price
           : isDev
           ? "price_1KBnlPJ7Zwl77LqnixoYRahN"
-          : "price_1QKLfhJ7Zwl77LqnZw5iaY1V", // prod
+          : PRICE_999, // prod
         quantity: 1,
       },
     ],
