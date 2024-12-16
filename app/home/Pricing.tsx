@@ -88,11 +88,28 @@ const MyTabs = ({
                 </span>
               </h4>
               <div className="text-base font-light text-iron dark:text-metal  flex flex-col gap-4 mt-10">
-                <p>📹 más de 14 unidades con tutoriales en video</p>
+                <p>
+                  📹 Más de{" "}
+                  <strong className="font-semibold text-iron dark:text-white/60">
+                    14 unidades
+                  </strong>{" "}
+                  con tutoriales en video
+                </p>
                 <p>💪🏻 Learnings y ejercicios por lección</p>
-                <p>📚 Recursos extra </p>
+                <p>
+                  📚 Recopilación de{" "}
+                  <strong className="font-semibold text-iron dark:text-white/60">
+                    recursos extra{" "}
+                  </strong>
+                </p>
                 <p>💀 Acceso de por vida</p>
-                <p>🚀 Actualizaciones futuras del curso</p>
+                <p>
+                  🚀{" "}
+                  <strong className="font-semibold text-iron dark:text-white/60">
+                    Actualizaciones futuras
+                  </strong>{" "}
+                  del curso
+                </p>
                 <p>🫶🏻 Acceso a la comunidad de Disscord</p>
               </div>
               {leftButton}
@@ -123,11 +140,11 @@ const MyTabs = ({
             </h4>
             <div className="text-base font-light text-iron dark:text-metal flex flex-col gap-4 mt-10">
               <p>
-                📹{" "}
+                📹 Más de{" "}
                 <strong className="font-semibold text-iron dark:text-white/60">
-                  12 unidades
+                  14 unidades
                 </strong>{" "}
-                con tutoriales en video (1 por componente)
+                con tutoriales en video
               </p>
               <p>💪🏻 Learnings y ejercicios por lección</p>
               <p>
