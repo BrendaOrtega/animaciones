@@ -43,8 +43,8 @@ const generateLink = (token: string) =>
   token;
 
 const getToken = (email: string) => {
-  // @todo no expiration?
-  return jwt.sign({ email }, secret, { expiresIn: "24h" });
+  // @todo no expiration? Yes 7 days!
+  return jwt.sign({ email }, secret, { expiresIn: "30d" });
 };
 
 const validateToken = (token: string) => {
