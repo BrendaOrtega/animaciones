@@ -6,7 +6,7 @@ import {
 } from "@remix-run/node";
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 import { Link } from "@remix-run/react";
-import { ReactNode } from "react";
+import { MouseEvent, ReactNode } from "react";
 import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { PiLinkSimpleBold } from "react-icons/pi";
@@ -15,7 +15,11 @@ import { NavBar } from "~/components/NavBar";
 import { cn } from "~/lib/utils";
 import { getCanShareUserORNull } from "~/.server/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { get50Checkout, getStripeCheckout } from "~/.server/stripe";
+import {
+  get50Checkout,
+  get50CheckoutWithShirt,
+  getStripeCheckout,
+} from "~/.server/stripe";
 import { FaGoogle } from "react-icons/fa";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useToast } from "~/components/Toaster";
@@ -63,7 +67,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === ROLE) {
     const token = url.searchParams.get("token");
     const result = validateToken(token);
-    const stripeURL = await get50Checkout(result.email);
+    const playera = formData.get("playera");
+    let stripeURL;
+    if (playera === "1") {
+      stripeURL = await get50CheckoutWithShirt(result.email);
+    } else {
+      stripeURL = await get50Checkout(result.email);
+    }
     return redirect(stripeURL);
   }
   if (intent === "checkout") {
@@ -193,16 +203,20 @@ const BadToken = () => {
 
 const Invite = ({ courseTitle }: { courseTitle: string }) => {
   const fetcher = useFetcher();
-  const handleClick = () => {
+  const handleClick = (
+    event: MouseEvent<HTMLButtonElement>,
+    playera: number
+  ) => {
     fetcher.submit(
       {
+        playera,
         intent: ROLE,
       },
       { method: "POST" }
     );
   };
   return (
-    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white">
+    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white px-4 md:px-0">
       <img className="w-52 h-auto" src="/congrats.png" />
       <h2 className="text-3xl md:text-5xl font-semibold text-center">
         ¡Andas de suerte eh! 🍀
@@ -214,9 +228,6 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
           50% para el curso <br />«{courseTitle}»
         </strong>
       </p>
-      <p className=" text-xl md:text-3xl text-center mb-12 text-fish">
-        Usa el cupón COMUNIDAD50
-      </p>
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
         ¡Apresúrate! Recuerda que los tokens solo viven un ratito 🕣
       </p>
@@ -226,7 +237,14 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
           isDisabled={fetcher.state !== "idle"}
           className="active:shadow"
         >
-          Reclamar cupón: $499.50 mxn
+          Canjear Full course
+        </PrimaryButton>
+        <PrimaryButton
+          onClick={(event) => handleClick(event, 1)}
+          isDisabled={fetcher.state !== "idle"}
+          className="active:shadow"
+        >
+          Canjear Full course + playera
         </PrimaryButton>
         <Link to="/">
           <button className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-600 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center ">

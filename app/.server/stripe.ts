@@ -1,6 +1,9 @@
 import Stripe from "stripe";
 
 const isDev = process.env.NODE_ENV === "development";
+const location = isDev
+  ? "http://localhost:3000"
+  : "https://animaciones.fixtergeek.com";
 
 export const PRICE_1499 = "price_1QKLfhJ7Zwl77LqnZw5iaY1V";
 export const PRICE_999 = "price_1QKRbEJ7Zwl77Lqn0O8rRwrN";
@@ -13,6 +16,16 @@ export const COUPON_50 = "yYMKDuTC"; // -50%
 export const get40Checkout = async () => {
   return await getStripeCheckout({
     coupon: isDev ? DEV_COUPON : COUPON_40,
+  });
+};
+
+export const get50CheckoutWithShirt = async (tokenEmail: string) => {
+  return await getStripeCheckout({
+    price: PRICE_1499,
+    coupon: isDev ? DEV_COUPON : COUPON_50, // -50%
+    metadata: {
+      host: tokenEmail,
+    },
   });
 };
 
@@ -58,8 +71,8 @@ export const getStripeCheckout = async (
         quantity: 1,
       },
     ],
-    success_url: `${process.env.CURRENT_URL}/player?success=1`,
-    cancel_url: `${process.env.CURRENT_URL}/player?videoIndex=10`,
+    success_url: `${location}/player?success=1`,
+    cancel_url: `${location}/player?videoIndex=10`,
     discounts: options.coupon ? [{ coupon: options.coupon }] : undefined,
     allow_promotion_codes: options.coupon ? undefined : true,
     // <= @todo multi moneda?
