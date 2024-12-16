@@ -75,9 +75,11 @@ export const NavBar = ({
           )}
           {mode === "player" && userEmail && (
             <div className="flex items-center gap-6">
-              <Link to={canShare ? "/comunidad" : "/"}>
-                <LuTicket className="text-2xl hover:scale-110" />
-              </Link>
+              {canShare && (
+                <Link to={"/comunidad"}>
+                  <LuTicket className="text-2xl hover:scale-110" />
+                </Link>
+              )}
               <button
                 onClick={handleSignOut}
                 className="flex items-center gap-2 text-base transition-all hover:scale-105 py-1 px-2 rounded-full text-white  active:scale-100"

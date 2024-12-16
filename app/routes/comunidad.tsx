@@ -86,7 +86,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         link: generateLink(token),
       };
     } else {
-      return { screen: "bad_token", link: token };
+      return { screen: "bad_token", link: token, courseTitle: "" };
     }
   }
   // default
@@ -218,7 +218,7 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
         Usa el cupón COMUNIDAD50
       </p>
       <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
-        ¡Apresúrate! Recuerda que los tokens solo viven unas horas 🕣
+        ¡Apresúrate! Recuerda que los tokens solo viven un ratito 🕣
       </p>
       <div className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6">
         <PrimaryButton

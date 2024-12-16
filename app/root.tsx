@@ -6,10 +6,19 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-
 import "./tailwind.css";
 import useGoogleTM from "./lib/useGoogleTM";
 import useHotjar from "./lib/useHotjar";
+
+export const links = () => {
+  return [
+    {
+      rel: "icon",
+      href: "/icon.svg",
+      type: "image/svg",
+    },
+  ];
+};
 
 export default function App() {
   useGoogleTM();
