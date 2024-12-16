@@ -122,7 +122,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
             type="button"
             className="bg-pink-600 enabled:hover:px-8"
           >
-            Comenzar a ver gratis 🪄📺
+            Comenzar gratis 🪄📺
           </PrimaryButton>
         </Form>
         {/* <DialogButton className="mx-auto">
