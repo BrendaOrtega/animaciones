@@ -31,6 +31,7 @@ export const MagicLink = () => {
       photoURL: user.photoURL,
       uid: user.uid,
     };
+    console.log("USER: ", user);
     fetcher.submit(
       {
         intent: "google_login",
