@@ -45,19 +45,19 @@ export const Faq = () => (
         <div className="flex flex-col gap-8">
           <Question
             question="¿Cómo compro el curso?"
-            answer="Al dar clic en el botón Comprar curso, serás redirigido al flujo de compra dentro de nuestra página principal, solo completa tu información de pago. El curso estará disponible en tu cuenta en www.fixtergeek.com"
+            answer="Al dar clic en el botón Comprar curso, serás redirigido a flujo de compra con Stripe. Al completar la compra, recibirás en tu correo el link de acceso al curso."
           />
           <Question
             question="¿Qué formas de pago aceptan?"
             answer="Aceptamos todo tipo de tarjetas de crédito o tarjetas débito internacionales (Visa, MasterCard o AMEX) que estén habilitadas para pagos online al extranjero. Si no te es posible pagar por este medio, escríbenos a hola@fixtergeek.com y buscaremos otras opciones."
           />
           <Question
-            question="¿Cuál es la diferencia entre el Full course y el Pro Full course?"
-            answer="El contenido de ambos cursos es el mismo, la única diferencia es que el Pro Full course incluye la playera oficial de fixter. Después de tu compra, nos pondremos en contacto contigo para enviarla hasta la puerta de tu casa."
+            question="¿Cuál es la diferencia entre el Full course y el Full course + Playera?"
+            answer="El contenido de ambos cursos es el mismo, la única diferencia es que el Full course + Playera incluye la playera oficial de fixter. Después de tu compra, nos pondremos en contacto contigo para enviarla hasta la puerta de tu casa."
           />{" "}
           <Question
             question="¿Emiten factura fiscal?"
-            answer="Sí, despues de suscribirte al Plan PRO completa tus datos fiscales desde tu perfil>Administrar plan y te haremos llegar tu fatura vía email, si tienes alguna duda escríbenos a hola@formmy.app"
+            answer="Sí, despues de suscribirte al Plan PRO completa tus datos fiscales desde tu perfil>Administrar plan y te haremos llegar tu fatura vía email, si tienes alguna duda escríbenos a brenda@fixter.org"
           />
         </div>
       </div>
