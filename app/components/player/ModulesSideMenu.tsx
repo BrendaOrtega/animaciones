@@ -153,7 +153,6 @@ const ListItem = ({
 
   return (
     <Link
-      reloadDocument
       ref={ref}
       to={`/player?videoSlug=${slug}`}
       // reloadDocument
@@ -217,7 +216,7 @@ const MenuListContainer = ({
         scrollbarWidth: "none",
         maskImage,
       }}
-      className="md:w-[380px] w-[300px] fixed z-10 rounded-xl overflow-y-scroll h-[88%] bg-dark top-0 left-0 pt-20"
+      className="md:w-[380px] w-[300px] fixed z-10 rounded-xl overflow-y-scroll h-[88%] bg-dark top-0 left-0 pt-20 z-20"
     >
       {children}
     </motion.div>
@@ -273,7 +272,7 @@ const MenuButton = ({
       style={{ x }}
       onClick={onToggle}
       className={cn(
-        "fixed bg-[#141518] text-4xl w-14 h-14 text-white top-0 mt-20 p-2 z-50 flex items-center justify-center rounded-r-2xl hover:bg-[rgba(35,35,44)]",
+        "fixed bg-[#141518] text-4xl w-14 h-14 text-white top-0 mt-20 p-2 z-20 flex items-center justify-center rounded-r-2xl hover:bg-[rgba(35,35,44)]",
         {
           "left-[-80px] md:left-auto": isOpen,
           "rounded-2xl": isOpen,

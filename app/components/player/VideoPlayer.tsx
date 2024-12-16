@@ -79,8 +79,8 @@ export const VideoPlayer = ({
     if (hlsSupport(videoRef.current)) {
       console.log(`HLS Supported ✅::`);
       //@todo improve
-      // (videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"), // @todo this should come in the model
-      //   (videoRef.current.type = "application/x-mpegURL");
+      // videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"; // @todo this should come in the model
+      // videoRef.current.type = "application/x-mpegURL";
     } else {
       console.log(
         "HLS Not supported. 😢 Fallbacking to storageLink::",
@@ -151,7 +151,7 @@ export const VideoPlayer = ({
         autoPlay={autoPlay}
         data-nombre={video.slug}
         poster={
-          (!video?.poster && video?.poster !== "null") || POSTER // global
+          video?.poster || POSTER // global
         }
         controlsList="nodownload"
         ref={videoRef}
