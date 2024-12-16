@@ -93,7 +93,7 @@ export const VideoForm = ({
   return (
     <>
       <Form
-        className="flex flex-col h-full text-white"
+        className="flex flex-col h-full dark:text-white"
         onSubmit={handleSubmit(onSubmition)}
       >
         <h3 className="mb-2 text-gray-400 text-xl">

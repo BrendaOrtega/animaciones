@@ -1,6 +1,6 @@
 import { type Video } from "@prisma/client";
-import { json, useFetcher, useLoaderData } from "@remix-run/react";
-import { FormEvent, useState } from "react";
+import { json, useFetcher, useFetchers, useLoaderData } from "@remix-run/react";
+import { FormEvent, MouseEvent, PointerEventHandler, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { db } from "~/.server/db";
 import { PrimaryButton } from "~/components/PrimaryButton";
@@ -16,18 +16,30 @@ import { cn } from "~/lib/utils";
 import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
-import {
-  createHLS360Chunks,
-  createHLSChunks,
-  createVideoVersions,
-  experiment,
-  print_detached,
-  updateDBSomeHow,
-} from "~/.server/videoProcessing";
+import { createVideoVersions, experiment } from "~/.server/videoProcessing";
+import { motion, LayoutGroup, useDragControls } from "motion/react";
+import { GrDrag } from "react-icons/gr";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+
+  if (intent === "update_modules_order") {
+    const moduleNamesOrder = JSON.parse(
+      formData.get("moduleNamesOrder") as string
+    );
+    const courseId = formData.get("courseId") as string;
+    if (!moduleNamesOrder.length || !courseId) return null;
+
+    await db.course.update({
+      where: {
+        id: courseId,
+      },
+      data: {
+        moduleNamesOrder,
+      },
+    });
+  }
 
   if (intent === "experiment") {
     console.log("::EXPERIMENT_VERSIONS_GENERATION::");
@@ -105,10 +117,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     orderBy: { index: "asc" },
   });
   if (!course) throw json(null, { status: 404 });
-  const moduleNames = [...new Set(videos.map((video) => video.moduleName))];
-  // const storageKey =  "animations_" + nanoid() + ".mov"; // @todo improve
-  // const [putURL, deleteURL] = await getReadAndDeletePair(storageKey);
-  return { course, videos, moduleNames };
+  const moduleNamesOrder = course.moduleNamesOrder.length
+    ? [...course.moduleNamesOrder]
+    : [...new Set(videos.map((video) => video.moduleName))];
+  return { course, videos, moduleNamesOrder };
 };
 
 const initialVideo = {
@@ -116,10 +128,11 @@ const initialVideo = {
   moduleName: "",
 };
 export default function Route() {
-  const { course, moduleNames, videos } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
+  const { course, moduleNamesOrder, videos } = useLoaderData<typeof loader>();
   const [video, setVideo] = useState<Partial<Video>>(initialVideo);
   const [showVideoDrawer, setShowVideoDrawer] = useState(false);
-  const [modules, setModules] = useState(moduleNames);
+  const [modules, setModules] = useState(moduleNamesOrder);
 
   const handleModuleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -144,6 +157,22 @@ export default function Route() {
     // @todo update all videos
   };
 
+  const handleModuleOrderUpdate = (oldIndex: number, newIndex: number) => {
+    const names = [...modules];
+    const moving = names.splice(oldIndex, 1)[0];
+    names.splice(newIndex, 0, moving);
+    setModules(names);
+    // server
+    fetcher.submit(
+      {
+        intent: "update_modules_order",
+        moduleNamesOrder: JSON.stringify(names),
+        courseId: course.id,
+      },
+      { method: "post" }
+    );
+  };
+
   return (
     <>
       <article className="bg-gradient-to-tr from-slate-950 to-indigo-950 min-h-screen py-20 px-8">
@@ -162,21 +191,24 @@ export default function Route() {
             Añadir módulo
           </PrimaryButton>
         </form>
-        <section className="my-8 flex gap-4 flex-wrap">
-          {modules.map((moduleTitle, i) => (
-            <Module
-              index={i}
-              onModuleTitleUpdate={handleModuleTitleUpdate}
-              onVideoSelect={handleVideoEdit}
-              onAddVideo={() => moduleTitle && handleAddVideo(moduleTitle)}
-              key={moduleTitle}
-              title={moduleTitle || ""}
-              videos={videos.filter(
-                (video) => video.moduleName === moduleTitle
-              )}
-            />
-          ))}
-        </section>
+        <LayoutGroup>
+          <section className="my-8 grid gap-4 grid-cols-2 md:grid-cols-3 max-w-7xl mx-auto">
+            {modules.map((moduleTitle, i) => (
+              <Module
+                onModuleOrderUpdate={handleModuleOrderUpdate}
+                index={i}
+                onModuleTitleUpdate={handleModuleTitleUpdate}
+                onVideoSelect={handleVideoEdit}
+                onAddVideo={() => moduleTitle && handleAddVideo(moduleTitle)}
+                key={moduleTitle}
+                title={moduleTitle || ""}
+                videos={videos.filter(
+                  (video) => video.moduleName === moduleTitle
+                )}
+              />
+            ))}
+          </section>
+        </LayoutGroup>
       </article>
       {/* drawer */}
       <Drawer
@@ -207,10 +239,12 @@ const Module = ({
   onAddVideo,
   onVideoSelect,
   onModuleTitleUpdate,
+  onModuleOrderUpdate,
   index,
 }: {
   index?: number;
   onModuleTitleUpdate?: (arg0: string, arg1: string) => void;
+  onModuleOrderUpdate?: (oldIndex: number, newIndex: number) => void;
   onVideoSelect?: (arg0: Partial<Video>) => void;
   onAddVideo?: (arg0?: string) => void;
   videos: Video[];
@@ -245,10 +279,35 @@ const Module = ({
       { method: "post" }
     );
   };
+  const controls = useDragControls();
+
+  const handleDragEnd = (event: MouseEvent) => {
+    const all = document.elementsFromPoint(event.clientX, event.clientY);
+    const found = all.find(
+      (node) => node.dataset.index && node.dataset.index !== String(index)
+    );
+    if (found) {
+      // update ui!
+      onModuleOrderUpdate?.(Number(index), Number(found.dataset.index));
+      // update db?
+    }
+  };
 
   return (
-    <article className="w-64">
+    <motion.article
+      layout
+      key={title}
+      layoutId={title}
+      className="relative"
+      drag
+      dragControls={controls}
+      dragSnapToOrigin
+      onDragEnd={handleDragEnd}
+      data-index={index}
+      dragListener={false}
+    >
       <section className="bg-slate-600 py-2 px-4 flex justify-between items-center mt-2 ">
+        <Dragger onPointerDown={(ev) => controls.start(ev)} />
         {isEditing ? (
           <form ref={ref} onSubmit={handleModuleTitleUpdate}>
             <input
@@ -261,7 +320,7 @@ const Module = ({
           </form>
         ) : (
           <>
-            <span className="text-gray-400"> {index + 1}</span>
+            <p className="text-gray-400 w-10 text-center"> {index + 1}</p>
             <button
               onClick={() => setIsEditing(true)}
               className="text-white font-bold capitalize text-left"
@@ -286,6 +345,7 @@ const Module = ({
             .sort((a, b) => (a.index < b.index ? -1 : 1))
             .map((video, index) => (
               <Video
+                // onReorder={handleVideoReorder}
                 onClick={() => onVideoSelect?.(video)}
                 key={video.id}
                 video={video}
@@ -299,22 +359,80 @@ const Module = ({
           </PrimaryButton>
         </section>
       )}
-    </article>
+    </motion.article>
   );
 };
 
-const Video = ({ video, onClick }: { onClick?: () => void; video: Video }) => {
+const Video = ({
+  video,
+  onClick,
+  onReorder,
+}: {
+  onReorder?: (oldIndex: number, newIndex: number) => void;
+  onClick?: () => void;
+  video: Video;
+}) => {
+  const fetcher = useFetcher();
+  const controls = useDragControls();
+
+  const handleDragEnd = (event: MouseEvent) => {
+    const all = document.elementsFromPoint(event.clientX, event.clientY);
+    const found = all.find(
+      (node) =>
+        node.dataset.videoIndex &&
+        node.dataset.videoIndex !== String(video.index)
+    );
+    if (found) {
+      // update parent?? nah! lets update the db directly
+      onReorder?.(Number(video.index), Number(found.dataset.videoIndex));
+      // @todo do we really want to do this here?
+      fetcher.submit(
+        {
+          intent: "update_video",
+          data: JSON.stringify([{}]),
+        },
+        { method: "POST" }
+      );
+    }
+  };
+
   return (
-    <button
+    <motion.button
+      data-videoIndex={video.index}
+      onDragEnd={handleDragEnd}
+      dragListener={false}
+      drag
+      dragControls={controls}
+      dragSnapToOrigin
       onClick={onClick}
       className={cn(
-        "transition-all hover:scale-[1.02] text-left py-1 px-4 rounded",
+        "hover:scale-[1.02] text-left py-1 px-4 rounded",
         video.isPublic ? "bg-green-500" : "bg-slate-400",
         "flex justify-between"
       )}
     >
+      <Dragger onPointerDown={(event) => controls.start(event)} />
       <p className="truncate">{video.title}</p>
       <span>{video.storageKey ? "✅" : "🫥"}</span>
-    </button>
+    </motion.button>
+  );
+};
+
+const Dragger = ({
+  onPointerDown,
+}: {
+  onPointerDown?: (arg0?: unknown) => void;
+}) => {
+  return (
+    <motion.button
+      whileTap={{ cursor: "grabbing", boxShadow: "0px 0px 24px 0px gray" }}
+      className="cursor-grab py-px pr-px shadow-[unset] text-xl text-gray-900"
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        onPointerDown?.(e);
+      }}
+    >
+      <GrDrag />
+    </motion.button>
   );
 };

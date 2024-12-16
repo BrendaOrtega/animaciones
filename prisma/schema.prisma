@@ -91,7 +91,8 @@ model Course {
   updatedAt         DateTime  @updatedAt
   version           String?
   theme             Json?
-  // sep 2023 Will be used on Nov 2024
+  // sep 2023 Will be used on Nov 2024 🤯
+  moduleNamesOrder  String[]
   module            Json?
   Modules           Module[]
   modules           String[]  @db.ObjectId
