@@ -1,5 +1,11 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect, useLoaderData, useNavigate } from "@remix-run/react";
+import {
+  json,
+  MetaFunction,
+  redirect,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import { useState } from "react";
 import { db } from "~/.server/db";
 import { get40Checkout } from "~/.server/stripe";
@@ -9,8 +15,15 @@ import { VideosMenu } from "~/components/player/ModulesSideMenu";
 import { VideoPlayer } from "~/components/player/VideoPlayer";
 import { SuccessDrawer } from "~/components/player/SuccessDrawer";
 import { PurchaseDrawer } from "~/components/player/PurchaseDrawer";
+import { getMetaTags } from "~/utils/getMetaTags";
 
 const courseId = "645d3dbd668b73b34443789c";
+
+export const meta: MetaFunction = () =>
+  getMetaTags({
+    title: "Visualizador del curso de animaciones con React",
+    description: "Mira todos los videos del curso en alta definición.",
+  });
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -77,6 +90,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Route() {
   const navigate = useNavigate();
+
   const { nextVideo, isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
 
@@ -91,8 +105,10 @@ export default function Route() {
     const url = new URL(location.href);
     url.pathname = "/player";
     url.searchParams.set("videoSlug", nextVideo.slug);
-    navigate(url.pathname + url.search);
-    setIsMenuOpen(true);
+    // @todo: fix it (change for a link)
+    // setIsMenuOpen(true);
+    // navigate(url.pathname + url.search, { replace: true, flushSync: true });
+    location.href = url.toString();
   };
 
   return (
@@ -100,10 +116,13 @@ export default function Route() {
       <NavBar mode="player" className="m-0" />
       <article className="bg-dark relative overflow-x-hidden pt-20">
         <VideoPlayer
+          video={video}
           // @todo visit and refactor please
           onClickNextVideo={handleClickEnding}
-          type={video.type || undefined}
-          src={video.storageLink || undefined}
+          // type={video.type || undefined}
+          // src={video.storageLink || undefined}
+          src={"/playlist/" + video.storageKey + "/index.m3u8"}
+          type={"application/x-mpegURL"}
           poster={video.poster || undefined}
           nextVideo={nextVideo || undefined}
           slug={video.slug}

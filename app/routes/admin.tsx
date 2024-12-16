@@ -16,10 +16,35 @@ import { cn } from "~/lib/utils";
 import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
+import {
+  createHLS360Chunks,
+  createHLSChunks,
+  createVideoVersions,
+  experiment,
+  print_detached,
+  updateDBSomeHow,
+} from "~/.server/videoProcessing";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+
+  if (intent === "experiment") {
+    console.log("::EXPERIMENT_VERSIONS_GENERATION::");
+    const storageKey = String(formData.get("storageKey"));
+    experiment(storageKey);
+    return null;
+  }
+
+  if (intent === "generate_video_versions") {
+    const videoId = String(formData.get("videoId"));
+    const originalKey = String(formData.get("storageKey"));
+    const newStorageKeys = await createVideoVersions({
+      originalKey,
+      version: "small",
+    });
+    console.log("TOOOODO para: ", newStorageKeys, "funciona?");
+  }
   if (intent === "get_combo_urls") {
     const storageKey = String(formData.get("storageKey"));
     // @todo should throw?
@@ -45,7 +70,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
     data.slug = slugify(data.title, { lower: true }); // @todo zod
     data.index = data.index ? Number(data.index) : undefined;
-    data.storageLink = "/videos?storageKey=" + data.storageKey; // video experiment
+    data.storageLink = "/videos?storageKey=" + data.storageKey; // experiment?
 
     // if exists
     if (data.id) {

@@ -10,17 +10,22 @@ export const magicLinkTemplate = ({ link }: { link: string }) => `
     <img alt="logo" style="width:160px;" src="https://i.imgur.com/CSOCrRV.png"/>
   </div>
   <div style="text-align:left; background:white; border-radius:16px; margin-top:16px; ">
-    <h2 style="color:#15191E; font-size:20px; margin-top:24px; line-height:140%">¡Bienvenido de nuevo geek! 🎉</h2>
+    <h2 style="color:#15191E; font-size:20px; margin-top:24px; line-height:140%">
+    ¡Bienvenid@ de nuevo geek! 🤓
+    </h2>
     <p style="margin-top:14px; color:#495466"> 
-      Ya puedes ver todos los tutoriales del curso <strong>"Animaciones con React" 📺🥳 </strong>   
+      Vuelve a entrar al curso: <strong>"Animaciones con React" </strong>   
     </p>
-    <p style="margin-top:14px; color:#495466"> 
-       Aquí tienes tu magic link de acceso. ${link} 
+    <p style="margin-top:14px;color:#495466;"> 
+       Aquí tienes tu magic link. <strong style="color:#5158f6;">
+                                    Nos vemos dentro 🪄✨🎩🐰🤩
+                                      </strong>
     </p> 
+    <a href="${link}" target="_blank" rel="noreferrer" style="margin-top:24px;padding:12px 16px;border-radius:50px;background:#5158f6;color:white;font-weight:bold;text-decoration:none;display:inline-block;" >
+    Abrir curso
+    </a>
    <p style="margin-top:14px; color:#495466; margin-top:48px;"> 
-       <strong style="">
-Nos vemos dentro 🪄🎩🐇
-  </strong>
+     
     </p> 
     <p style="font-size:12px; color:#8391A1; margin-top:48px;">Si tienes alguna duda o pregunta, no dudes en responder este correo. </p>
   </div>

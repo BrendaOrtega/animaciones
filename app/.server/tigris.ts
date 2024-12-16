@@ -4,8 +4,10 @@ import {
   PutObjectCommand,
   PutBucketCorsCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { v4 as uuidv4 } from "uuid";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -34,12 +36,34 @@ const setCors = async () => {
   return await S3.send(command);
 };
 
-export const getReadURL = async (key: string, expiresIn = 3600) =>
+export const fileExist = async (
+  key: string,
+  expiresIn = 3600,
+  isAnimations: boolean = true
+) => {
+  return await S3.send(
+    new HeadObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: isAnimations ? "animaciones/" + key : key,
+    })
+  )
+    .then(() => true)
+    .catch((err) => {
+      console.error("FILE_MAY_NOT_EXIST", key, err.message);
+      return false;
+    });
+};
+
+export const getReadURL = async (
+  key: string,
+  expiresIn = 3600,
+  isAnimations: boolean = true
+) =>
   await getSignedUrl(
     S3,
     new GetObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: "animaciones/" + key,
+      Key: isAnimations ? "animaciones/" + key : key,
     }),
     { expiresIn }
   );
@@ -54,13 +78,31 @@ export const getImageURL = async (key: string, expiresIn = 900) =>
     { expiresIn }
   );
 
-export const getPutFileUrl = async (key: string) => {
+// borrame
+
+export const getPutVideoExperiment = async () => {
+  const key = "videos_experiment/" + uuidv4();
   await setCors();
   return await getSignedUrl(
     S3,
     new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: "animaciones/" + key, // @TODO: update when prod beta
+      Key: key,
+    }),
+    { expiresIn: 3600 }
+  );
+};
+
+export const getPutFileUrl = async (
+  key: string,
+  isAnimations: boolean = true
+) => {
+  await setCors();
+  return await getSignedUrl(
+    S3,
+    new PutObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: isAnimations ? "animaciones/" + key : key,
     }),
     { expiresIn: 3600 }
   );

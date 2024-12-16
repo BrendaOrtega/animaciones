@@ -148,6 +148,7 @@ const ListItem = ({
 
   return (
     <Link
+      reloadDocument
       ref={ref}
       to={`/player?videoSlug=${slug}`}
       // reloadDocument

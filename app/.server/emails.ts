@@ -32,7 +32,7 @@ export const sendMagicLinkEmail = (user: User, token: string) => {
   return sendgridTransport
     .sendMail({
       from: "contacto@fixter.org",
-      subject: "🪄 Aquí está tu link mágico 🎩",
+      subject: "🪄 Aquí está tu magic link 🎩",
       bcc: [user.email],
       html: magicLinkTemplate({ link: url.toString() }),
     })

@@ -2,9 +2,9 @@ import { type Video } from "@prisma/client";
 import { Form, useFetcher } from "@remix-run/react";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useForm } from "react-hook-form";
-import { VideoFileInput } from "~/components/admin/VideoFileInput";
 import { cn } from "~/lib/utils";
 import { ImageInput } from "./ImageInput";
+import { VideoFileInput } from "./VideoFileInput";
 
 // @todo select moduleName to swap'em
 export const VideoForm = ({
@@ -68,10 +68,32 @@ export const VideoForm = ({
     onSubmit?.();
   };
 
+  const handleGenerateVersions = () => {
+    // Kidnaped du an experiment 🚧
+    return fetcher.submit(
+      { intent: "experiment", storageKey: video.storageKey },
+      { method: "POST" }
+    );
+
+    if (!confirm("Esta operación gasta recursos, ¿estás segura de continuar?"))
+      return;
+    // soy flojo como pa definir muchs fetchers con tipos distintos U_U
+    if (!video.id || !video.storageKey) return alert("No existe video");
+    fetcher.submit(
+      {
+        intent: "generate_video_versions",
+        // intent: "generate_hsl", // HSL experiment
+        videoId: video.id,
+        storageKey: video.storageKey,
+      },
+      { method: "POST", action: "/api" }
+    );
+  };
+
   return (
     <>
       <Form
-        className="flex flex-col h-full"
+        className="flex flex-col h-full text-white"
         onSubmit={handleSubmit(onSubmition)}
       >
         <h3 className="mb-2 text-gray-400 text-xl">
@@ -99,6 +121,32 @@ export const VideoForm = ({
             register={register}
           />
         )}
+        {fetcher.data?.playListURL && (
+          <video controls className="aspect-video">
+            <source
+              src={fetcher.data.playListURL}
+              type="application/x-mpegURL"
+            />
+          </video>
+        )}
+        {video.storageKeys && video.storageKeys.length > 0 && (
+          <div className="text-white dark:text-black mb-2">
+            <p>Otras versiones:</p>
+            {video.storageKeys?.map((k) => (
+              <p key={k}>{k}</p>
+            ))}
+          </div>
+        )}
+        {video.storageKey && (
+          <button
+            onClick={handleGenerateVersions}
+            type="button"
+            className="dark:text-black text-white border rounded-md py-2 active:bg-gray-800 mb-4"
+          >
+            Generar Todas las Versiones
+          </button>
+        )}
+
         {video.id && (
           <ImageInput
             setValue={setValue}

@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 .env
+media
+conversiones
+chunks
 
 # Editor directories and files
 .vscode/*
