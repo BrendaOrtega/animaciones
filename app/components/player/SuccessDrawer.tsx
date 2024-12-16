@@ -20,29 +20,27 @@ export const SuccessDrawer = ({
         onClose={onClose}
         mode="big"
       >
-        <div className="h-full flex items-center px-[5%]">
-          <div>
+        <div className="h-full flex items-center">
+          <div className="mx-auto">
             <img src="/congrats.png" alt="logo" className="mx-auto w-[240px]" />
-            <h2 className="text-2xl dark:text-white font-semibold md:text-4xl text-center pt-20 text-white">
-              ¡Ve a tu correo para desbloquears! 🎉 🍾
+            <h2 className="text-2xl dark:text-white font-semibold md:text-4xl text-center pt-10 md:pt-20 text-white max-w-xl">
+              ¡Tu acceso está listo! 🪄✨🎩🐰🤩 Ve por él, está en tu correo.
             </h2>
-            <p className="text-lg text-metal dark:text-metal text-center font-light mt-6">
-              Nos da gusto que seas parte de este curso, y que al igual que
-              nosotros seas un entusiasta de las animaciones web. A partir de
-              hoy, tus sitios web nunca volverán a ser los mismos. <br />
+            <p className="md:max-w-xl text-lg text-metal dark:text-metal text-center font-light mt-6">
+              Nos da gusto que seas parte de este curso. <br />A partir de hoy,
+              tus páginas web nunca volverán a ser los mismos. <br />
               <strong>¡Que comience la magia! 🧙🏻🪄</strong>
             </p>
-            <p className="text-sm  dark:text-metal text-iron text-center font-light mt-6">
-              Pd. Si aún no puedes ver los tutoriales, ve a tu{" "}
+            <p className="text-sm  dark:text-metal text-metal text-center font-light mt-6">
+              Pd. Si aún no recibiste tu acceso, escribenos:{" "}
               <a
                 className="text-blue-500 hover:text-blue-600"
                 rel="noreferrer"
                 target="_blank"
-                href="http://gmail.com"
+                href="mailto:brenda@fixter.org"
               >
-                email
+                brenda@fixter.org
               </a>{" "}
-              y da clic en el link de acceso. 🎯
             </p>
           </div>
         </div>
