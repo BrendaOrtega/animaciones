@@ -11,5 +11,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (!storageKey) throw json(null, { status: 404 });
   console.log("DELIVERING direct-video-reading-url FOR: ", storageKey);
   const readURL = await getReadURL(storageKey);
+  // console.log("URL_ADQUIRED", readURL);
   return redirect(readURL);
 };

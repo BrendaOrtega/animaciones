@@ -4,9 +4,7 @@ import {
   json,
   MetaFunction,
   redirect,
-  useFetcher,
   useLoaderData,
-  useNavigate,
   useSubmit,
 } from "@remix-run/react";
 import { useState } from "react";
@@ -104,18 +102,20 @@ export default function Route() {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const submit = useSubmit();
 
+  const [autoPlay, setAutoPlay] = useState(false);
+
   const handleClickEnding = () => {
     const searchParams = createSearchParams();
     searchParams.set("videoSlug", nextVideo?.slug);
     console.log("HETE?", searchParams.toString(), nextVideo?.slug);
-    submit(searchParams, { method: "GET", action: "/player" });
+    submit(searchParams);
+    // how to trigger play?
+    setAutoPlay(true);
 
     // fetcher.submit(searchParams, { method: "get", action: "/player" });
-
     // @todo: fix it (change for a link)
     // setIsMenuOpen(true);
     // navigate(url.pathname + url.search, { replace: true, flushSync: true });
-
     // location.href = url.toString();
   };
 
@@ -123,18 +123,12 @@ export default function Route() {
     <>
       <NavBar mode="player" className="m-0" />
       <article className="bg-dark relative overflow-x-hidden pt-20">
+        {/* // @todo visit and refactor please */}
         <VideoPlayer
+          autoPlay={autoPlay}
           video={video}
-          // @todo visit and refactor please
           onClickNextVideo={handleClickEnding}
-          // type={video.type || undefined}
-          // src={video.storageLink || undefined}
-          src={video.storageLink}
-          // src={"/playlist/" + video.storageKey + "/index.m3u8"}
-          type={"application/x-mpegURL"}
-          poster={video.poster || undefined}
           nextVideo={nextVideo || undefined}
-          slug={video.slug}
           onPause={() => {
             // setIsMenuOpen(true);
           }}

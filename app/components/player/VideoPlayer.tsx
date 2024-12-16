@@ -8,25 +8,19 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
 export const VideoPlayer = ({
-  src,
   video,
-  type = "video/mov",
   onPlay,
   onPause,
   onClickNextVideo,
-  poster,
   onEnd,
   nextVideo,
-  slug,
+  autoPlay,
 }: {
+  autoPlay?: boolean;
   video?: Partial<Video>;
-  slug: string;
   nextVideo?: Partial<Video>;
-  poster?: string;
   onClickNextVideo?: () => void;
   onEnd?: () => void;
-  type?: string;
-  src?: string;
   onPlay?: () => void;
   onPause?: () => void;
 }) => {
@@ -34,6 +28,10 @@ export const VideoPlayer = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
+  const [source, setSource] = useState<{ src: string; type?: string }>({
+    src: video?.storageLink as string,
+    type: "video/mp4",
+  });
 
   const togglePlay = () => {
     const controls = videoRef.current || null;
@@ -69,7 +67,7 @@ export const VideoPlayer = ({
     if (typeof window === "undefined") return;
     let list = localStorage.getItem("watched") || "[]";
     list = JSON.parse(list);
-    list = [...new Set([...list, slug])];
+    list = [...new Set([...list, video.slug])];
     localStorage.setItem("watched", JSON.stringify(list));
   };
 
@@ -79,17 +77,24 @@ export const VideoPlayer = ({
     // detecting HLS support
     const hlsSupport = (videoNode: HTMLVideoElement) =>
       videoNode.canPlayType("application/vnd.apple.mpegURL");
-    console.log(
-      hlsSupport(videoRef.current)
-        ? `HLS Supported ✅:: ${hlsSupport(videoRef.current)}`
-        : "HLS Not supported 😢"
-    );
+
     if (hlsSupport(videoRef.current)) {
+      console.log(`HLS Supported ✅::`);
       //@todo improve
-      videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8";
+      setSource({
+        src: "/playlist/" + video?.storageKey + "/index.m3u8", // @todo this should come in the model
+        type: "application/x-mpegURL",
+      });
     } else {
       // videoRef.current.src = video?.storageLink;
-      console.log("Fallbacking to storageLink::", video?.storageLink);
+      console.log(
+        "HLS Not supported. 😢 Fallbacking to storageLink::",
+        video?.storageLink
+      );
+      // setSource({
+      //   src: video.storageLink as string,
+      //   type: "video/mp4",
+      // });
     }
   }, [video]);
 
@@ -141,9 +146,9 @@ export const VideoPlayer = ({
             </div>
             <img
               alt="poster"
-              src={nextVideo.poster || poster}
+              src={nextVideo.poster || video?.poster}
               onError={(e) => {
-                e.target.src = poster;
+                e.target.src = video?.poster;
                 e.target.error = false;
               }}
               className="aspect-video w-40 rounded-xl object-cover"
@@ -152,14 +157,20 @@ export const VideoPlayer = ({
         )}
       </AnimatePresence>
       <video
-        poster={poster}
+        autoPlay={autoPlay}
+        data-nombre={video.slug}
+        poster={
+          (!video?.poster && video?.poster !== "null") ||
+          "https://i.imgur.com/kP5Rrjt.png" // global
+        }
         controlsList="nodownload"
         ref={videoRef}
         className="w-full h-full"
         controls
+        src={source.src}
+        type={source.type}
       >
         <track kind="captions" />
-        <source src={src} type={type} />
       </video>
     </section>
   );
