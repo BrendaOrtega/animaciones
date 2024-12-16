@@ -13,7 +13,6 @@ import {
 } from "~/.server/stripe";
 import { getUserORNull } from "~/.server/user";
 import { Animations } from "~/components/Animations";
-import { DialogButton } from "~/components/DialogButton";
 import { NavBar } from "~/components/NavBar";
 import { Faq } from "~/home/Faq";
 import { Footer } from "~/home/Footer";
@@ -23,8 +22,8 @@ import { ScrollBanner } from "~/home/ScrollBanenr";
 import { Teacher } from "~/home/Teacher";
 import { Testimonials } from "~/home/Testimonial";
 import { Why } from "~/home/Why";
-import { FaRegClock } from "react-icons/fa6";
 import { PrimaryButton } from "~/components/PrimaryButton";
+import { getMetaTags } from "~/utils/getMetaTags";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const isDev = process.env.NODE_ENV === "development";
@@ -55,50 +54,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return null;
 };
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Curso de Animaciones | Fixtergeek" },
-    {
-      name: "description",
-      content:
-        "Crea tus propios componentes animados con React y Framer motion",
-    },
-    {
-      property: "og:title",
-      content: "Curso de Animaciones con React",
-    },
-    {
-      property: "og:image",
-      content: "https://i.imgur.com/kP5Rrjt.png",
-    },
-    {
-      property: "og:description",
-      content:
-        "Crea tus propios componentes animados con React y Framer motion",
-    },
-    {
-      property: "og:url",
-      content: "https://animaciones.fixtergeek.com",
-    },
-    {
-      property: "twitter:card",
-      content: "summary_large_image",
-    },
-    {
-      property: "twitter:description",
-      content:
-        "Crea tus propios componentes animados con React y Framer motion",
-    },
-    {
-      property: "twitter:title",
-      content: "Curso de Animaciones con React",
-    },
-    {
-      property: "twitter:image",
-      content: "https://animaciones.fixtergeek.com",
-    },
-  ];
-};
+export const meta: MetaFunction = () =>
+  getMetaTags({
+    title: "Curso de animaciones con React | Fixtergeek ",
+    description:
+      "Crea tus propios componentes animados con React, Vite y Motion",
+  });
 
 export default function Route({ children }: { children: React.ReactNode }) {
   const [isLoading, setISLoading] = useState(false);

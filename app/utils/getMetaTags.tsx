@@ -59,4 +59,20 @@ export const getMetaTags = ({
     property: "og:audio",
     content: audio,
   },
+  {
+    property: "twitter:card",
+    content: "summary_large_image",
+  },
+  {
+    property: "twitter:description",
+    content: description,
+  },
+  {
+    property: "twitter:title",
+    content: title,
+  },
+  {
+    property: "twitter:image",
+    content: image,
+  },
 ];
