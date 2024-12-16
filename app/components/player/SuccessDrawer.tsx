@@ -14,22 +14,23 @@ export const SuccessDrawer = ({
       <Drawer
         header={<></>}
         cta={<></>}
-        className="z-[100] "
+        className="z-[100]"
         title="Desbloquea todo el curso"
         isOpen={isOpen}
         onClose={onClose}
+        mode="big"
       >
-        <div className=" h-full flex items-center px-[5%]">
+        <div className="h-full flex items-center px-[5%]">
           <div>
             <img src="/congrats.png" alt="logo" className="mx-auto w-[240px]" />
-            <h2 className="text-2xl text-dark dark:text-white font-semibold md:text-4xl text-center pt-20">
-              ¡Has desbloqueado todos los tutoriales! 🎉 🍾
+            <h2 className="text-2xl dark:text-white font-semibold md:text-4xl text-center pt-20 text-white">
+              ¡Ve a tu correo para desbloquears! 🎉 🍾
             </h2>
-            <p className="text-lg  dark:text-metal text-center text-iron font-light mt-6">
+            <p className="text-lg text-metal dark:text-metal text-center font-light mt-6">
               Nos da gusto que seas parte de este curso, y que al igual que
               nosotros seas un entusiasta de las animaciones web. A partir de
               hoy, tus sitios web nunca volverán a ser los mismos. <br />
-              <strong>¡Que empiece la magia! 🧙🏻🪄</strong>
+              <strong>¡Que comience la magia! 🧙🏻🪄</strong>
             </p>
             <p className="text-sm  dark:text-metal text-iron text-center font-light mt-6">
               Pd. Si aún no puedes ver los tutoriales, ve a tu{" "}

@@ -15,7 +15,7 @@ export const PurchaseDrawer = () => {
     >
       <div className="pt-20 px-8  pb-8">
         <h3 className="text-4xl text-white">
-          ¿Listo para crear animaciones? Prepárate porque apenas estamos
+          ¿List@ para crear animaciones? Prepárate porque apenas estamos
           comenzando 🚀🧙🏻
         </h3>
         <p className="text-xl font-light mt-16 text-metal">
