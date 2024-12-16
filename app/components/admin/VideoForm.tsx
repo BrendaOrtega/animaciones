@@ -93,10 +93,10 @@ export const VideoForm = ({
   return (
     <>
       <Form
-        className="flex flex-col h-full dark:text-white"
+        className="flex flex-col h-full "
         onSubmit={handleSubmit(onSubmition)}
       >
-        <h3 className="mb-2 text-gray-400 text-xl">
+        <h3 className="mb-2 text-gray-100 text-xl">
           Nombre del modulo: {video.moduleName}
         </h3>
         <h3 className="mb-2 text-gray-400 text-xl"> {video.slug}</h3>
@@ -114,6 +114,7 @@ export const VideoForm = ({
         />
         {video.id && (
           <VideoFileInput
+            className="text-white"
             label="Link del video"
             name="storageLink"
             video={video}
@@ -149,6 +150,7 @@ export const VideoForm = ({
 
         {video.id && (
           <ImageInput
+            className="text-white"
             setValue={setValue}
             defaultValue={video.poster}
             name="poster"
@@ -160,12 +162,12 @@ export const VideoForm = ({
 
         {video.id && (
           <>
-            <label className="flex justify-between cursor-pointer my-4">
+            <label className="flex justify-between cursor-pointer my-4 text-white">
               <span>¿Este video es público?</span>
               <input
                 {...register("isPublic")}
                 name="isPublic"
-                className="size-4"
+                className="size-4 text-green-500"
                 type="checkbox"
               />
             </label>
@@ -221,14 +223,18 @@ export const TextField = ({
   [x: string]: any;
 }) => {
   return (
-    <label className="flex flex-col gap-2 mb-4">
+    <label className="flex flex-col gap-2 mb-4 text-white">
       <p className="">{label}</p>
       <input
         disabled={isDisabled}
         placeholder={placeholder}
-        className={cn("shadow rounded-md py-2 px-4 border w-full", {
-          "bg-gray-200 text-gray-500 pointer-events-none": isDisabled,
-        })}
+        className={cn(
+          "shadow rounded-md py-2 px-4 border w-full",
+          "text-black",
+          {
+            "bg-gray-200 text-gray-500 pointer-events-none": isDisabled,
+          }
+        )}
         type={type}
         name={name}
         {...props}

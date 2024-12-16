@@ -379,12 +379,12 @@ const Video = ({
     const all = document.elementsFromPoint(event.clientX, event.clientY);
     const found = all.find(
       (node) =>
-        node.dataset.videoIndex &&
-        node.dataset.videoIndex !== String(video.index)
+        node.dataset.videoindex &&
+        node.dataset.videoindex !== String(video.index)
     );
     if (found) {
       // update parent?? nah! lets update the db directly
-      onReorder?.(Number(video.index), Number(found.dataset.videoIndex));
+      onReorder?.(Number(video.index), Number(found.dataset.videoindex));
       // @todo do we really want to do this here?
       fetcher.submit(
         {
@@ -397,8 +397,8 @@ const Video = ({
   };
 
   return (
-    <motion.button
-      data-videoIndex={video.index}
+    <motion.div
+      data-videoindex={video.index}
       onDragEnd={handleDragEnd}
       dragListener={false}
       drag
@@ -414,7 +414,7 @@ const Video = ({
       <Dragger onPointerDown={(event) => controls.start(event)} />
       <p className="truncate">{video.title}</p>
       <span>{video.storageKey ? "✅" : "🫥"}</span>
-    </motion.button>
+    </motion.div>
   );
 };
 

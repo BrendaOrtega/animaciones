@@ -10,8 +10,10 @@ export const ImageInput = ({
   name,
   defaultValue,
   register,
+  className,
   ...props
 }: {
+  className?: string;
   register: any;
   defaultValue?: string | null;
   name: string;
@@ -71,7 +73,7 @@ export const ImageInput = ({
 
   return (
     <>
-      <section className="w-full">
+      <section className={cn("w-full", className)}>
         <p className="">{label}</p>
         <input
           type="text"

@@ -1,10 +1,13 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import {
+  createSearchParams,
   json,
   MetaFunction,
   redirect,
+  useFetcher,
   useLoaderData,
   useNavigate,
+  useSubmit,
 } from "@remix-run/react";
 import { useState } from "react";
 import { db } from "~/.server/db";
@@ -62,6 +65,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       slug: searchParams.get("videoSlug") || "bienvenida-al-curso", // @todo better sorting
     },
   });
+
+  // console.log("Load triggered::", video?.slug);
+
   if (!video) throw json(null, { status: 404 });
   const nextVideo = await db.video.findFirst({
     where: {
@@ -89,26 +95,28 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Route() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  // const fetcher = useFetcher();
 
   const { nextVideo, isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
-
-  const [successIsOpen, setSuccessIsOpen] = useState(searchParams.success);
-
+  const [successIsOpen] = useState(searchParams.success);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-
-  const nextIndex = ((video.index || 0) + 1) % videos.length;
-  // const nextVideo = videos[nextIndex];
+  const submit = useSubmit();
 
   const handleClickEnding = () => {
-    const url = new URL(location.href);
-    url.pathname = "/player";
-    url.searchParams.set("videoSlug", nextVideo.slug);
+    const searchParams = createSearchParams();
+    searchParams.set("videoSlug", nextVideo?.slug);
+    console.log("HETE?", searchParams.toString(), nextVideo?.slug);
+    submit(searchParams, { method: "GET", action: "/player" });
+
+    // fetcher.submit(searchParams, { method: "get", action: "/player" });
+
     // @todo: fix it (change for a link)
     // setIsMenuOpen(true);
     // navigate(url.pathname + url.search, { replace: true, flushSync: true });
-    location.href = url.toString();
+
+    // location.href = url.toString();
   };
 
   return (
@@ -121,7 +129,8 @@ export default function Route() {
           onClickNextVideo={handleClickEnding}
           // type={video.type || undefined}
           // src={video.storageLink || undefined}
-          src={"/playlist/" + video.storageKey + "/index.m3u8"}
+          src={video.storageLink}
+          // src={"/playlist/" + video.storageKey + "/index.m3u8"}
           type={"application/x-mpegURL"}
           poster={video.poster || undefined}
           nextVideo={nextVideo || undefined}

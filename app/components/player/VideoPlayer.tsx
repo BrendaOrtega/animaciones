@@ -82,14 +82,16 @@ export const VideoPlayer = ({
     console.log(
       hlsSupport(videoRef.current)
         ? `HLS Supported ✅:: ${hlsSupport(videoRef.current)}`
-        : "HLS Not supported 📵"
+        : "HLS Not supported 😢"
     );
     if (hlsSupport(videoRef.current)) {
+      //@todo improve
+      videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8";
     } else {
-      videoRef.current.src = video?.storageLink;
+      // videoRef.current.src = video?.storageLink;
       console.log("Fallbacking to storageLink::", video?.storageLink);
     }
-  }, []);
+  }, [video]);
 
   return (
     <section

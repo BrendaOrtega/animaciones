@@ -3,6 +3,7 @@ import { useFetcher } from "@remix-run/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { action } from "~/routes/admin";
 import { Spinner } from "../Spinner";
+import { cn } from "~/lib/utils";
 
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
 // import { toBlobURL } from "@ffmpeg/util";
@@ -13,7 +14,9 @@ export const VideoFileInput = ({
   label,
   name,
   register,
+  className,
 }: {
+  className?: string;
   register?: any;
   label?: string;
   name: string;
@@ -143,7 +146,7 @@ export const VideoFileInput = ({
   }, [fetcher.data]);
 
   return (
-    <section className="my-2 grid gap-2">
+    <section className={cn("my-2 grid gap-2 ", className)}>
       <p>{label}</p>
       <input
         type="text"
