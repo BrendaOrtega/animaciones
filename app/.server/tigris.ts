@@ -5,10 +5,12 @@ import {
   PutBucketCorsCommand,
   DeleteObjectCommand,
   HeadObjectCommand,
+  CreateMultipartUploadCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
 
+const PREFIX = "animaciones/";
 const isDev = process.env.NODE_ENV === "development";
 
 const S3 = new S3Client({
@@ -34,6 +36,20 @@ const setCors = async () => {
   };
   const command = new PutBucketCorsCommand(input);
   return await S3.send(command);
+};
+
+// EXPERIMENTING with parts
+export const uploadWithMultiPart = (storageKey: string) => {
+  // @todo return
+  // createMultipartUploadCommand(
+  //   {
+  //     Bucket: process.env.BUCKET_NAME,
+  //     Key: PREFIX + storageKey,
+  //   },
+  //   (err, data) => {
+  //     console.log("Multipart worked", data, err);
+  //   }
+  // );
 };
 
 export const fileExist = async (

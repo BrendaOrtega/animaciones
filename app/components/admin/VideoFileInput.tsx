@@ -98,8 +98,9 @@ export const VideoFileInput = ({
     }
   }, [fetcher.data]);
 
+  //@todo revisit max-w
   return (
-    <section className={cn("my-2 grid gap-2 ", className)}>
+    <section className={cn("my-2 grid gap-2 max-w-[50vw]", className)}>
       <p>{label}</p>
       <input
         type="text"
@@ -114,6 +115,11 @@ export const VideoFileInput = ({
         accept="video/*"
         className="mb-2"
       />{" "}
+      {uploading && (
+        <div className="flex gap-2">
+          <Spinner /> Subiendo video, no cierre la ventana
+        </div>
+      )}
       {videoSrc && (
         <video
           onCanPlay={(event) => onVideoLoads?.(videoRef, event)} // shulada 🥰
@@ -122,11 +128,6 @@ export const VideoFileInput = ({
           className="border rounded-xl my-2 aspect-video w-full"
           controls
         ></video>
-      )}
-      {uploading && (
-        <div className="flex gap-2">
-          <Spinner /> Subiendo video, no cierre la ventana
-        </div>
       )}
     </section>
   );

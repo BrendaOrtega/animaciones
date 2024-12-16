@@ -8,9 +8,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // @todo check for permissions
   const url = new URL(request.url);
   const storageKey = url.searchParams.get("storageKey");
-  if (!storageKey) throw json(null, { status: 404 });
-  console.log("DELIVERING direct-video-reading-url FOR: ", storageKey);
+  if (!storageKey || storageKey === "undefined" || storageKey === "null")
+    throw json(undefined, { status: 404 });
   const readURL = await getReadURL(storageKey);
+  console.log("DELIVERING direct-video-reading-url FOR: ", storageKey);
   // console.log("URL_ADQUIRED", readURL);
   return redirect(readURL);
 };

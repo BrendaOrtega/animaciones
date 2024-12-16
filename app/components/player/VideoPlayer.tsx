@@ -7,6 +7,8 @@ import { IoIosClose } from "react-icons/io";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
+const POSTER = "https://i.imgur.com/kP5Rrjt.png";
+
 export const VideoPlayer = ({
   video,
   onPlay,
@@ -28,10 +30,6 @@ export const VideoPlayer = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
-  const [source, setSource] = useState<{ src: string; type?: string }>({
-    src: video?.storageLink as string,
-    type: "video/mp4",
-  });
 
   const togglePlay = () => {
     const controls = videoRef.current || null;
@@ -81,10 +79,8 @@ export const VideoPlayer = ({
     if (hlsSupport(videoRef.current)) {
       console.log(`HLS Supported ✅::`);
       //@todo improve
-      setSource({
-        src: "/playlist/" + video?.storageKey + "/index.m3u8", // @todo this should come in the model
-        type: "application/x-mpegURL",
-      });
+      // (videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"), // @todo this should come in the model
+      //   (videoRef.current.type = "application/x-mpegURL");
     } else {
       console.log(
         "HLS Not supported. 😢 Fallbacking to storageLink::",
@@ -141,10 +137,10 @@ export const VideoPlayer = ({
             </div>
             <img
               alt="poster"
-              src={nextVideo.poster || video?.poster}
+              src={nextVideo.poster || POSTER}
               onError={(e) => {
-                e.target.src = video?.poster;
-                e.target.error = false;
+                e.target.onerror = null;
+                e.target.src = POSTER;
               }}
               className="aspect-video w-40 rounded-xl object-cover"
             />
@@ -155,15 +151,14 @@ export const VideoPlayer = ({
         autoPlay={autoPlay}
         data-nombre={video.slug}
         poster={
-          (!video?.poster && video?.poster !== "null") ||
-          "https://i.imgur.com/kP5Rrjt.png" // global
+          (!video?.poster && video?.poster !== "null") || POSTER // global
         }
         controlsList="nodownload"
         ref={videoRef}
         className="w-full h-full"
         controls
-        src={source.src}
-        type={source.type}
+        src={video?.storageLink}
+        type={"video/mp4"}
       >
         <track kind="captions" />
       </video>

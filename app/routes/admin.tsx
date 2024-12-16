@@ -221,7 +221,7 @@ export default function Route() {
         cta={<></>} // remove cancel button
       >
         <VideoForm
-          nextIndex={videos.length}
+          // @todo sugerir indice, empieza a tener sentido el módulo, cuando menos como meta referencia? 🤫
           onSubmit={() => {
             setVideo(initialVideo);
             setShowVideoDrawer(false);

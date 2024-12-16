@@ -11,18 +11,13 @@ import { Ref } from "react";
 export const VideoForm = ({
   onSubmit,
   video,
-  nextIndex,
 }: {
-  nextIndex: number;
   onSubmit?: (arg0?: Partial<Video>) => void;
   video: Partial<Video>;
 }) => {
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
-  const index =
-    video.index === 0 || video.index === "0"
-      ? 0
-      : Number(video.index) || nextIndex;
+
   const {
     handleSubmit,
     register,
@@ -30,8 +25,9 @@ export const VideoForm = ({
     setValue,
   } = useForm({
     defaultValues: {
-      storageLink:
-        video.storageLink || "/videos?storageKey=" + video.storageKey,
+      storageLink: `/videos?storageKey=${
+        video.storageKey || `video-${video.id}` // why? first time.
+      }`,
       storageKey: video.storageKey,
       title: video.title || "",
       isPublic: video.isPublic || false,
@@ -39,7 +35,7 @@ export const VideoForm = ({
       moduleName: video.moduleName,
       id: video.id,
       slug: video.slug,
-      index: index,
+      index: Number(video.index),
       // @todo remove default
       poster: video.poster,
     },
@@ -47,11 +43,8 @@ export const VideoForm = ({
 
   // puente para la duración
   const handleVideoLoad = (videoRef: Ref<HTMLVideoElement>) => {
-    console.log("AVERS:", videoRef);
     setValue("duration", String(Number(videoRef.current.duration) / 60));
   };
-
-  console.log("Video: ", video.duration);
 
   const onSubmition = (values: Partial<Video>) => {
     fetcher.submit(
@@ -102,7 +95,7 @@ export const VideoForm = ({
   return (
     <>
       <Form
-        className="flex flex-col h-full "
+        className="flex flex-col h-full"
         onSubmit={handleSubmit(onSubmition)}
       >
         <h3 className="mb-2 text-gray-100 text-xl">
@@ -159,18 +152,6 @@ export const VideoForm = ({
         )}
 
         {video.id && (
-          <ImageInput
-            className="text-white"
-            setValue={setValue}
-            defaultValue={video.poster}
-            name="poster"
-            storageKey={"poster-" + video.id}
-            label="Link del poster"
-            register={register}
-          />
-        )}
-
-        {video.id && (
           <>
             <label className="flex justify-between cursor-pointer my-4 text-white">
               <span>¿Este video es público?</span>
@@ -190,7 +171,19 @@ export const VideoForm = ({
             />
           </>
         )}
-        <div className="flex mt-auto gap-4">
+        {/* No borrar, puede volver, debería */}
+        {/* {video.id && (
+          <ImageInput
+            className="text-white"
+            setValue={setValue}
+            defaultValue={video.poster}
+            name="poster"
+            storageKey={"poster-" + video.id}
+            label="Link del poster"
+            register={register}
+          />
+        )} */}
+        <div className="flex gap-2 pt-4 sticky bottom-0 bg-black">
           <PrimaryButton
             isDisabled={!isValid || isLoading}
             className="w-full"

@@ -108,15 +108,8 @@ export default function Route() {
     const searchParams = createSearchParams();
     searchParams.set("videoSlug", nextVideo?.slug);
     console.log("HETE?", searchParams.toString(), nextVideo?.slug);
-    submit(searchParams);
-    // how to trigger play?
     setAutoPlay(true);
-
-    // fetcher.submit(searchParams, { method: "get", action: "/player" });
-    // @todo: fix it (change for a link)
-    // setIsMenuOpen(true);
-    // navigate(url.pathname + url.search, { replace: true, flushSync: true });
-    // location.href = url.toString();
+    submit(searchParams);
   };
 
   return (
