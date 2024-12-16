@@ -14,7 +14,11 @@ import {
 import { FormEvent, useState } from "react";
 import { z } from "zod";
 import { db } from "~/.server/db";
-import { getAdminUserOrRedirect, getOrCreateAndUpdate } from "~/.server/user";
+import {
+  getAdminUserOrRedirect,
+  getOrCreateAndUpdate,
+  GetOrCreateAndUpdateType,
+} from "~/.server/user";
 import { cn } from "~/lib/utils";
 
 const COURSE_ID = "645d3dbd668b73b34443789c";
@@ -27,12 +31,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === "new") {
     const email = formData.get("email") as string;
     z.string().email().parse(email);
-    const role = formData.get("role") as string;
-    const confirmed = Boolean(formData.get("confirmed") as string);
-    const courseId = formData.get("courseId") as string;
+    const isRole = formData.get("isRole") ? true : undefined;
+    const isConfirmed = formData.get("isConfirmed") ? true : undefined;
+    const isEnrolled = formData.get("isEnrolled") ? true : undefined;
 
-    // return null;
-    await getOrCreateAndUpdate({ email, confirmed, role, courseId });
+    const data: GetOrCreateAndUpdateType = {
+      email,
+      isConfirmed,
+      isRole,
+      isEnrolled,
+    };
+
+    console.log("Received: ", data);
+
+    await getOrCreateAndUpdate(data);
     throw redirect("/admin/users?search=" + email);
   }
   return null;
@@ -139,18 +151,18 @@ const AccessTable = ({
               <label className="cursor-pointer">
                 <span>Encender: </span>
                 <input
-                  name="role"
+                  name="isRole"
                   value="CAN_SHARE_50_DISCOUNT"
                   type="checkbox"
                 />
               </label>
               <label className="cursor-pointer">
                 <span>Encender: </span>
-                <input name="courseId" value={COURSE_ID} type="checkbox" />
+                <input name="isEnrolled" value={COURSE_ID} type="checkbox" />
               </label>
               <label className="cursor-pointer">
                 <span>Encender: </span>
-                <input name="confirmed" value="true" type="checkbox" />
+                <input name="isConfirmed" type="checkbox" />
               </label>
             </div>
             <div className="flex py-2 gap-1">

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { sendMagicLinkEmail, sendWelcomeEmail } from "./emails";
 import { commitSession, destroySession, getSession } from "~/sessions";
 import { redirect, Session } from "@remix-run/node";
+import { boolean } from "zod";
 
 const secret = "yutuSecret"; // @todo from .env file
 
@@ -187,6 +188,17 @@ export const getOrCreateUser = async ({
   });
 };
 
+export type GetOrCreateAndUpdateType = {
+  email: string;
+  isConfirmed?: boolean;
+  isRole?: boolean;
+  isEnrolled?: boolean;
+  phoneNumber?: string;
+  photoURL?: string;
+  uid?: string;
+  displayName?: string;
+  username?: string;
+};
 export const getOrCreateAndUpdate = async ({
   email,
   displayName,
@@ -194,20 +206,10 @@ export const getOrCreateAndUpdate = async ({
   phoneNumber,
   photoURL,
   uid,
-  confirmed,
-  role,
-  courseId,
-}: {
-  email: string;
-  role?: string;
-  courseId?: string;
-  confirmed?: boolean;
-  phoneNumber?: string;
-  photoURL?: string;
-  uid?: string;
-  displayName?: string;
-  username?: string;
-}) => {
+  isConfirmed,
+  isRole,
+  isEnrolled,
+}: GetOrCreateAndUpdateType) => {
   const exist = await db.user.findUnique({
     where: {
       email,
@@ -217,12 +219,12 @@ export const getOrCreateAndUpdate = async ({
     return await db.user.update({
       where: { email },
       data: {
-        confirmed: confirmed,
-        courses: courseId
-          ? { push: courseId }
-          : exist.courses.filter((rol) => COURSE_ID !== rol), // @todo improve
-        roles: role
-          ? { push: role }
+        confirmed: isConfirmed,
+        courses: isEnrolled
+          ? { push: COURSE_ID }
+          : exist.courses.filter((id) => COURSE_ID !== id), // @todo improve
+        roles: isRole
+          ? { push: ROLE }
           : exist.roles.filter((rol) => ROLE !== rol), // @todo improve
       },
     });
