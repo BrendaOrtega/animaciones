@@ -29,7 +29,7 @@ export const PrimaryButton = ({
       disabled={isDisabled}
       {...props}
       className={twMerge(
-        "rounded-full enabled:hover:px-8 transition-all bg-fish text-base md:text-lg text-white h-12 md:h-14 px-6 flex gap-2 items-center justify-center font-light",
+        "rounded-full md:enabled:hover:px-8  transition-all bg-fish text-base md:text-lg text-white h-12 md:h-14 px-6 flex gap-2 items-center justify-center font-light",
         "disabled:bg-slate-300 disabled:pointer-events-none",
         className
       )}

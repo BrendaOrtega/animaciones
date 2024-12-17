@@ -81,7 +81,7 @@ export default function Route({ children }: { children: React.ReactNode }) {
             as="Link"
             to="/player"
             type="button"
-            className="bg-pink-600 enabled:hover:px-8"
+            className="bg-pink-600 enabled:hover:px-8 text-center"
           >
             Comenzar gratis 🪄📺
           </PrimaryButton>
