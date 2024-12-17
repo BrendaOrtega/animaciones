@@ -406,13 +406,13 @@ export const uploadChunks = async (
   const chunkPaths = fs
     .readdirSync(tempFolder)
     .map((fileName) => path.join(tempFolder, fileName));
-  console.log("UPLOADING_FILES::", chunkPaths);
+  console.log("UPLOADING_FILES::", chunkPaths, chunkPaths.length);
   for await (let chunkPath of chunkPaths) {
     // @todo, try/catch
     let cloudPath: string[] | string = chunkPath.split("/").slice(1);
     cloudPath.splice(cloudPath.length - 2, 1);
     cloudPath = cloudPath.join("/");
-    console.log("CLOUD_PATH::", cloudPath);
+    // console.log("CLOUD_PATH::", cloudPath);
     const putURL = await getPutFileUrl(cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
     const r = await put({
@@ -420,7 +420,7 @@ export const uploadChunks = async (
       contentType: "application/x-mpegURL",
       putURL,
     });
-    console.log("chunk uploaded::", r.ok);
+    // console.log("chunk uploaded::", r.ok);
     if (cleanUp) {
       fs.rmSync(chunkPath, { recursive: true, force: true });
     }

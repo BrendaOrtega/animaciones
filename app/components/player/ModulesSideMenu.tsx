@@ -149,7 +149,7 @@ const ListItem = ({
         // inline: "center",
       });
     }
-  }, [isCurrent]);
+  }, [isCurrent, slug]);
 
   return (
     <Link
