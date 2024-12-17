@@ -130,8 +130,8 @@ export default function Route() {
           video={video}
           onClickNextVideo={handleClickEnding}
           nextVideo={nextVideo || undefined}
-          onPause={() => {
-            // setIsMenuOpen(true);
+          onPlay={() => {
+            setIsMenuOpen(false);
           }}
         />
 

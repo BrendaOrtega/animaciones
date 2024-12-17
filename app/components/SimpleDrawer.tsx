@@ -15,7 +15,7 @@ export const Drawer = ({
   header,
   mode,
 }: {
-  mode?: string;
+  mode?: "big";
   header?: ReactNode;
   cta?: ReactNode;
   title?: string;
@@ -70,7 +70,7 @@ export const Drawer = ({
         exit={{ x: "120%" }}
         transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
         className={cn(
-          "bg-dark border border-white/10 z-10 h-screen fixed top-0 right-0 shadow-xl rounded-tl-3xl rounded-bl-3xl py-8 px-4 flex flex-col",
+          "bg-dark border border-white/10 z-10 h-screen fixed top-0 right-0 shadow-xl rounded-tl-3xl rounded-bl-3xl py-8 px-4 flex flex-col lg:w-[40%] md:w-[60%] w-[95%]",
           {
             "md:w-[95%] w-[95%]": mode === "big",
           }

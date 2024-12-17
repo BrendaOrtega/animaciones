@@ -42,8 +42,17 @@ export const VideoPlayer = ({
       controls.pause();
     }
     setIsPlaying(!controls.paused);
+  };
+
+  const setListeners = () => {
+    const controls = videoRef.current || null;
+    if (!controls) return;
+
     // listeners
-    controls.onplaying = () => setIsPlaying(true);
+    controls.onplaying = () => {
+      onPlay?.();
+      setIsPlaying(true);
+    };
     controls.onplay = () => setIsPlaying(true);
     controls.onpause = () => {
       setIsPlaying(false);
@@ -84,13 +93,12 @@ export const VideoPlayer = ({
     } else {
       console.info("HLS Not supported. 😢 Fallbacking to storageLink::");
     }
-
     // autoplay?
     // autoPlay && setIsPlaying(true);
   }, [video]);
 
   useEffect(() => {
-    autoPlay && setIsPlaying(true); // @todo not working
+    setListeners();
   }, []);
 
   return (
