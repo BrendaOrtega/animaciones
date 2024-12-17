@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactNode, useEffect, useRef } from "react";
 // import { createPortal } from "react-dom";
@@ -76,25 +77,27 @@ export const Drawer = ({
           }
         )}
       >
-        {header ? (
-          header
-        ) : (
-          <header className="flex items-start justify-between mb-6 ">
+        <header className="flex items-start justify-end mb-6 ">
+          {header ? (
+            header
+          ) : (
             <div>
               <h4 className="text-2xl font-semibold md:text-4xl text-white">
                 {title}
               </h4>
               <p className="text-brand_gray">{subtitle}</p>
             </div>
-            <button
-              tabIndex={0}
-              onClick={onClose}
-              className="text-2xl bg-gray-200 round-full p-1 active:scale-95"
-            >
-              <IoClose />
-            </button>
-          </header>
-        )}
+          )}
+          <Link
+            to="/player"
+            tabIndex={0}
+            onClick={onClose}
+            className="w-10 h-10 flex items-center justify-center bg-gray-200/10 rounded-full p-1 active:scale-95"
+          >
+            <IoClose className="text-white text-2xl" />
+          </Link>
+        </header>
+
         <section className="overflow-y-scroll h-[95%]">{children}</section>
         <nav className="flex justify-end gap-4  mt-auto">
           {cta ? (
