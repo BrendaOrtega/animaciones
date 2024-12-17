@@ -117,7 +117,7 @@ export default function Route() {
     let list = localStorage.getItem("watched") || "[]";
     list = JSON.parse(list);
     const last = list[list.length - 1];
-    handleClickEnding(undefined, last);
+    // handleClickEnding(undefined, last);
   }, []);
 
   return (
