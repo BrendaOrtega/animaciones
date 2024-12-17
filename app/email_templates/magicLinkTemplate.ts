@@ -2,7 +2,7 @@ export const magicLinkTemplate = ({ link }: { link: string }) => `
 
 <html>
 <head>
-  <title>¡Todos los tutoriales son tuyos! 🔥</title>
+  <title> ¡Bienvenid@ de nuevo geek! 🔥</title>
 </head>
 <body style="font-family:Arial; background-color:#F8F8F8;padding:24px; ">
 <div style="min-width:360px; max-width:480px; margin:0 auto;padding:24px; background-color:#ffffff; border-radius:24px;">
