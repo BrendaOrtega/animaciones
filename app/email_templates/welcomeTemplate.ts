@@ -27,10 +27,8 @@ export const welcomeTemplate = ({ link }: { link: string }) => `
     <a href="${link}" target="_blank" rel="noreferrer" style="margin-top:24px;padding:12px 16px;border-radius:50px;background:#5158f6;color:white;font-weight:bold;text-decoration:none;display:inline-block;" >
     Comenzar curso
     </a>
-   <p style="margin-top:14px; color:#495466; margin-top:48px;"> 
-     
-    </p> 
-    <p style="font-size:12px; color:#8391A1; margin-top:48px;">Si tienes alguna duda o pregunta, no dudes en responder este correo. </p>
+   <p style="font-size:12px; color:#8391A1; margin-top:48px;">No olvides que las unidades 6 y 7 se estrenan en Enero.</p>
+    <p style="font-size:12px; color:#8391A1; margin-top:12px;">Si tienes alguna duda o pregunta, no dudes en responder este correo. </p>
   </div>
   
    <div style="text-align:left; margin-top:8px; margin-bottom:16px">

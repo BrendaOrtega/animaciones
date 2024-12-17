@@ -88,7 +88,7 @@ export const VideosMenu = ({
             <div key={index}>
               <ModuleHeader
                 title={moduleName}
-                subtitle={"capitulo 0" + (index + 1)}
+                subtitle={"unidad 0" + (index + 1)}
                 isCompleted={completed.includes(moduleName)}
               />
               {videos

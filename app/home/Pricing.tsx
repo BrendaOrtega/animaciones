@@ -89,11 +89,11 @@ const MyTabs = ({
               </h4>
               <div className="text-base font-light text-iron dark:text-metal  flex flex-col gap-4 mt-10">
                 <p>
-                  📹 Más de{" "}
+                  📹{" "}
                   <strong className="font-semibold text-iron dark:text-white/60">
-                    14 unidades
+                    7 unidades
                   </strong>{" "}
-                  con tutoriales en video
+                  con más de 30 tutoriales en video
                 </p>
                 <p>💪🏻 Learnings y ejercicios por lección</p>
                 <p>
@@ -140,11 +140,11 @@ const MyTabs = ({
             </h4>
             <div className="text-base font-light text-iron dark:text-metal flex flex-col gap-4 mt-10">
               <p>
-                📹 Más de{" "}
+                📹{" "}
                 <strong className="font-semibold text-iron dark:text-white/60">
-                  14 unidades
+                  7 unidades
                 </strong>{" "}
-                con tutoriales en video
+                con más de 30 tutoriales en video
               </p>
               <p>💪🏻 Learnings y ejercicios por lección</p>
               <p>
