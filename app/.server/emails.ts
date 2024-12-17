@@ -49,8 +49,8 @@ export const notifyBrendi = ({
 }) => {
   return sendgridTransport.sendMail({
     from: "contacto@fixter.org",
-    subject: "🪄 Aquí está tu acceso 🎫",
-    bcc: [user.email],
+    subject: "🪄 Nueva compra! 🎫",
+    bcc: ["brenda@fixter.org"],
     html: brendiTemplate({
       userMail: user.email,
       title: courseTitle,

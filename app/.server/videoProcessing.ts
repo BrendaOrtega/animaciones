@@ -270,7 +270,7 @@ export const experiment = async (storageKey: string) => {
   createHLSChunks({
     sizeName: "1080p",
     storageKey,
-    checkExistance: false,
+    checkExistance: true,
     when: "in 2 seconds",
     cb: (path) => {
       if (!path) {
