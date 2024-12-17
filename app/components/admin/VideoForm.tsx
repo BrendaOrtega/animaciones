@@ -174,7 +174,7 @@ export const VideoForm = ({
           </>
         )}
         {/* No borrar, puede volver, debería */}
-        {/* {video.id && (
+        {video.id && (
           <ImageInput
             className="text-white"
             setValue={setValue}
@@ -184,7 +184,7 @@ export const VideoForm = ({
             label="Link del poster"
             register={register}
           />
-        )} */}
+        )}
         <div className="flex gap-2 pt-4 sticky bottom-0 bg-black">
           <PrimaryButton
             isDisabled={!isValid || isLoading}

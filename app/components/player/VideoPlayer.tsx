@@ -77,15 +77,12 @@ export const VideoPlayer = ({
       videoNode.canPlayType("application/vnd.apple.mpegURL");
 
     if (hlsSupport(videoRef.current)) {
-      console.log(`HLS Supported ✅::`);
+      console.info(`HLS Supported ✅::`);
       //@todo improve
       // videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"; // @todo this should come in the model
       // videoRef.current.type = "application/x-mpegURL";
     } else {
-      console.log(
-        "HLS Not supported. 😢 Fallbacking to storageLink::",
-        video?.storageLink
-      );
+      console.info("HLS Not supported. 😢 Fallbacking to storageLink::");
     }
   }, [video]);
 
@@ -111,7 +108,7 @@ export const VideoPlayer = ({
           </motion.button>
         )}
         {nextVideo && isEnding && (
-          <motion.button
+          <motion.div
             onClick={onClickNextVideo}
             whileTap={{ scale: 0.99 }}
             transition={{ type: "spring", bounce: 0.2 }}
@@ -144,7 +141,7 @@ export const VideoPlayer = ({
               }}
               className="aspect-video w-40 rounded-xl object-cover"
             />
-          </motion.button>
+          </motion.div>
         )}
       </AnimatePresence>
       <video

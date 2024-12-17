@@ -73,7 +73,7 @@ export const ImageInput = ({
 
   return (
     <>
-      <section className={cn("w-full", className)}>
+      <section className={cn("max-w-[30vw]", className)}>
         <p className="">{label}</p>
         <input
           type="text"

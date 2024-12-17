@@ -7,7 +7,7 @@ import {
   useLoaderData,
   useSubmit,
 } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "~/.server/db";
 import { get40Checkout } from "~/.server/stripe";
 import { getUserORNull } from "~/.server/user";
@@ -104,13 +104,21 @@ export default function Route() {
 
   const [autoPlay, setAutoPlay] = useState(false);
 
-  const handleClickEnding = () => {
+  const handleClickEnding = (_: MouseEvent, slug?: string) => {
     const searchParams = createSearchParams();
-    searchParams.set("videoSlug", nextVideo?.slug);
-    console.log("HETE?", searchParams.toString(), nextVideo?.slug);
+    searchParams.set("videoSlug", slug || nextVideo?.slug);
     setAutoPlay(true);
+    setIsMenuOpen(false);
     submit(searchParams);
   };
+
+  // experiment current position in the list
+  useEffect(() => {
+    let list = localStorage.getItem("watched") || "[]";
+    list = JSON.parse(list);
+    const last = list[list.length - 1];
+    handleClickEnding(undefined, last);
+  }, []);
 
   return (
     <>
