@@ -84,7 +84,14 @@ export const VideoPlayer = ({
     } else {
       console.info("HLS Not supported. 😢 Fallbacking to storageLink::");
     }
+
+    // autoplay?
+    // autoPlay && setIsPlaying(true);
   }, [video]);
+
+  useEffect(() => {
+    autoPlay && setIsPlaying(true); // @todo not working
+  }, []);
 
   return (
     <section
