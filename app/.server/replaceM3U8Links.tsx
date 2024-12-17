@@ -5,24 +5,23 @@ import { CHUNKS_FOLDER } from "./videoProcessing";
 
 export const replaceLinks = async (storageKey: string, playlist: string) => {
   const { tempPath, ok } = await fetchVideo(
-    path.join(CHUNKS_FOLDER, storageKey, playlist)
+    path.join(CHUNKS_FOLDER, storageKey, playlist),
+    true
   ); // @todo fetchFile instead
   if (!ok) return console.error("::PLAYLIST_NOT_FOUND::");
 
   const content = fs.readFileSync(tempPath, "utf8");
-
+  const c = content.split("\n");
   const segmentNames = content
     .split("\n")
     .filter((text) => text.includes(".ts"));
   const links = segmentNames.map((name) => {
     return `/playlist/${storageKey}/${name}`;
   });
-
-  const c = content.split("\n");
   segmentNames.forEach((name, index) => {
     const i = c.findIndex((text) => text === name);
     c[i] = links[index];
   });
-
-  return c.join("\n") as string;
+  const joined = c.join("\n") as string;
+  return joined;
 };

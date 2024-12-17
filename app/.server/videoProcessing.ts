@@ -144,7 +144,7 @@ export const experiment__legacy = async (
   data: any = {}
 ) => {
   const { fileStream } = await fetchVideo(storageKey);
-  console.log("SIZE: ", fileStream.bytesWritten / 1_024 / 1_024 + "mb");
+
   forkChild("./child_process/experiment.js", [JSON.stringify(data)], (exit) =>
     console.log("FORK_FINISHED_WITH_EXIT_CODE::", exit)
   );
@@ -258,35 +258,59 @@ const generateMasterFile = async (storageKey: string) => {
   // });
   // console.log("MASTER_FILE::UPLOADED ✅");
 };
-export const experiment = (storageKey: string) => {
-  // @todo: update DB with success state
+export const experiment = async (storageKey: string) => {
+  // update db
+  const update = async (storageKey, size) => {
+    await db.video.update({
+      where: { storageKey },
+      data: { m3u8: { push: size } },
+    });
+  };
+
   createHLSChunks({
-    sizeName: "720p",
+    sizeName: "1080p",
     storageKey,
     checkExistance: false,
     when: "in 1 seconds",
+    cb: (path) => {
+      if (!path) {
+        update(storageKey, "1080p");
+      } else {
+        uploadChunks(path, true, () => update(storageKey, "1080p"));
+      }
+    },
   });
-  createHLSChunks({
-    sizeName: "480p",
-    storageKey,
-    checkExistance: false,
-    when: "in 2 seconds",
-  });
-  createHLSChunks({
-    sizeName: "360p",
-    storageKey,
-    checkExistance: false,
-    when: "in 3 seconds",
-  });
-  createHLSChunks({
-    checkExistance: false,
-    storageKey,
-    when: "in 4 seconds",
-    cb: uploadChunks, // uploading at the end
-  });
+
+  // createHLSChunks({
+  //   sizeName: "720p",
+  //   storageKey,
+  //   checkExistance: false,
+  //   when: "in 2 seconds",
+  //   cb: (path) => {
+  //     if (!path) {
+  //       update(storageKey, "720p");
+  //     } else {
+  //       uploadChunks(path, true, () => update(storageKey, "720p"));
+  //     }
+  //   },
+  // });
+
+  // createHLSChunks({
+  //   sizeName: "480p",
+  //   storageKey,
+  //   checkExistance: true,
+  //   when: "in 1 seconds",
+  // });
+  // createHLSChunks({
+  //   checkExistance: false,
+  //   storageKey,
+  //   when: "in 4 seconds",
+  //   cb: uploadChunks, // uploading at the end
+  // });
 };
+
 export const createHLSChunks = async ({
-  sizeName = "1080p",
+  sizeName = "720p",
   storageKey,
   cb,
   checkExistance,
@@ -305,6 +329,7 @@ export const createHLSChunks = async ({
     const exist = await fileExist(listPath);
     if (exist) {
       console.log("AVOIDING_VERSION::", sizeName);
+      cb?.(null);
       return;
     }
   }
@@ -321,7 +346,7 @@ export const createHLSChunks = async ({
         : "1920x1080";
     const { storageKey } = job.attrs.data;
     console.log(`CREATING::HLS_FOR::${sizeName}::`, storageKey);
-    const outputFolder = `media/${CHUNKS_FOLDER}/${storageKey}`;
+    const outputFolder = `media/${CHUNKS_FOLDER}/${storageKey}/${sizeName}`;
     if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true }); // this is gold
     }
@@ -334,7 +359,7 @@ export const createHLSChunks = async ({
       .addOption("-level", "3.0")
       .addOption("-start_number", "0")
       .addOption("-hls_list_size", "0")
-      // .addOption("-hls_time", "3") we need to force keyframes
+      // .addOption("-hls_time", "3") we need to force keyframes?
       .addOption("-f", "hls")
       .addOption(`-hls_segment_filename ${hlsSegmentFilename}`);
 
@@ -345,6 +370,7 @@ export const createHLSChunks = async ({
       })
       .on("end", function () {
         console.log(`::VERSION_${sizeName}_CREATED::`);
+        // update db?
         // update main file?
         cb?.(outputFolder); // chunks/:storageKey
       })
@@ -356,7 +382,8 @@ export const createHLSChunks = async ({
 };
 export const uploadChunks = async (
   tempFolder: string,
-  cleanUp: boolean = true
+  cleanUp: boolean = true,
+  cb?: () => void
 ) => {
   if (!fs.existsSync(tempFolder)) {
     return console.error("FOLDER_NOT_FOUND::", tempFolder);
@@ -367,7 +394,11 @@ export const uploadChunks = async (
   console.log("UPLOADING_FILES::", chunkPaths);
   for await (let chunkPath of chunkPaths) {
     // @todo, try/catch
-    const putURL = await getPutFileUrl(chunkPath.replace("media/", "")); // bridge
+    let cloudPath: string[] | string = chunkPath.split("/").slice(1);
+    cloudPath.splice(cloudPath.length - 2, 1);
+    cloudPath = cloudPath.join("/");
+    console.log("CLOUD_PATH::", cloudPath);
+    const putURL = await getPutFileUrl(cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
     const r = await put({
       file,
@@ -379,7 +410,9 @@ export const uploadChunks = async (
       fs.rmSync(chunkPath, { recursive: true, force: true });
     }
   }
-  console.log(`All chunks uploaded total: ${chunkPaths.length}`);
+  console.log(`All chunks uploaded ${chunkPaths.length} for: ${tempFolder}`);
+  // update db
+  await cb?.();
   if (cleanUp) {
     // @todo: use uuid for unique folder
     // fs.rmSync(dirname(chunkPaths[0]), { recursive: true, force: true });

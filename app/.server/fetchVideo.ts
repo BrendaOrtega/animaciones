@@ -12,9 +12,12 @@ export type VideoFetched = {
   fileStream?: WriteStream;
 };
 
-export const fetchVideo = async (storageKey: string): Promise<VideoFetched> => {
+export const fetchVideo = async (
+  storageKey: string,
+  forceFetch?: boolean
+): Promise<VideoFetched> => {
   const existPath = `conversiones/${storageKey}`;
-  if (fs.existsSync(existPath)) {
+  if (!forceFetch && fs.existsSync(existPath)) {
     // @todo: damage files can be found
     const f = fs.readFileSync(existPath);
     console.log("AVOIDING_FILE_FETCH");

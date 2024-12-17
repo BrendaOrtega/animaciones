@@ -52,7 +52,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     console.log("::EXPERIMENT_VERSIONS_GENERATION::");
     const storageKey = String(formData.get("storageKey"));
     experiment(storageKey);
-    return null;
+    return json(null, { status: 200 });
   }
 
   if (intent === "generate_video_versions") {

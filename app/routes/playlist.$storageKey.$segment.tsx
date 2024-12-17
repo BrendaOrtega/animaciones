@@ -7,12 +7,12 @@ import { getUserORNull, getUserOrRedirect } from "~/.server/user";
 const CHUNKS_FOLDER = "chunks";
 // @todo members only?
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  // await getUserORNull({ request }); // @todo a way of validating?
+  // await getUserOrRedirect({ request });
   const storageKey = params["storageKey"];
   if (!storageKey) throw json("Not found", { status: 404 });
 
   let string = null;
-  console.log("::SEGMENT::REQUIRED::", params.segment);
+  console.info("::SEGMENT::REQUIRED::", params.segment);
   if (params.segment?.split(".")[1] === "m3u8") {
     string = (await replaceLinks(storageKey, params.segment)) as string;
     return new Response(string, {

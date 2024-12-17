@@ -27,7 +27,7 @@ const setCors = async () => {
           AllowedHeaders: ["*"],
           AllowedMethods: ["PUT", "DELETE", "GET"],
           AllowedOrigins: isDev
-            ? ["http://localhost:3000"]
+            ? ["http://localhost:3000"] // accepts only one
             : ["https://animaciones.fixtergeek.com"],
           MaxAgeSeconds: 3600,
         },
@@ -86,19 +86,17 @@ export const fileExist = async (key: string, expiresIn = 3600) => {
     });
 };
 
-export const getReadURL = async (
-  key: string,
-  expiresIn = 3600,
-  isAnimations: boolean = true
-) =>
-  await getSignedUrl(
+export const getReadURL = async (key: string, expiresIn = 3600) => {
+  await setCors();
+  return await getSignedUrl(
     S3,
     new GetObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: isAnimations ? "animaciones/" + key : key,
+      Key: PREFIX + key,
     }),
     { expiresIn }
   );
+};
 
 export const getImageURL = async (key: string, expiresIn = 900) =>
   await getSignedUrl(
@@ -127,7 +125,7 @@ export const getPutVideoExperiment = async () => {
 
 export const getPutFileUrl = async (
   key: string,
-  options: { UploadId: string; PartNumber: number }
+  options?: { UploadId: string; PartNumber: number }
 ) => {
   const { UploadId, PartNumber } = options || {};
   await setCors();
@@ -136,8 +134,8 @@ export const getPutFileUrl = async (
     new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME,
       Key: PREFIX + key,
-      UploadId,
-      PartNumber,
+      UploadId: UploadId || undefined,
+      PartNumber: PartNumber || undefined,
     }),
     { expiresIn: 3600 }
   );
@@ -169,3 +167,5 @@ export const removeFilesFor = async (id: string) => {
   await fetch(videoDelete, { method: "DELETE" });
   return true;
 };
+
+setCors();

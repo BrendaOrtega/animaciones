@@ -4,12 +4,27 @@ import { sendMagicLinkEmail, sendWelcomeEmail } from "./emails";
 import { commitSession, destroySession, getSession } from "~/sessions";
 import { redirect, Session } from "@remix-run/node";
 import { boolean } from "zod";
+import { Video } from "@prisma/client";
 
 const secret = "yutuSecret"; // @todo from .env file
 
 const COURSE_ID = "645d3dbd668b73b34443789c";
 
 const ROLE = "CAN_SHARE_50_DISCOUNT";
+
+export const checkIfUserIsEnrolledOrRedirect = async (
+  request: Request,
+  video: Video
+) => {
+  const user = await getUserOrRedirect({ request });
+  const includes = video.courseIds.find((courseId) =>
+    user.courses.includes(courseId)
+  );
+  if (!includes) {
+    throw redirect("/404");
+  }
+  return true;
+};
 
 // throw redirect
 const throwRedirect = async (redirectURL: string, session: Session) => {

@@ -126,6 +126,7 @@ export default function Route() {
       <article className="bg-dark relative overflow-x-hidden pt-20">
         {/* // @todo visit and refactor please */}
         <VideoPlayer
+          isPurchased={isPurchased}
           autoPlay={autoPlay}
           video={video}
           onClickNextVideo={handleClickEnding}

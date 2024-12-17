@@ -18,7 +18,9 @@ export const VideoPlayer = ({
   onEnd,
   nextVideo,
   autoPlay,
+  isPurchased,
 }: {
+  isPurchased?: boolean;
   autoPlay?: boolean;
   video?: Partial<Video>;
   nextVideo?: Partial<Video>;
@@ -89,9 +91,11 @@ export const VideoPlayer = ({
     if (hlsSupport(videoRef.current)) {
       console.info(`Native HLS Supported ✅::`);
       //@todo improve
-      videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"; // @todo this should come in the model
+      videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"; // is this in server?
+      // @todo this should come in the model
       // videoRef.current.type = "application/x-mpegURL";
     } else {
+      if (!video?.isPublic && !isPurchased) return; // @todo server
       console.info("Native HLS Not supported. 😢 Fallbacking to hls.js::");
       const exampleSrc = `/playlist/${video?.storageKey}/index.m3u8`;
       console.log("HLS.JS_IS_UP::", Hls.isSupported());
