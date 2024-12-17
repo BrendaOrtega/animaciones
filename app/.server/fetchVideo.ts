@@ -3,6 +3,7 @@ import { finished } from "stream/promises";
 import { Readable } from "stream";
 import { getReadURL } from "./tigris";
 import path from "path";
+import { randomUUID } from "crypto";
 
 export type VideoFetched = {
   contentLength: string;
@@ -12,22 +13,24 @@ export type VideoFetched = {
   fileStream?: WriteStream;
 };
 
+// @todo: return cleanup!
 export const fetchVideo = async (
   storageKey: string,
   forceFetch?: boolean
 ): Promise<VideoFetched> => {
-  const existPath = `conversiones/${storageKey}`;
-  if (!forceFetch && fs.existsSync(existPath)) {
-    // @todo: damage files can be found
-    const f = fs.readFileSync(existPath);
-    console.log("AVOIDING_FILE_FETCH");
-    return Promise.resolve({
-      contentLength: Buffer.byteLength(f).toString(),
-      contentType: "video/mp4",
-      ok: true,
-      tempPath: existPath,
-    });
-  }
+  const tempPath = `conversiones/${randomUUID()}/${storageKey}`;
+
+  // if (!forceFetch && fs.existsSync(existPath)) {
+  //   // @todo: damage files can be found
+  //   const f = fs.readFileSync(existPath);
+  //   console.log("AVOIDING_FILE_FETCH");
+  //   return Promise.resolve({
+  //     contentLength: Buffer.byteLength(f).toString(),
+  //     contentType: "video/mp4",
+  //     ok: true,
+  //     tempPath: existPath,
+  //   });
+  // }
   const getURL = await getReadURL(storageKey, 3600);
   const response = await fetch(getURL).catch((e) => console.error(e));
   console.log("FILE_FETCHED::", response.ok, storageKey);
@@ -42,7 +45,6 @@ export const fetchVideo = async (
   }
   //  save file temp
   // let tempPath = "./conversiones/" + directory + (storageKey || randomUUID());
-  const tempPath = `conversiones/${storageKey}`;
   const __dirname = path.dirname(tempPath);
   if (!fs.existsSync(__dirname)) {
     fs.mkdirSync(__dirname, { recursive: true });

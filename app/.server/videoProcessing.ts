@@ -284,13 +284,41 @@ export const experiment = async (storageKey: string) => {
   createHLSChunks({
     sizeName: "360p",
     storageKey,
-    checkExistance: false,
+    checkExistance: true,
     when: "in 1 second",
     cb: (path) => {
       if (!path) {
         update(storageKey, "360p");
       } else {
         uploadChunks(path, true, () => update(storageKey, "360p"));
+      }
+    },
+  });
+
+  createHLSChunks({
+    sizeName: "480p",
+    storageKey,
+    checkExistance: true,
+    when: "in 4 second",
+    cb: (path) => {
+      if (!path) {
+        update(storageKey, "480p");
+      } else {
+        uploadChunks(path, true, () => update(storageKey, "480p"));
+      }
+    },
+  });
+
+  createHLSChunks({
+    sizeName: "720p",
+    storageKey,
+    checkExistance: true,
+    when: "in 3 second",
+    cb: (path) => {
+      if (!path) {
+        update(storageKey, "720p");
+      } else {
+        uploadChunks(path, true, () => update(storageKey, "720p"));
       }
     },
   });

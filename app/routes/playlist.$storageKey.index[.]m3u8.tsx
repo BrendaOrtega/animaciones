@@ -17,6 +17,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (video?.m3u8.includes("1080p")) {
     sizes.push("1080p");
   }
+  if (video?.m3u8.includes("360p")) {
+    sizes.push("360p");
+  }
   if (video && !video.isPublic) {
     await checkIfUserIsEnrolledOrRedirect(request, video);
   }
