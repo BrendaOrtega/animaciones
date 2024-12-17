@@ -133,7 +133,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUserOrRedirect({ request });
-  if (user.role !== "ADMIN") return redirect("/");
+  if (user.role !== "ADMIN") throw redirect("/");
 
   const course = await db.course.findUnique({
     where: { id: "645d3dbd668b73b34443789c" },
@@ -222,7 +222,7 @@ export default function Route() {
           </PrimaryButton>
         </form>
         <LayoutGroup>
-          <section className="my-8 grid gap-4 grid-cols-2 md:grid-cols-3 max-w-7xl mx-auto">
+          <section className="my-8 grid gap-4 max-w-7xl mx-auto grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {modules.map((moduleTitle, i) => (
               <Module
                 onModuleOrderUpdate={handleModuleOrderUpdate}
@@ -439,12 +439,22 @@ const Video = ({
       className={cn(
         "hover:scale-[1.02] text-left py-1 px-4 rounded",
         video.isPublic ? "bg-green-500" : "bg-slate-400",
-        "flex justify-between"
+        "flex gap-2"
       )}
     >
       <Dragger onPointerDown={(event) => controls.start(event)} />
       <p className="truncate">{video.title}</p>
-      <span>{video.storageKey ? "✅" : "🫥"}</span>
+      <div className="ml-auto flex gap-2 items-end">
+        <span>{video.storageKey ? "📼" : "🫥"}</span>
+        {[...new Set(video.m3u8 || [])].map((version) => (
+          <span
+            className="text-xs text-white bg-blue-500 py-px px-2 rounded-full"
+            key={version}
+          >
+            {version}
+          </span>
+        ))}
+      </div>
     </motion.div>
   );
 };
