@@ -32,6 +32,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       webhookStripeSignatureHeader,
       endpointSecret
     );
+    console.log("STRIPE_PARSED_CORRECTLY");
   } catch (error: unknown) {
     console.error(`Stripe event construct error: ${error}`);
     return json(error, { status: 401 });
@@ -60,6 +61,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         email,
         displayName: session.customer_details?.name || "",
       });
+      console.log("USER_ACQUIRED::", user.email);
       const courses = [...new Set([...user.courses, courseId])]; // avoiding repetition
       // assign course
       await db.user.update({

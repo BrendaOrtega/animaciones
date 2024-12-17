@@ -14,7 +14,7 @@ const ROLE = "CAN_SHARE_50_DISCOUNT";
 
 export const checkIfUserIsEnrolledOrRedirect = async (
   request: Request,
-  video: Video
+  video: Partial<Video> & { courseIds: string[] }
 ) => {
   const user = await getUserOrRedirect({ request });
   const includes = video.courseIds.find((courseId) =>
