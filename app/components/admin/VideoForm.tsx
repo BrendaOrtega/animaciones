@@ -138,9 +138,11 @@ export const VideoForm = ({
         {video.storageKeys && video.storageKeys.length > 0 && (
           <div className="text-white dark:text-black mb-2">
             <p>Otras versiones:</p>
-            {video.storageKeys?.map((k) => (
-              <p key={k}>{k}</p>
-            ))}
+            <div className="flex gap-2">
+              {video.m3u8?.map((k) => (
+                <p key={k}>{k}</p>
+              ))}
+            </div>
           </div>
         )}
         {video.storageKey && (
