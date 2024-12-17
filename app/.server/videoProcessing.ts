@@ -271,7 +271,7 @@ export const experiment = async (storageKey: string) => {
     sizeName: "1080p",
     storageKey,
     checkExistance: false,
-    when: "in 1 seconds",
+    when: "in 2 seconds",
     cb: (path) => {
       if (!path) {
         update(storageKey, "1080p");
@@ -281,32 +281,19 @@ export const experiment = async (storageKey: string) => {
     },
   });
 
-  // createHLSChunks({
-  //   sizeName: "720p",
-  //   storageKey,
-  //   checkExistance: false,
-  //   when: "in 2 seconds",
-  //   cb: (path) => {
-  //     if (!path) {
-  //       update(storageKey, "720p");
-  //     } else {
-  //       uploadChunks(path, true, () => update(storageKey, "720p"));
-  //     }
-  //   },
-  // });
-
-  // createHLSChunks({
-  //   sizeName: "480p",
-  //   storageKey,
-  //   checkExistance: true,
-  //   when: "in 1 seconds",
-  // });
-  // createHLSChunks({
-  //   checkExistance: false,
-  //   storageKey,
-  //   when: "in 4 seconds",
-  //   cb: uploadChunks, // uploading at the end
-  // });
+  createHLSChunks({
+    sizeName: "360p",
+    storageKey,
+    checkExistance: false,
+    when: "in 1 second",
+    cb: (path) => {
+      if (!path) {
+        update(storageKey, "360p");
+      } else {
+        uploadChunks(path, true, () => update(storageKey, "360p"));
+      }
+    },
+  });
 };
 
 export const createHLSChunks = async ({
