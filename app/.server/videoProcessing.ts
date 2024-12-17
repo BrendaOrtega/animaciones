@@ -293,7 +293,10 @@ export const experiment = async (storageKey: string) => {
       if (!path) {
         update(storageKey, "360p");
       } else {
-        uploadChunks(path, true, () => update(storageKey, "360p"));
+        uploadChunks(path, true, () => {
+          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
+          update(storageKey, "360p");
+        });
       }
     },
   });
@@ -307,7 +310,10 @@ export const experiment = async (storageKey: string) => {
       if (!path) {
         update(storageKey, "480p");
       } else {
-        uploadChunks(path, true, () => update(storageKey, "480p"));
+        uploadChunks(path, true, () => {
+          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
+          update(storageKey, "480p");
+        });
       }
     },
   });
@@ -321,7 +327,10 @@ export const experiment = async (storageKey: string) => {
       if (!path) {
         update(storageKey, "720p");
       } else {
-        uploadChunks(path, true, () => update(storageKey, "720p"));
+        uploadChunks(path, true, () => {
+          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
+          update(storageKey, "720p");
+        });
       }
     },
   });

@@ -222,7 +222,7 @@ export default function Route() {
           </PrimaryButton>
         </form>
         <LayoutGroup>
-          <section className="my-8 grid gap-4 max-w-7xl mx-auto grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <section className="my-8 grid gap-4 max-w-7xl mx-auto grid-cols-1 lg:grid-cols-3">
             {modules.map((moduleTitle, i) => (
               <Module
                 onModuleOrderUpdate={handleModuleOrderUpdate}
@@ -438,13 +438,15 @@ const Video = ({
       onClick={onClick}
       className={cn(
         "hover:scale-[1.02] text-left py-1 px-4 rounded",
-        video.isPublic ? "bg-green-500" : "bg-slate-400",
+        // video.isPublic ? "bg-green-500" : "bg-slate-400",
+        "bg-slate-400",
         "flex gap-2"
       )}
     >
       <Dragger onPointerDown={(event) => controls.start(event)} />
       <p className="truncate">{video.title}</p>
-      <div className="ml-auto flex gap-2 items-end">
+      <div className="ml-auto flex gap-2 items-center">
+        {video.isPublic && <span>🌎</span>}
         <span>{video.storageKey ? "📼" : "🫥"}</span>
         {[...new Set(video.m3u8 || [])].map((version) => (
           <span
