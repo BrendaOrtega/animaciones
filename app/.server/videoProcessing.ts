@@ -271,12 +271,15 @@ export const experiment = async (storageKey: string) => {
     sizeName: "1080p",
     storageKey,
     checkExistance: true,
-    when: "in 2 seconds",
+    when: "in 4 seconds",
     cb: (path) => {
       if (!path) {
         update(storageKey, "1080p");
       } else {
-        uploadChunks(path, true, () => update(storageKey, "1080p"));
+        uploadChunks(path, true, () => {
+          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
+          update(storageKey, "1080p");
+        });
       }
     },
   });
@@ -285,7 +288,7 @@ export const experiment = async (storageKey: string) => {
     sizeName: "360p",
     storageKey,
     checkExistance: true,
-    when: "in 1 second",
+    when: "in 3 second",
     cb: (path) => {
       if (!path) {
         update(storageKey, "360p");
@@ -299,7 +302,7 @@ export const experiment = async (storageKey: string) => {
     sizeName: "480p",
     storageKey,
     checkExistance: true,
-    when: "in 4 second",
+    when: "in 2 second",
     cb: (path) => {
       if (!path) {
         update(storageKey, "480p");
@@ -313,7 +316,7 @@ export const experiment = async (storageKey: string) => {
     sizeName: "720p",
     storageKey,
     checkExistance: true,
-    when: "in 3 second",
+    when: "in 1 second",
     cb: (path) => {
       if (!path) {
         update(storageKey, "720p");
