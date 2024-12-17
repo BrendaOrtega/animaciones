@@ -263,24 +263,24 @@ export const experiment = (storageKey: string) => {
   createHLSChunks({
     sizeName: "720p",
     storageKey,
-    checkExistance: true,
+    checkExistance: false,
     when: "in 1 seconds",
   });
   createHLSChunks({
     sizeName: "480p",
     storageKey,
-    checkExistance: true,
+    checkExistance: false,
     when: "in 2 seconds",
   });
   createHLSChunks({
     sizeName: "360p",
     storageKey,
-    checkExistance: true,
+    checkExistance: false,
     when: "in 3 seconds",
   });
   createHLSChunks({
-    storageKey,
     checkExistance: false,
+    storageKey,
     when: "in 4 seconds",
     cb: uploadChunks, // uploading at the end
   });
@@ -320,7 +320,7 @@ export const createHLSChunks = async ({
         ? "1280x720"
         : "1920x1080";
     const { storageKey } = job.attrs.data;
-    console.log(`HLS::${sizeName}::`, storageKey);
+    console.log(`CREATING::HLS_FOR::${sizeName}::`, storageKey);
     const outputFolder = `media/${CHUNKS_FOLDER}/${storageKey}`;
     if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true }); // this is gold

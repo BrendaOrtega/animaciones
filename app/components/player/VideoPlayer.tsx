@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { FaGooglePlay } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
+import Hls from "hls.js";
 
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
@@ -86,13 +87,24 @@ export const VideoPlayer = ({
       videoNode.canPlayType("application/vnd.apple.mpegURL");
 
     if (hlsSupport(videoRef.current)) {
-      console.info(`HLS Supported ✅::`);
+      console.info(`Native HLS Supported ✅::`);
       //@todo improve
-      // videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"; // @todo this should come in the model
+      videoRef.current.src = "/playlist/" + video?.storageKey + "/index.m3u8"; // @todo this should come in the model
       // videoRef.current.type = "application/x-mpegURL";
     } else {
-      console.info("HLS Not supported. 😢 Fallbacking to storageLink::");
+      console.info("Native HLS Not supported. 😢 Fallbacking to hls.js::");
+      const exampleSrc = `/playlist/${video?.storageKey}/index.m3u8`;
+      console.log("HLS.JS_IS_UP::", Hls.isSupported());
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(exampleSrc);
+        hls.attachMedia(videoRef.current);
+      }
     }
+
+    // experiment before xmas 🎅🏼
+    // const exampleSrc = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+
     // autoplay?
     // autoPlay && setIsPlaying(true);
   }, [video]);

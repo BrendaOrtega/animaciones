@@ -69,18 +69,17 @@ export const getUploadWithMultiPart = async (storageKey: string) => {
   ).catch((e) => console.error(e));
 };
 
-export const fileExist = async (
-  key: string,
-  expiresIn = 3600,
-  isAnimations: boolean = true
-) => {
+export const fileExist = async (key: string, expiresIn = 3600) => {
   return await S3.send(
     new HeadObjectCommand({
       Bucket: process.env.BUCKET_NAME,
-      Key: isAnimations ? "animaciones/" + key : key,
+      Key: PREFIX + key,
     })
   )
-    .then(() => true)
+    .then((r) => {
+      console.log("Result ", r.ContentLength);
+      return true;
+    })
     .catch((err) => {
       console.error("FILE_MAY_NOT_EXIST", key, err.message);
       return false;
