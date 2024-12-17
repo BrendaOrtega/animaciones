@@ -69,7 +69,7 @@ export const useToast = () => {
       setExit(toast);
       await sleep(0.3);
       toast.remove();
-    }, 10000);
+    }, 2000);
   };
 
   return {

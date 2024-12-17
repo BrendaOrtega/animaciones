@@ -24,7 +24,7 @@ export const MagicLink = () => {
 
   const toast = useToast();
   useEffect(() => {
-    if (fetcher.data?.error) {
+    if (fetcher.data?.error && fetcher.state === "idle") {
       toast.error({ text: fetcher.data.error });
     }
   }, [fetcher]);
