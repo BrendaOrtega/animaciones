@@ -5,7 +5,7 @@ import { getMasterFileResponse } from "~/.server/virtualM3U8";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const storageKey = params["storageKey"];
-  const video = await db.video.findUnique({
+  const video = await db.video.findFirst({
     where: { storageKey },
     select: {
       m3u8: true,
