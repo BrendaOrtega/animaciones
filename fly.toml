@@ -12,10 +12,10 @@ primary_region = 'qro'
   processes = ['app']
 
 [[vm]]
-  size = 'shared-cpu-2x'
-  memory = '1gb'
-  processes = ['worker']
+  size = 'shared-cpu-1x'
+  memory = '512mb'
+  processes = ['app']
 
 [[vm]]
   size = 'performance-4x'
-  processes = ['app']
+  processes = ['worker']
