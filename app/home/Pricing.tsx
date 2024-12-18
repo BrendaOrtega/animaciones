@@ -60,7 +60,7 @@ const MyTabs = ({
               Animaciones <br /> con React
             </h3>
             <p className="text-iron font-light dark:text-metal text-sm mt-2">
-              Full course + Player oficial
+              Full course + Playera oficial
             </p>
           </div>
         </Tab>
