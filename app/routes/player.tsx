@@ -101,6 +101,7 @@ export default function Route() {
     useLoaderData<typeof loader>();
   const [successIsOpen] = useState(searchParams.success);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [isTabOpen, setIsTabOpen] = useState(true);
   const submit = useSubmit();
 
   const [autoPlay, setAutoPlay] = useState(false);
@@ -146,8 +147,9 @@ export default function Route() {
           defaultOpen={!searchParams.success}
           isLocked={!isPurchased}
         />
-
-        {/* <VideosResources isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} /> */}
+        {isPurchased ? (
+          <VideosResources isOpen={isTabOpen} setIsOpen={setIsTabOpen} />
+        ) : null}
       </article>
       {searchParams.success && <SuccessDrawer isOpen={successIsOpen} />}
       {!isPurchased && !video.isPublic && <PurchaseDrawer />}

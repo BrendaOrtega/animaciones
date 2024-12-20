@@ -61,9 +61,15 @@ export const VideosResources = ({
             Esta es la lista de recursos o links que ocuparás durante el curso:
           </h3>
           <ul className="text-metal mt-12 flex flex-col gap-3">
-            <li className="flex gap-3 items-center">
-              <GrGithub /> Link al repo
-            </li>
+            <a
+              href="https://github.com/FixterGeek/Animaciones.git"
+              target="_blank"
+            >
+              <li className="flex gap-3 items-center hover:text-fish">
+                <GrGithub /> Link al repo
+              </li>
+            </a>
+
             <a href="https://motion.dev/" target="_blank">
               <li className="flex gap-3 items-center hover:text-fish">
                 <MdOutlineAutoAwesomeMotion /> Documentación oficial de Motion
