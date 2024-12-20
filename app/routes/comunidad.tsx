@@ -216,68 +216,68 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
     );
   };
   return (
-    <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white px-4 md:px-0">
+    <section className="flex flex-col items-center min-h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white px-4 md:px-0">
       <img className="w-44 md:w-52 h-auto" src="/congrats.png" />
       <h2 className="text-2xl md:text-5xl font-semibold text-center">
         ¡Andas de suerte eh! 🍀
       </h2>
-      <p className="text-base md:text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
+      <p className="text-base md:text-xl text-center dark:text-metal text-iron font-light mt-0 mb-0 md:mb-8">
         Tu amig@ te ha compartido un descuento del
         <strong className="font-bold">
           {" "}
           50% para el curso <br />«{courseTitle}»
         </strong>
       </p>
-      <div className="flex gap-4 md:gap-12">
-        <div className="border border-dark/10 rounded-3xl w-54 h-40 text-center p-4">
+      <div className="flex flex-wrap md:flex-nowrap justify-center gap-4 md:gap-12">
+        <div className="border border-dark/10 rounded-3xl w-full md:w-56 h-fit text-center p-4">
           <h3 className="text-base md:text-xl font-medium text-dark dark:text-white">
-            Animaciones <br /> con React
+            Animaciones con React
           </h3>
-          <p className="text-iron font-light dark:text-metal text-sm mt-2 mb-3">
+          <p className="text-iron font-light dark:text-metal text-sm mt-1 mb-2">
             Full course
           </p>
           <span className="line-through	font-semibold">$999 </span>{" "}
           <span className=" text-[#FF4B4B] dark:text-[#C8496C] font-semibold ml-2">
-            $498.5{" "}
+            $499{" "}
           </span>
-          <span className="text-sm font-normal text-iron dark:text-metal/70  ">
+          <span className="text-xs font-normal text-iron dark:text-metal/70  ">
             / MXN{" "}
           </span>
+          <PrimaryButton
+            onClick={handleClick}
+            isDisabled={fetcher.state !== "idle"}
+            className="active:shadow mx-auto mt-3 md:mt-6 w-40"
+          >
+            Canjear
+          </PrimaryButton>
         </div>
-        <div className="border border-dark/10 rounded-3xl w-54 h-40 text-center p-4">
+        <div className="border border-dark/10 rounded-3xl w-full md:w-56 h-fit text-center p-4">
           <h3 className="text-base md:text-xl font-medium text-dark dark:text-white">
-            Animaciones <br /> con React
+            Animaciones con React
           </h3>
-          <p className="text-iron font-light dark:text-metal text-sm mt-2 mb-3">
+          <p className="text-iron font-light dark:text-metal text-sm mt-1 mb-2">
             Full course + playera
           </p>
           <span className="line-through	font-semibold">$1,499 </span>{" "}
           <span className=" text-[#FF4B4B] dark:text-[#C8496C] font-semibold ml-2">
-            $749.5{" "}
+            $750{" "}
           </span>
-          <span className="text-sm font-normal text-iron dark:text-metal/70  ">
+          <span className="text-xs font-normal text-iron dark:text-metal/70  ">
             / MXN{" "}
           </span>
+          <PrimaryButton
+            onClick={(event) => handleClick(event, 1)}
+            isDisabled={fetcher.state !== "idle"}
+            className="active:shadow mx-auto mt-3 md:mt-6 w-40"
+          >
+            Canjear 👕
+          </PrimaryButton>
         </div>
       </div>
       <p className="text-base md:text-lg text-center dark:text-metal text-iron font-light mt-0 mb-8">
         ¡Apresúrate! Recuerda que los tokens solo viven un ratito 🕣
       </p>
       <div className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6">
-        <PrimaryButton
-          onClick={handleClick}
-          isDisabled={fetcher.state !== "idle"}
-          className="active:shadow"
-        >
-          Canjear Full course
-        </PrimaryButton>
-        <PrimaryButton
-          onClick={(event) => handleClick(event, 1)}
-          isDisabled={fetcher.state !== "idle"}
-          className="active:shadow"
-        >
-          Canjear Full course + playera
-        </PrimaryButton>
         <Link to="/">
           <button className="bg-[#F5F5F5] md:mt-0 mx-auto font-normal text-gray-600 rounded-full enabled:hover:px-8 transition-all text-base md:text-lg  h-12 md:h-14 px-6 flex gap-2 items-center justify-center ">
             Ver detalle del curso
