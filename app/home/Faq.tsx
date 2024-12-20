@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { ReactNode, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
 import { ScrollReveal } from "./Hero";
@@ -73,9 +73,12 @@ export const Question = ({
   answer: ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
-
+  const ref = useRef(null);
   return (
-    <div className="border-lightgray dark:border-lightGray/20   border-[1px] rounded-2xl">
+    <div
+      ref={ref}
+      className="border-lightgray dark:border-lightGray/20   border-[1px] rounded-2xl"
+    >
       <button
         className="w-full px-6 py-6 text-base md:text-xl font-medium text-left flex justify-between items-center"
         onClick={() => {

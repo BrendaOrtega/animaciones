@@ -17,6 +17,7 @@ import { VideoPlayer } from "~/components/player/VideoPlayer";
 import { SuccessDrawer } from "~/components/player/SuccessDrawer";
 import { PurchaseDrawer } from "~/components/player/PurchaseDrawer";
 import { getMetaTags } from "~/utils/getMetaTags";
+import { VideosResources } from "~/components/player/VideosResources";
 
 const courseId = "645d3dbd668b73b34443789c";
 
@@ -145,6 +146,8 @@ export default function Route() {
           defaultOpen={!searchParams.success}
           isLocked={!isPurchased}
         />
+
+        {/* <VideosResources isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} /> */}
       </article>
       {searchParams.success && <SuccessDrawer isOpen={successIsOpen} />}
       {!isPurchased && !video.isPublic && <PurchaseDrawer />}

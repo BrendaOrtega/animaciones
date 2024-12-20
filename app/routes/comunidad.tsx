@@ -217,18 +217,50 @@ const Invite = ({ courseTitle }: { courseTitle: string }) => {
   };
   return (
     <section className="flex flex-col items-center h-screen justify-center gap-4 dark:bg-dark bg-white/40 dark:text-white px-4 md:px-0">
-      <img className="w-52 h-auto" src="/congrats.png" />
-      <h2 className="text-3xl md:text-5xl font-semibold text-center">
+      <img className="w-44 md:w-52 h-auto" src="/congrats.png" />
+      <h2 className="text-2xl md:text-5xl font-semibold text-center">
         ¡Andas de suerte eh! 🍀
       </h2>
-      <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
+      <p className="text-base md:text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
         Tu amig@ te ha compartido un descuento del
         <strong className="font-bold">
           {" "}
           50% para el curso <br />«{courseTitle}»
         </strong>
       </p>
-      <p className="text-xl text-center dark:text-metal text-iron font-light mt-0 mb-8">
+      <div className="flex gap-4 md:gap-12">
+        <div className="border border-dark/10 rounded-3xl w-54 h-40 text-center p-4">
+          <h3 className="text-base md:text-xl font-medium text-dark dark:text-white">
+            Animaciones <br /> con React
+          </h3>
+          <p className="text-iron font-light dark:text-metal text-sm mt-2 mb-3">
+            Full course
+          </p>
+          <span className="line-through	font-semibold">$999 </span>{" "}
+          <span className=" text-[#FF4B4B] dark:text-[#C8496C] font-semibold ml-2">
+            $498.5{" "}
+          </span>
+          <span className="text-sm font-normal text-iron dark:text-metal/70  ">
+            / MXN{" "}
+          </span>
+        </div>
+        <div className="border border-dark/10 rounded-3xl w-54 h-40 text-center p-4">
+          <h3 className="text-base md:text-xl font-medium text-dark dark:text-white">
+            Animaciones <br /> con React
+          </h3>
+          <p className="text-iron font-light dark:text-metal text-sm mt-2 mb-3">
+            Full course + playera
+          </p>
+          <span className="line-through	font-semibold">$1,499 </span>{" "}
+          <span className=" text-[#FF4B4B] dark:text-[#C8496C] font-semibold ml-2">
+            $749.5{" "}
+          </span>
+          <span className="text-sm font-normal text-iron dark:text-metal/70  ">
+            / MXN{" "}
+          </span>
+        </div>
+      </div>
+      <p className="text-base md:text-lg text-center dark:text-metal text-iron font-light mt-0 mb-8">
         ¡Apresúrate! Recuerda que los tokens solo viven un ratito 🕣
       </p>
       <div className="flex-wrap md:flex-nowrap justify-center items-center flex gap-4 md:gap-6">
