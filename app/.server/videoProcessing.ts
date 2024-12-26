@@ -343,7 +343,7 @@ export const createHLSChunks = async ({
   checkExistance,
   when = "in 1 second",
 }: {
-  when: string;
+  when?: string;
   checkExistance?: boolean;
   sizeName?: "360p" | "480p" | "720p" | "1080p";
   storageKey: string;
@@ -392,6 +392,11 @@ export const createHLSChunks = async ({
 
     return await command
       .clone()
+      .on("progress", function ({ frames, percent }) {
+        console.log(
+          "PROCESSING:: " + frames + "::::" + percent?.toFixed(0) + "%::::"
+        );
+      })
       .on("error", function (err) {
         console.log("an error happened: " + err.message);
       })

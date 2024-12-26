@@ -24,12 +24,14 @@ import { VideoForm } from "~/components/admin/VideoForm";
 import { createVideoVersions, experiment } from "~/.server/videoProcessing";
 import { motion, LayoutGroup, useDragControls } from "motion/react";
 import { GrDrag } from "react-icons/gr";
+import { machines_experiment } from "~/.server/machines_experiment";
 
 const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+  const url = new URL(request.url);
 
   if (intent === "update_modules_order") {
     const moduleNamesOrder = JSON.parse(
@@ -51,7 +53,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === "experiment") {
     console.log("::EXPERIMENT_VERSIONS_GENERATION::");
     const storageKey = String(formData.get("storageKey"));
-    experiment(storageKey);
+    // experiment(storageKey);
+    machines_experiment({
+      storageKey,
+      machineId: url.searchParams.get("machineId"),
+    });
     return json(null, { status: 200 });
   }
 
