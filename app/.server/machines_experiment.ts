@@ -1,34 +1,56 @@
 import { FetchModuleOptions } from "vite";
-import { createHLSChunks, uploadChunks } from "./videoProcessing";
+import {
+  createHLSChunks,
+  updateVideoVersions,
+  uploadChunks,
+  VIDEO_SIZE,
+} from "./videoProcessing";
 
 const MACHINES_API_URL = "https://api.machines.dev/v1/apps/animations/machines";
 const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
 
-export const machines_experiment = async ({
-  storageKey,
+export const generateVersion = async ({
   machineId,
+  storageKey,
+  size,
 }: {
   storageKey: string;
-  machineId: string | null;
+  size: VIDEO_SIZE;
+  machineId: string;
 }) => {
-  if (machineId) {
-    console.log("Corriendo en WORKER 🪄✨", storageKey);
-    await createHLSChunks({
-      storageKey,
-      sizeName: "360p",
-      checkExistance: false,
-      cb: (path: string) => {
-        uploadChunks(path, true, stopMachine(machineId)); // @todo: where to get id?
-      },
-    });
-    return;
-  }
-  console.log("PREPARANDO::PERFORMANCE-1x::MACHINE::");
-  const id = await createMachine({
+  if (!machineId) return console.error("NO MACHINE ID FOUND");
+
+  return await createHLSChunks({
+    onError: () => stopMachine(machineId as string),
+    storageKey,
+    sizeName: size,
+    checkExistance: false,
+    cb: (path: string) => {
+      uploadChunks(path, true, async () => {
+        await updateVideoVersions(storageKey, size);
+        stopMachine(machineId)(); // finish machine
+      });
+    },
+  });
+};
+
+export const createVersionDetached = async (
+  storageKey: string,
+  size: VIDEO_SIZE
+) => {
+  // not in worker
+  console.log("PREPARANDO::PERFORMANCE::MACHINE::");
+  const machineId = await createMachine({
     image: await listMachinesAndFindImage(),
   });
-  await waitForMachineToStart(id);
-  await delegateToPerformanceMachine(id, storageKey);
+  if (!machineId) return console.error("ERROR_ON_MACHINE_CREATION");
+  await waitForMachineToStart(machineId);
+  await delegateToPerformanceMachine({
+    size,
+    machineId,
+    storageKey,
+    intent: "generate_video_version",
+  });
 };
 
 const createMachine = async ({ image }: { image: string }) => {
@@ -54,7 +76,7 @@ const createMachine = async ({ image }: { image: string }) => {
   return id;
 };
 
-const stopMachine = (machineId: string | null) => async () => {
+const stopMachine = (machineId: string) => async () => {
   if (!machineId) return;
   const id: string = machineId;
   const init: RequestInit = {
@@ -68,24 +90,40 @@ const stopMachine = (machineId: string | null) => async () => {
 };
 
 // @todo could this be generic?
-const delegateToPerformanceMachine = async (
-  machineId: string,
-  storageKey: string
-) => {
+const delegateToPerformanceMachine = async ({
+  machineId,
+  storageKey,
+  path = "/admin",
+  intent = "experiment",
+  size,
+}: {
+  size?: VIDEO_SIZE;
+  machineId: string;
+  storageKey: string;
+  path?: string;
+  intent?: string;
+}) => {
   const body = new FormData();
-  body.append("intent", "experiment");
+  body.append("intent", intent);
   body.append("storageKey", storageKey);
   const init: RequestInit = {
     method: "POST",
     body,
   };
   const internal_host = `http://${machineId}.vm.animations.internal:3000`;
-  const response = await fetch(
-    `${internal_host}/admin?machineId=${machineId}`,
-    init
-  ); // @todo revisit to improve
-  console.log("::THE_RESPONSE::", response);
-  return response.ok;
+  try {
+    const response = await fetch(
+      `${internal_host}${path}?machineId=${machineId}&size=${size}`,
+      init
+    );
+    if (!response.ok) {
+      console.error("::ERROR_ON_INTERNAL_REQUEST::", response);
+      stopMachine(machineId);
+    }
+  } catch (e) {
+    stopMachine(machineId);
+  }
+  console.log("::RESPONSE_OK::", response.ok);
 };
 
 const startMachine = async (id: string) => {
