@@ -69,7 +69,7 @@ export const getUploadWithMultiPart = async (storageKey: string) => {
   ).catch((e) => console.error(e));
 };
 
-export const fileExist = async (key: string, expiresIn = 3600) => {
+export const fileExist = async (key: string) => {
   return await S3.send(
     new HeadObjectCommand({
       Bucket: process.env.BUCKET_NAME,
@@ -77,7 +77,7 @@ export const fileExist = async (key: string, expiresIn = 3600) => {
     })
   )
     .then((r) => {
-      console.log("Result ", r.ContentLength);
+      console.log("::FILE_EXIST:: ", r.ContentType);
       return true;
     })
     .catch((err) => {

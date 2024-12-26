@@ -348,7 +348,7 @@ export const createHLSChunks = async ({
       .addOption("-level", "3.0")
       .addOption("-start_number", "0")
       .addOption("-hls_list_size", "0")
-      // .addOption("-hls_time", "3") we need to force keyframes?
+      .addOption("-hls_time", "6") // standard
       .addOption("-f", "hls")
       .addOption(`-hls_segment_filename ${hlsSegmentFilename}`);
 

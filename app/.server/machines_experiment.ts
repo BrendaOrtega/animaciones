@@ -6,6 +6,7 @@ import {
   VIDEO_SIZE,
 } from "./videoProcessing";
 import { Agenda } from "@hokify/agenda";
+import { fileExist } from "./tigris";
 
 const MACHINES_API_URL = "https://api.machines.dev/v1/apps/animations/machines";
 const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
@@ -39,16 +40,19 @@ export const createVersionDetached = async (
   storageKey: string,
   size: VIDEO_SIZE
 ) => {
-  // not in worker
-  console.log("PREPARANDO::PERFORMANCE::MACHINE::");
-  const machineId = await createMachine({
-    image: await listMachinesAndFindImage(),
-  });
-  if (!machineId) return console.error("ERROR_ON_MACHINE_CREATION");
-
+  // @todo: if exists avoid
+  const exist = await fileExist(`chunks/${storageKey}/${size}.m3u8`);
+  if (exist) {
+    return console.info("VERSION_ALREADY_EXIST_ABORTING", size);
+  }
   const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
-
   agenda.define("create_chunks", async (job) => {
+    console.log("CREATING::PERFORMANCE::MACHINE::");
+    const machineId = await createMachine({
+      image: await listMachinesAndFindImage(),
+    });
+    if (!machineId) return console.error("ERROR_ON_MACHINE_CREATION");
+
     await waitForMachineToStart(machineId);
     await delegateToPerformanceMachine({
       size,
