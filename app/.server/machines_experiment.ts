@@ -5,6 +5,7 @@ import {
   uploadChunks,
   VIDEO_SIZE,
 } from "./videoProcessing";
+import { Agenda } from "@hokify/agenda";
 
 const MACHINES_API_URL = "https://api.machines.dev/v1/apps/animations/machines";
 const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
@@ -44,13 +45,20 @@ export const createVersionDetached = async (
     image: await listMachinesAndFindImage(),
   });
   if (!machineId) return console.error("ERROR_ON_MACHINE_CREATION");
-  await waitForMachineToStart(machineId);
-  await delegateToPerformanceMachine({
-    size,
-    machineId,
-    storageKey,
-    intent: "generate_video_version",
+
+  const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
+
+  agenda.define("create_chunks", async (job) => {
+    await waitForMachineToStart(machineId);
+    await delegateToPerformanceMachine({
+      size,
+      machineId,
+      storageKey,
+      intent: "generate_video_version",
+    });
   });
+  await agenda.start();
+  await agenda.schedule("in 2 seconds", "create_chunks");
 };
 
 const createMachine = async ({ image }: { image: string }) => {
@@ -151,11 +159,10 @@ const waitForMachineToStart = async (id: string) => {
     `${MACHINES_API_URL}/${id}/wait?state=started`,
     init
   );
-  console.log("RESPONSE_RECEIVED_ON_WAITING");
   if (!response.ok) console.error("MACHINE_NOT_WAITED", response);
   return new Promise((res) =>
     setTimeout(() => {
-      console.log("PERFORMANCE_MACHINE_READY::");
+      console.log("::PERFORMANCE_MACHINE_READY::");
       res(response.ok);
     }, 10000)
   );

@@ -65,10 +65,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   if (intent === "experiment") {
-    createVersionDetached(storageKey, "360p");
-    createVersionDetached(storageKey, "480p");
-    createVersionDetached(storageKey, "720p");
-    createVersionDetached(storageKey, "1080p");
+    await createVersionDetached(storageKey, "360p");
     return json(null, { status: 200 });
   }
   if (intent === "get_multipart_upload") {
