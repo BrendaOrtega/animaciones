@@ -60,13 +60,13 @@ export const Why = () => {
           <div className="flex flex-wrap md:flex-nowrap gap-12 mt-12">
             <div className="w-full md:w-[50%] ">
               <h3 className="text-2xl text-wvil text-dark dark:text-white font-semibold">
-                Recibe feedback personal 🔥
+                Más y más componentes 🔥
               </h3>
               <p className="  dark:text-metal text-iron font-light mt-2">
-                Los ejercicios prácticos que realices durante el curso serán
-                revisados por el instructor y{" "}
+                Seguiremos agregado componentes durante el año, así que después
+                de que lo termines{" "}
                 <span className="text-iron dark:text-white/70 font-semibold">
-                  recibirás feedback personalizado.
+                  regresa de vez en cuando a ver que hay de nuevo.
                 </span>
               </p>
             </div>
