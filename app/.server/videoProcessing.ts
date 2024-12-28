@@ -258,15 +258,26 @@ const generateMasterFile = async (storageKey: string) => {
   // });
   // console.log("MASTER_FILE::UPLOADED ✅");
 };
-export const experiment = async (storageKey: string) => {
-  // update db
-  const update = async (storageKey, size) => {
-    await db.video.update({
-      where: { storageKey },
-      data: { m3u8: { push: size } },
-    });
-  };
 
+export type VIDEO_SIZE = "360p" | "480p" | "720p" | "1080p" | "2040p";
+// update db
+export const updateVideoVersions = async (
+  storageKey: string,
+  size: VIDEO_SIZE
+) => {
+  const video = await db.video.findFirst({
+    where: {
+      storageKey,
+    },
+  });
+  if (!video) return;
+  await db.video.update({
+    where: { id: video.id },
+    data: { m3u8: [...new Set([...video.m3u8, size])] },
+  });
+};
+
+export const experiment = async (storageKey: string) => {
   createHLSChunks({
     sizeName: "1080p",
     storageKey,
@@ -274,62 +285,11 @@ export const experiment = async (storageKey: string) => {
     when: "in 4 seconds",
     cb: (path) => {
       if (!path) {
-        update(storageKey, "1080p");
+        updateVideoVersions(storageKey, "1080p");
       } else {
         uploadChunks(path, true, () => {
           fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
-          update(storageKey, "1080p");
-        });
-      }
-    },
-  });
-
-  createHLSChunks({
-    sizeName: "360p",
-    storageKey,
-    checkExistance: true,
-    when: "in 3 second",
-    cb: (path) => {
-      if (!path) {
-        update(storageKey, "360p");
-      } else {
-        uploadChunks(path, true, () => {
-          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
-          update(storageKey, "360p");
-        });
-      }
-    },
-  });
-
-  createHLSChunks({
-    sizeName: "480p",
-    storageKey,
-    checkExistance: true,
-    when: "in 2 second",
-    cb: (path) => {
-      if (!path) {
-        update(storageKey, "480p");
-      } else {
-        uploadChunks(path, true, () => {
-          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
-          update(storageKey, "480p");
-        });
-      }
-    },
-  });
-
-  createHLSChunks({
-    sizeName: "720p",
-    storageKey,
-    checkExistance: true,
-    when: "in 1 second",
-    cb: (path) => {
-      if (!path) {
-        update(storageKey, "720p");
-      } else {
-        uploadChunks(path, true, () => {
-          fs.rmSync(path, { force: true, recursive: true }); // @improve cleanup
-          update(storageKey, "720p");
+          updateVideoVersions(storageKey, "1080p");
         });
       }
     },
@@ -342,10 +302,12 @@ export const createHLSChunks = async ({
   cb,
   checkExistance,
   when = "in 1 second",
+  onError,
 }: {
-  when: string;
+  onError?: () => void;
+  when?: string;
   checkExistance?: boolean;
-  sizeName?: "360p" | "480p" | "720p" | "1080p";
+  sizeName?: VIDEO_SIZE;
   storageKey: string;
   cb?: (playListPath: string) => void;
 }) => {
@@ -386,14 +348,20 @@ export const createHLSChunks = async ({
       .addOption("-level", "3.0")
       .addOption("-start_number", "0")
       .addOption("-hls_list_size", "0")
-      // .addOption("-hls_time", "3") we need to force keyframes?
+      .addOption("-hls_time", "6") // standard
       .addOption("-f", "hls")
       .addOption(`-hls_segment_filename ${hlsSegmentFilename}`);
 
     return await command
       .clone()
+      .on("progress", function ({ frames, percent }) {
+        console.log(
+          "PROCESSING:: " + frames + "::::" + percent?.toFixed(0) + "%::::"
+        );
+      })
       .on("error", function (err) {
-        console.log("an error happened: " + err.message);
+        console.log("ERROR_ON_MEDIA_PROCESSING: " + err.message);
+        onError?.();
       })
       .on("end", function () {
         console.log(`::VERSION_${sizeName}_CREATED::`);

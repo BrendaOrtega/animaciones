@@ -1,6 +1,6 @@
 import { type Video } from "@prisma/client";
-import { json, useFetcher, useFetchers, useLoaderData } from "@remix-run/react";
-import { FormEvent, MouseEvent, PointerEventHandler, useState } from "react";
+import { json, useFetcher, useLoaderData } from "@remix-run/react";
+import { FormEvent, MouseEvent, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { db } from "~/.server/db";
 import { PrimaryButton } from "~/components/PrimaryButton";
@@ -21,15 +21,21 @@ import {
 } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
-import { createVideoVersions, experiment } from "~/.server/videoProcessing";
 import { motion, LayoutGroup, useDragControls } from "motion/react";
 import { GrDrag } from "react-icons/gr";
+import {
+  createVersionDetached,
+  generateVersion,
+} from "~/.server/machines_experiment";
+import { VIDEO_SIZE } from "~/.server/videoProcessing";
 
 const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
+  const url = new URL(request.url);
+  const storageKey = String(formData.get("storageKey"));
 
   if (intent === "update_modules_order") {
     const moduleNamesOrder = JSON.parse(
@@ -48,23 +54,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
   }
 
+  if (intent === "generate_video_version") {
+    // @todo if processes for this size active, avoid.
+    console.info("INSIDE_WORKER_PERFORMANCE_MACHINE");
+    generateVersion({
+      machineId: url.searchParams.get("machineId") as string,
+      size: url.searchParams.get("size") as VIDEO_SIZE,
+      storageKey,
+    });
+  }
+
   if (intent === "experiment") {
-    console.log("::EXPERIMENT_VERSIONS_GENERATION::");
-    const storageKey = String(formData.get("storageKey"));
-    experiment(storageKey);
+    await createVersionDetached(storageKey, "360p");
+    await createVersionDetached(storageKey, "480p");
+    await createVersionDetached(storageKey, "720p");
+    await createVersionDetached(storageKey, "1080p");
     return json(null, { status: 200 });
   }
-
-  if (intent === "generate_video_versions") {
-    const videoId = String(formData.get("videoId"));
-    const originalKey = String(formData.get("storageKey"));
-    const newStorageKeys = await createVideoVersions({
-      originalKey,
-      version: "small",
-    });
-    console.log("TOOOODO para: ", newStorageKeys, "funciona?");
-  }
-
   if (intent === "get_multipart_upload") {
     const storageKey = String(formData.get("storageKey"));
     const numberOfParts = formData.has("numberOfParts")
