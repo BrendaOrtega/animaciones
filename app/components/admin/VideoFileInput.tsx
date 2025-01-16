@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { action } from "~/routes/admin";
 import { Spinner } from "../Spinner";
 import { cn } from "~/lib/utils";
+import { useUploadMultipart } from "react-hook-multipart/react";
 
 const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
 
@@ -37,14 +38,7 @@ export const VideoFileInput = ({
   const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
   const [storageKey, setStorageKey] = useState<string>("");
   const [uploading, setUploading] = useState<boolean>(false);
-
-  // @todo: calculate progress 🤩
-  const updateProgres = () => {
-    new TransformStream({
-      transform() {},
-      flush() {},
-    });
-  };
+  const [progress, setProgress] = useState(0);
 
   const getStorageKey = () => {
     const storageKey = "video-" + video.id; // @todo improve
@@ -67,7 +61,19 @@ export const VideoFileInput = ({
     uploadFile(file); // upload
   };
 
+  const { upload } = useUploadMultipart({
+    onUploadProgress: ({ percentage }) => setProgress(percentage),
+  });
   const uploadFile = async (file: File) => {
+    setUploading(true);
+    const { key } = await upload("animaciones/", file);
+    const modKey = key.replace("animaciones/", "");
+    setValue("storageKey", modKey);
+    setValue("storageLink", "/files?storageKey=" + modKey);
+    setUploading(false);
+  };
+  /** DEPRECATED */
+  const __uploadFile = async (file: File) => {
     // @todo: catch progress
     if (!file || !urls) return console.error("No file, nor urls present");
 
@@ -122,7 +128,10 @@ export const VideoFileInput = ({
       />{" "}
       {uploading && (
         <div className="flex gap-2">
-          <Spinner /> Subiendo video, no cierre la ventana
+          <Spinner />{" "}
+          <span>
+            Subiendo video {progress.toFixed(0)}% no cierre la ventana
+          </span>
         </div>
       )}
       {videoSrc && (

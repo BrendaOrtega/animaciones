@@ -1,7 +1,7 @@
 import fs, { WriteStream } from "fs";
 import { finished } from "stream/promises";
 import { Readable } from "stream";
-import { getReadURL } from "./tigris";
+import { getReadURL } from "react-hook-multipart";
 import path from "path";
 import { randomUUID } from "crypto";
 

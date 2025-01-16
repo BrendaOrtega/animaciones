@@ -5,8 +5,7 @@ import { CHUNKS_FOLDER } from "./videoProcessing";
 
 export const replaceLinks = async (storageKey: string, playlist: string) => {
   const { tempPath, ok } = await fetchVideo(
-    path.join(CHUNKS_FOLDER, storageKey, playlist),
-    true
+    path.join("animaciones/", CHUNKS_FOLDER, storageKey, playlist)
   ); // @todo fetchFile instead
   if (!ok) return console.error("::PLAYLIST_NOT_FOUND::");
 

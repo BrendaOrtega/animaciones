@@ -80,14 +80,11 @@ export const fileExist = async (key: string) => {
 
 export const getReadURL = async (key: string, expiresIn = 3600) => {
   await setCors();
-  return await getSignedUrl(
-    S3,
-    new GetObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
-      Key: PREFIX + key,
-    }),
-    { expiresIn }
-  );
+  const command = new GetObjectCommand({
+    Bucket: process.env.BUCKET_NAME,
+    Key: PREFIX + key,
+  });
+  return await getSignedUrl(S3, command, { expiresIn });
 };
 
 export const getPutFileUrl = async (key: string) => {
