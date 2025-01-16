@@ -13,12 +13,7 @@ import {
 import { useClickOutside } from "~/hooks/useClickOutside";
 import slugify from "slugify";
 import { cn } from "~/lib/utils";
-import {
-  getComboURLs,
-  getMultipartURLs,
-  getUploadWithMultiPart,
-  removeFilesFor,
-} from "~/.server/tigris";
+import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { VideoForm } from "~/components/admin/VideoForm";
 import { motion, LayoutGroup, useDragControls } from "motion/react";
@@ -70,29 +65,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await createVersionDetached(storageKey, "720p");
     await createVersionDetached(storageKey, "1080p");
     return json(null, { status: 200 });
-  }
-  if (intent === "get_multipart_upload") {
-    const storageKey = String(formData.get("storageKey"));
-    const numberOfParts = formData.has("numberOfParts")
-      ? Number(formData.get("numberOfParts"))
-      : 0;
-    // @todo should throw?
-    const { UploadId }: { UploadId: string } = await getUploadWithMultiPart(
-      "multipart_testing"
-    );
-
-    // @todo get all presignedURls
-    const uploadPayload = {
-      storageKey,
-      UploadId,
-      numberOfParts,
-      chunkSize: MAX_CHUNK_SIZE,
-      presignedUrls: [] as string[],
-    };
-    const presignedUrls = await getMultipartURLs(uploadPayload);
-    uploadPayload.presignedUrls = presignedUrls;
-    console.log("MULTIPART_UPLOAD_REQUESTED", uploadPayload);
-    return uploadPayload;
   }
   if (intent === "get_combo_urls") {
     const storageKey = String(formData.get("storageKey"));

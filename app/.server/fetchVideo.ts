@@ -14,26 +14,11 @@ export type VideoFetched = {
 };
 
 // @todo: return cleanup!
-export const fetchVideo = async (
-  storageKey: string,
-  forceFetch?: boolean
-): Promise<VideoFetched> => {
+export const fetchVideo = async (storageKey: string): Promise<VideoFetched> => {
   const tempPath = `conversiones/${randomUUID()}/${storageKey}`;
-
-  // if (!forceFetch && fs.existsSync(existPath)) {
-  //   // @todo: damage files can be found
-  //   const f = fs.readFileSync(existPath);
-  //   console.log("AVOIDING_FILE_FETCH");
-  //   return Promise.resolve({
-  //     contentLength: Buffer.byteLength(f).toString(),
-  //     contentType: "video/mp4",
-  //     ok: true,
-  //     tempPath: existPath,
-  //   });
-  // }
-  const getURL = await getReadURL(storageKey, 3600);
+  const getURL = await getReadURL(storageKey);
   const response = await fetch(getURL).catch((e) => console.error(e));
-  console.log("FILE_FETCHED::", response.ok, storageKey);
+  console.log("FILE_FETCHED::", response?.ok, storageKey);
   if (!response?.body) {
     return {
       contentLength: "",

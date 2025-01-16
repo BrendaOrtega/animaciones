@@ -5,20 +5,43 @@ import {
   PutBucketCorsCommand,
   DeleteObjectCommand,
   HeadObjectCommand,
-  CreateMultipartUploadCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 const PREFIX = "animaciones/";
 const isDev = process.env.NODE_ENV === "development";
 
 const S3 = new S3Client({
-  region: "auto",
+  region: process.env.AWS_REGION,
   endpoint: process.env.AWS_ENDPOINT_URL_S3,
 });
 
-const setCors = async () => {
+const setCors = (options?: {
+  MaxAgeSeconds?: number;
+  AllowedOrigins?: string[];
+}) => {
+  const { MaxAgeSeconds = 3600, AllowedOrigins = ["*"] } = options || {};
+  const input = {
+    Bucket: process.env.BUCKET_NAME,
+    CORSConfiguration: {
+      CORSRules: [
+        {
+          MaxAgeSeconds,
+          AllowedOrigins,
+          AllowedHeaders: ["*"],
+          ExposeHeaders: ["ETag"], // important for multipart
+          AllowedMethods: ["PUT", "DELETE", "GET"],
+        },
+      ],
+    },
+  };
+  const command = new PutBucketCorsCommand(input);
+  return S3.send(command);
+};
+
+/** DEPRECATED */
+const __setCors = async () => {
   const input = {
     Bucket: process.env.BUCKET_NAME,
     CORSConfiguration: {
@@ -36,37 +59,6 @@ const setCors = async () => {
   };
   const command = new PutBucketCorsCommand(input);
   return await S3.send(command);
-};
-
-// EXPERIMENTING with parts @todo Asign ACL?
-
-export const getMultipartURLs = ({
-  UploadId,
-  numberOfParts,
-  storageKey,
-}: {
-  storageKey: string;
-  UploadId: string;
-  numberOfParts: number;
-}) => {
-  const promises = [];
-  for (let i = 0; i < numberOfParts; i += 1) {
-    const promise = getPutFileUrl(storageKey, {
-      PartNumber: i,
-      UploadId,
-    });
-    promises.push(promise);
-  }
-  return Promise.all(promises);
-};
-
-export const getUploadWithMultiPart = async (storageKey: string) => {
-  return await S3.send(
-    new CreateMultipartUploadCommand({
-      Bucket: process.env.BUCKET_NAME,
-      Key: PREFIX + storageKey,
-    })
-  ).catch((e) => console.error(e));
 };
 
 export const fileExist = async (key: string) => {
@@ -98,44 +90,13 @@ export const getReadURL = async (key: string, expiresIn = 3600) => {
   );
 };
 
-export const getImageURL = async (key: string, expiresIn = 900) =>
-  await getSignedUrl(
-    S3,
-    new GetObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
-      Key: "animaciones/" + key, // @TODO: update when prod beta
-    }),
-    { expiresIn }
-  );
-
-// borrame
-
-export const getPutVideoExperiment = async () => {
-  const key = "videos_experiment/" + uuidv4();
-  await setCors();
-  return await getSignedUrl(
-    S3,
-    new PutObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
-      Key: key,
-    }),
-    { expiresIn: 3600 }
-  );
-};
-
-export const getPutFileUrl = async (
-  key: string,
-  options?: { UploadId: string; PartNumber: number }
-) => {
-  const { UploadId, PartNumber } = options || {};
+export const getPutFileUrl = async (key: string) => {
   await setCors();
   return await getSignedUrl(
     S3,
     new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME,
       Key: PREFIX + key,
-      UploadId: UploadId || undefined,
-      PartNumber: PartNumber || undefined,
     }),
     { expiresIn: 3600 }
   );
@@ -159,7 +120,7 @@ export const getComboURLs = async (key: string) => ({
   deleteURL: await getRemoveFileUrl(key),
 });
 
-// @todo: now is using prefix keys, we can improve
+// @todo: now is using prefix keys, we can improve REMOVE THIS?
 export const removeFilesFor = async (id: string) => {
   const posterDelete = await getRemoveFileUrl("poster-" + id);
   const videoDelete = await getRemoveFileUrl("video-" + id);
@@ -167,5 +128,3 @@ export const removeFilesFor = async (id: string) => {
   await fetch(videoDelete, { method: "DELETE" });
   return true;
 };
-
-setCors();
