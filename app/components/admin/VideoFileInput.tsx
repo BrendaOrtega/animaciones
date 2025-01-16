@@ -66,7 +66,7 @@ export const VideoFileInput = ({
   });
   const uploadFile = async (file: File) => {
     setUploading(true);
-    const { key } = await upload("animaciones/", file);
+    const { key } = await upload("animaciones/video-", file);
     const modKey = key.replace("animaciones/", "");
     setValue("storageKey", modKey);
     setValue("storageLink", "/files?storageKey=" + modKey);

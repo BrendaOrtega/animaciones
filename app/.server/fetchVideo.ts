@@ -19,6 +19,9 @@ export const fetchVideo = async (storageKey: string): Promise<VideoFetched> => {
   const getURL = await getReadURL(storageKey);
   const response = await fetch(getURL).catch((e) => console.error(e));
   console.log("FILE_FETCHED::", response?.ok, storageKey);
+  if (!response.ok) {
+    console.log("BAD URL:", getURL);
+  }
   if (!response?.body) {
     return {
       contentLength: "",

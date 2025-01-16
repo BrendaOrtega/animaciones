@@ -875,6 +875,9 @@ const fetchVideo = async (storageKey) => {
   const getURL = await getReadURL$1(storageKey);
   const response2 = await fetch(getURL).catch((e) => console.error(e));
   console.log("FILE_FETCHED::", response2 == null ? void 0 : response2.ok, storageKey);
+  if (!response2.ok) {
+    console.log("BAD URL:", getURL);
+  }
   if (!(response2 == null ? void 0 : response2.body)) {
     return {
       contentLength: "",
