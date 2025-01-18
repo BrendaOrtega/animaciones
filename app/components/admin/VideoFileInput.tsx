@@ -1,16 +1,12 @@
-import { type Video } from "@prisma/client";
-import { useFetcher } from "@remix-run/react";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { action } from "~/routes/admin";
+import type { Video } from "@prisma/client";
+import { type ChangeEvent, Ref, SyntheticEvent, useRef, useState } from "react";
 import { Spinner } from "../Spinner";
 import { cn } from "~/lib/utils";
 import { useUploadMultipart } from "react-hook-multipart/react";
-
-const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
-
+import { UseFormSetValue } from "react-hook-form";
+import { handler } from "react-hook-multipart";
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
-// import { toBlobURL } from "@ffmpeg/util"; @TODO experiment
-
+// import { toBlobURL } from "@ffmpeg/util"; @TODO Try use ffmpg in the browser! (WASM) 🤓
 export const VideoFileInput = ({
   video,
   setValue,
@@ -20,94 +16,53 @@ export const VideoFileInput = ({
   className,
   onVideoLoads,
 }: {
-  onVideoLoads?: () => void;
+  onVideoLoads?: (
+    arg0: Ref<HTMLVideoElement>,
+    arg1: SyntheticEvent<HTMLVideoElement, Event>
+  ) => void;
   className?: string;
   register?: any;
   label?: string;
   name: string;
-  setValue: (arg0: string, arg2: string | number) => void;
+  setValue: UseFormSetValue<Partial<Video> | any>;
   video: Partial<Video>;
 }) => {
-  const [urls, setURLs] = useState<{
-    putURL: string;
-    readURL: string;
-    deleteURL: string;
-  } | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const fetcher = useFetcher<typeof action>();
   const [videoSrc, setVideoSrc] = useState<string>(video.storageLink || "");
-  const [storageKey, setStorageKey] = useState<string>("");
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [uploading, setIsUploading] = useState<boolean>(false);
   const [progress, setProgress] = useState(0);
 
-  const getStorageKey = () => {
-    const storageKey = "video-" + video.id; // @todo improve
-    fetcher.submit(
-      {
-        intent: "get_combo_urls",
-        storageKey,
-      },
-      { method: "POST" }
-    );
-    setStorageKey(storageKey);
-    return storageKey;
-  };
-
   const handleFileSelection = async (e: ChangeEvent<HTMLInputElement>) => {
-    //  params.set('totalChunks', Math.ceil(file.size / chunkSize));
-    const file = e.target.files?.[0];
-    if (!file) return console.error("No file selected");
-    setVideoSrc(URL.createObjectURL(file)); // create preview stream from file
-    uploadFile(file); // upload
+    if (!e.currentTarget.files?.length) return;
+
+    const file = e.currentTarget.files[0] as File;
+    if (
+      "type" in file &&
+      (file.type === "video/mp4" || file.type === "video/quicktime")
+    ) {
+      setVideoSrc(URL.createObjectURL(file)); // create preview stream from file
+      uploadFileHandler(file); // upload handler
+    } else {
+      return console.error("No file selected");
+    }
   };
 
+  // multipart stuff
   const { upload } = useUploadMultipart({
-    onUploadProgress: ({ percentage }) => setProgress(percentage),
+    handler: "/api/upload/" + video.id,
+    onUploadProgress: ({ percentage }: { percentage: number }) =>
+      setProgress(percentage),
   });
-  const uploadFile = async (file: File) => {
-    setUploading(true);
+  const uploadFileHandler = async (file: File) => {
+    setIsUploading(true);
     const { key } = await upload("animaciones/video-", file);
-    const modKey = key.replace("animaciones/", "");
+    const modKey = key.replace("animaciones/", ""); // weird hack for this course 🥲
+    // this is mere formality, the model is already updated on the action
     setValue("storageKey", modKey);
     setValue("storageLink", "/files?storageKey=" + modKey);
-    setUploading(false);
-  };
-  /** DEPRECATED */
-  const __uploadFile = async (file: File) => {
-    // @todo: catch progress
-    if (!file || !urls) return console.error("No file, nor urls present");
-
-    if (urls.putURL) {
-      setUploading(true);
-      await fetch(urls.putURL, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Length": file.size,
-          "Content-Type": file.type,
-        },
-      })
-        .catch((e) => {
-          setUploading(false);
-          console.error(e);
-        })
-        .then(() => setUploading(false));
-      //@todo improve
-      setValue("storageKey", storageKey);
-      setValue("storageLink", "/files?storageKey=" + storageKey);
-    }
+    setIsUploading(false);
   };
 
-  useEffect(() => {
-    // @todo why?
-    if (fetcher.data) {
-      setURLs({ ...fetcher.data });
-    } else {
-      getStorageKey();
-    }
-  }, [fetcher.data]);
-
-  //@todo revisit max-w
   return (
     <section
       className={cn("my-2 grid gap-2 max-w-[50vw] md:max-w-[30vw]", className)}
@@ -123,7 +78,7 @@ export const VideoFileInput = ({
       <input
         type="file"
         onChange={handleFileSelection}
-        accept="video/*"
+        accept="video/mp4,video/x-m4v,video/*"
         className="mb-2"
       />{" "}
       {uploading && (
