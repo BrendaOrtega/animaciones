@@ -9,7 +9,7 @@ export type VideoFetched = {
   contentLength: string;
   contentType: string;
   ok: boolean;
-  tempPath: string;
+  tempPath: string | null;
   fileStream?: WriteStream;
 };
 
@@ -24,7 +24,7 @@ export const fetchVideo = async (storageKey: string): Promise<VideoFetched> => {
       contentLength: "",
       contentType: "",
       ok: false,
-      tempPath: "",
+      tempPath: null,
       fileStream: new WriteStream(), // XD
     }; // @todo use invariant
   }

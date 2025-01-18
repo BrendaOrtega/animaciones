@@ -318,7 +318,6 @@ export const createHLSChunks = async ({
     const exist = await fileExist(listPath);
     if (exist) {
       console.log("AVOIDING_VERSION::", sizeName);
-      cb?.(null);
       return;
     }
   }
@@ -343,6 +342,10 @@ export const createHLSChunks = async ({
     const playListPath = `${outputFolder}/${sizeName}.m3u8`;
     // const { tempPath } = await fetchVideo(storageKey);
     const { tempPath } = await fetchVideo("animaciones/" + storageKey); // specific for this app
+    if (!tempPath) {
+      onError?.();
+      console.error("No File Found"); // @todo should trhow?
+    }
     const command = Ffmpeg(tempPath, { timeout: 432000 })
       .size(size)
       .addOption("-profile:v", "baseline")
@@ -356,16 +359,21 @@ export const createHLSChunks = async ({
     return await command
       .clone()
       .on("progress", function ({ frames, percent }) {
-        console.log(
-          "PROCESSING:: " + frames + "::::" + percent?.toFixed(0) + "%::::"
+        console.info(
+          "PROCESSING:: " +
+            `${sizeName}::` +
+            frames +
+            "::::" +
+            percent?.toFixed(0) +
+            "%::::"
         );
       })
       .on("error", function (err) {
-        console.log("ERROR_ON_MEDIA_PROCESSING: " + err.message);
         onError?.();
+        console.error("ERROR_ON_MEDIA_PROCESSING: " + err.message);
       })
       .on("end", function () {
-        console.log(`::VERSION_${sizeName}_CREATED::`);
+        console.info(`::VERSION_${sizeName}_CREATED::`);
         // update db?
         // update main file?
         cb?.(outputFolder); // chunks/:storageKey
