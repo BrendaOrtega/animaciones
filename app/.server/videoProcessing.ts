@@ -9,7 +9,7 @@ import { fork } from "child_process";
 import path, { dirname } from "path";
 import { fetchVideo } from "./fetchVideo";
 
-export const CHUNKS_FOLDER = "chunks";
+export const CHUNKS_FOLDER = "animaciones/chunks";
 
 // EXPERIMENTS 🚧
 export const forkChild = (
@@ -339,10 +339,10 @@ export const createHLSChunks = async ({
     const hlsSegmentFilename = `${outputFolder}/${sizeName}_%03d.ts`;
     const playListPath = `${outputFolder}/${sizeName}.m3u8`;
     // specific for this app
-    const { tempPath } = await fetchVideo("animaciones/" + storageKey);
+    const { tempPath } = await fetchVideo("animaciones/" + storageKey); // bridge
     if (!tempPath) {
-      onError?.();
       console.error("No File Found"); // @todo should trhow?
+      return onError?.();
     }
     const command = Ffmpeg(tempPath, { timeout: 432000 })
       .size(size)
@@ -395,7 +395,7 @@ export const uploadChunks = async (
     // @todo, try/catch
     let cloudPath: string[] | string = chunkPath.split("/").slice(1);
     cloudPath.splice(cloudPath.length - 2, 1);
-    cloudPath = cloudPath.join("/");
+    cloudPath = cloudPath.join("/"); // chunks/:id/:size.*
     const putURL = await getPutFileUrl("animaciones/" + cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
     // @todo retry
