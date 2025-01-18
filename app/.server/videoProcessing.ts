@@ -316,10 +316,13 @@ export const createHLSChunks = async ({
     const exist = await fileExist(listPath); // on s3
     if (exist) {
       console.info("::AVOIDING_VERSION::", sizeName);
+      console.log("::FILE_EXIST_IN::", listPath);
       return;
     }
   }
-  const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
+  const agenda = new Agenda({
+    db: { address: process.env.DATABASE_URL as string },
+  });
   // agenda schedule definition
   agenda.define("generate_hls_chunks", async (job) => {
     const size =
@@ -338,10 +341,11 @@ export const createHLSChunks = async ({
     }
     const hlsSegmentFilename = `${outputFolder}/${sizeName}_%03d.ts`;
     const playListPath = `${outputFolder}/${sizeName}.m3u8`;
-    // specific for this app
-    const { tempPath } = await fetchVideo("animaciones/" + storageKey); // bridge
+    // bridge specific for this app animaciones/ -->
+    const { tempPath } = await fetchVideo("animaciones/" + storageKey);
+    // <--
     if (!tempPath) {
-      console.error("No File Found"); // @todo should trhow?
+      console.error("::ARCHIVO_NO_ENCONTRADO::", storageKey);
       return onError?.();
     }
     const command = Ffmpeg(tempPath, { timeout: 432000 })

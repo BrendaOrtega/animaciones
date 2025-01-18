@@ -40,12 +40,15 @@ export const createVersionDetached = async (
   size: VIDEO_SIZE
 ) => {
   // @todo: if exists avoid
-  const exist = await fileExist(`chunks/${storageKey}/${size}.m3u8`);
+  const playListPath = `animaciones/chunks/${storageKey}/${size}.m3u8`;
+  const exist = await fileExist(playListPath);
   if (exist) {
     return console.info("VERSION_ALREADY_EXIST_ABORTING", size);
   }
-  const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
-  agenda.define("create_chunks", async (job) => {
+  const agenda = new Agenda({
+    db: { address: process.env.DATABASE_URL as string },
+  });
+  agenda.define("create_chunks", async () => {
     console.log("CREATING::PERFORMANCE::MACHINE::");
     const machineId = await createMachine({
       image: await listMachinesAndFindImage(),
