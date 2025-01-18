@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Agenda } from "@hokify/agenda";
-import { fileExist, getPutFileUrl } from "react-hook-multipart";
+import { getPutFileUrl } from "react-hook-multipart";
 import Ffmpeg from "fluent-ffmpeg";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -309,17 +309,6 @@ export const createHLSChunks = async ({
   storageKey: string;
   cb?: (playListPath: string) => void;
 }) => {
-  if (checkExistance) {
-    // will avoid everything if exists
-    // but we want to check for the m3u8 playlist
-    const listPath = path.join(CHUNKS_FOLDER, storageKey, `${sizeName}.m3u8`);
-    const exist = await fileExist(listPath); // on s3
-    if (exist) {
-      console.info("::AVOIDING_VERSION::", sizeName);
-      console.log("::FILE_EXIST_IN::", listPath);
-      return;
-    }
-  }
   const agenda = new Agenda({
     db: { address: process.env.DATABASE_URL as string },
   });
@@ -397,10 +386,11 @@ export const uploadChunks = async (
   console.info("UPLOADING_FILES::", chunkPaths.length);
   for await (let chunkPath of chunkPaths) {
     // @todo, try/catch
-    let cloudPath: string[] | string = chunkPath.split("/").slice(1);
-    cloudPath.splice(cloudPath.length - 2, 1);
-    cloudPath = cloudPath.join("/"); // chunks/:id/:size.*
-    const putURL = await getPutFileUrl("animaciones/" + cloudPath); // bridge
+    let cloudPath: string[] | string = chunkPath.split("/").slice(1); // remove media/
+    cloudPath.splice(cloudPath.length - 2, 1); // remove size/
+    cloudPath = cloudPath.join("/"); // animaciones/chunks/:id/(size)p_(d+).(m3u8|ts)
+    console.log("::THIS IS THE PATH::", cloudPath);
+    const putURL = await getPutFileUrl(cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
     // @todo retry
     const response = await put({
