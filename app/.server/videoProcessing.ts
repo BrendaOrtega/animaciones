@@ -396,7 +396,7 @@ export const uploadChunks = async (
     let cloudPath: string[] | string = chunkPath.split("/").slice(1);
     cloudPath.splice(cloudPath.length - 2, 1);
     cloudPath = cloudPath.join("/");
-    const putURL = await getPutFileUrl(cloudPath); // bridge
+    const putURL = await getPutFileUrl("animaciones/" + cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
     // @todo retry
     const response = await put({
