@@ -115,7 +115,7 @@ const MenuListContainer = ({
         scrollbarWidth: "none",
         maskImage,
       }}
-      className="md:w-[380px] w-[300px] fixed  rounded-xl overflow-y-scroll h-[88%] bg-[#141518] top-0 left-0 pt-20 z-20"
+      className="md:w-[380px] w-[300px] fixed  rounded-xl overflow-y-scroll h-[88%] bg-[#141518] top-0 left-0 pt-20 z-10"
     >
       {children}
     </motion.div>
