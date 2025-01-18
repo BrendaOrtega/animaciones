@@ -43,9 +43,9 @@ async function streamToBuffer(readableStream) {
 }
 
 export const fetchObject = async (storageKey) => {
-  const getURL = await getReadURL(storageKey, 3600);
+  const getURL = await getReadURL(storageKey);
   const response = await fetch(getURL).catch((e) => console.error(e));
-  console.log("FILE_FETCHED::", storageKey, response.ok);
+  console.log("FILE_FETCHED__::", storageKey, response.ok);
   if (!response?.body) {
     return {
       contentLength: "",

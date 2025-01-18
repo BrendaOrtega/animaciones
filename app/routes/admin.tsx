@@ -85,8 +85,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (!data.id) throw json("Video not found", { status: 404 });
 
     data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
-    const validData = updateVideoSchema.parse(data);
-    console.log("Validated: ", validData);
+    const validData = updateVideoSchema.parse(data); // @todo finish it
+    // console.log("Validated: ", validData);
     data.storageLink = data.storageLink
       ? data.storageLink
       : "/videos?storageKey=" + data.storageKey; // experiment?
