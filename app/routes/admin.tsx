@@ -19,8 +19,7 @@ import { VIDEO_SIZE } from "~/.server/videoProcessing";
 import { Module } from "~/components/admin/module_component/Module";
 import { VideoFormDrawer } from "~/components/admin/module_component/VideoFormDrawer";
 import { PrimaryButton } from "~/components/PrimaryButton";
-
-const MAX_CHUNK_SIZE = 5 * 1024 * 1024;
+import { updateVideoSchema } from "~/lib/zod";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -55,7 +54,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
   }
 
-  if (intent === "experiment") {
+  if (intent === "trigger_video_processing") {
     await createVersionDetached(storageKey, "360p");
     await createVersionDetached(storageKey, "480p");
     await createVersionDetached(storageKey, "720p");
@@ -83,24 +82,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
   if (intent === "update_video") {
     const data = JSON.parse(formData.get("data") as string) as Video;
-    data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
-    data.slug = slugify(data.title, { lower: true }); // @todo zod
-    data.index = data.index ? Number(data.index) : undefined;
-    data.storageLink = "/videos?storageKey=" + data.storageKey; // experiment?
+    if (!data.id) throw json("Video not found", { status: 404 });
 
-    // if exists
-    if (data.id) {
-      const id = data.id;
-      delete data.id; // improve
-      await db.video.update({
-        where: {
-          id,
-        },
-        data, // data includes storageKey
-      });
-      return null;
-    }
-    await db.video.create({ data });
+    data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
+    const validData = updateVideoSchema.parse(data);
+    console.log("Validated: ", validData);
+    data.storageLink = data.storageLink
+      ? data.storageLink
+      : "/videos?storageKey=" + data.storageKey; // experiment?
+    return await db.video.update({
+      where: {
+        id: data.id,
+      },
+      data: { ...data, id: undefined },
+    });
   }
   return null;
 };

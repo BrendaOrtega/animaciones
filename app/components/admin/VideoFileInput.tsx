@@ -71,8 +71,7 @@ export const VideoFileInput = ({
       <input
         type="text"
         name={name}
-        className="disabled:pointer-events-none rounded-lg disabled:text-gray-500 disabled:bg-gray-200"
-        disabled
+        className="disabled:pointer-events-none rounded-lg text-gray-500 disabled:bg-gray-300"
         {...register(name)}
       />
       <input

@@ -27,9 +27,7 @@ export const VideoForm = ({
     setValue,
   } = useForm({
     defaultValues: {
-      storageLink: `/videos?storageKey=${
-        video.storageKey || `video-${video.id}` // why? first time.
-      }`,
+      storageLink: video.storageLink,
       storageKey: video.storageKey,
       title: video.title || "",
       isPublic: video.isPublic || false,
@@ -48,7 +46,8 @@ export const VideoForm = ({
     setValue("duration", String(Number(videoRef.current.duration) / 60));
   };
 
-  const onSubmition = (values: Partial<Video>) => {
+  const handleSaveVideo = (values: Partial<Video>) => {
+    // @todo validate zod
     fetcher.submit(
       {
         intent: "update_video",
@@ -81,18 +80,12 @@ export const VideoForm = ({
       return alert("ABORTANDO::No existe video");
 
     return fetcher.submit(
-      { intent: "experiment", storageKey: video.storageKey as string },
-      { method: "POST" } // @todo add action and change for generate_video_versions
+      {
+        intent: "trigger_video_processing",
+        storageKey: video.storageKey as string,
+      },
+      { method: "POST" }
     );
-    // fetcher.submit(
-    //   {
-    //     intent: "generate_video_versions",
-    //     // intent: "generate_hsl", // HSL experiment
-    //     videoId: video.id as string,
-    //     storageKey: video.storageKey as string,
-    //   },
-    //   { method: "POST", action: "/api" }
-    // );
   };
 
   const data = (fetcher.data as { playListURL: string }) || {
@@ -103,7 +96,7 @@ export const VideoForm = ({
     <>
       <Form
         className="flex flex-col h-full"
-        onSubmit={handleSubmit(onSubmition)}
+        onSubmit={handleSubmit(handleSaveVideo)}
       >
         <h3 className="mb-2 text-gray-100 text-xl">
           Nombre del modulo: {video.moduleName}
