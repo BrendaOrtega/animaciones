@@ -359,7 +359,9 @@ export const createHLSChunks = async ({
     return await command
       .clone()
       .on("progress", function ({ frames, percent }) {
-        console.info(`::PROCESSING::${sizeName}::${percent?.toFixed(0)}::`);
+        console.info(
+          `::PROCESSING_VIDEO::${sizeName}::${percent?.toFixed(0)}::`
+        );
       })
       .on("error", function (err) {
         onError?.();
