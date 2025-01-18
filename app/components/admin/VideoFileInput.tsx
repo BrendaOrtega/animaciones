@@ -17,7 +17,7 @@ export const VideoFileInput = ({
   onVideoLoads,
 }: {
   onVideoLoads?: (
-    arg0: Ref<HTMLVideoElement>,
+    arg0: { current: HTMLVideoElement },
     arg1: SyntheticEvent<HTMLVideoElement, Event>
   ) => void;
   className?: string;

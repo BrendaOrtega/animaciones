@@ -2,12 +2,10 @@ import { type Video } from "@prisma/client";
 import { Form, useFetcher } from "@remix-run/react";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useForm } from "react-hook-form";
-import { cn } from "~/lib/utils";
 import { ImageInput } from "./ImageInput";
 import { VideoFileInput } from "./VideoFileInput";
-import { Ref } from "react";
+import { TextField } from "./TextField";
 
-// @todo select moduleName to swap'em
 export const VideoForm = ({
   onSubmit,
   video,
@@ -36,13 +34,12 @@ export const VideoForm = ({
       id: video.id,
       slug: video.slug,
       index: Number(video.index) || videosLength,
-      // @todo remove default
       poster: video.poster,
     },
   });
 
   // puente para la duración
-  const handleVideoLoad = (videoRef: Ref<HTMLVideoElement>) => {
+  const handleVideoLoad = (videoRef: { current: HTMLVideoElement }) => {
     setValue("duration", String(Number(videoRef.current.duration) / 60));
   };
 
@@ -68,11 +65,9 @@ export const VideoForm = ({
       },
       { method: "POST" }
     );
-    onSubmit?.();
   };
 
   const handleGenerateVersions = () => {
-    // Kidnaped du an experiment 🚧
     if (!confirm("Esta operación gasta recursos, ¿estás segura de continuar?"))
       return;
 
@@ -170,7 +165,6 @@ export const VideoForm = ({
             />
           </>
         )}
-        {/* No borrar, puede volver, debería */}
         {video.id && (
           <ImageInput
             className="text-white"
@@ -202,47 +196,5 @@ export const VideoForm = ({
         </div>
       </Form>
     </>
-  );
-};
-
-export const TextField = ({
-  error,
-  name,
-  label,
-  placeholder,
-  register,
-  isDisabled,
-  type = "text",
-  ...props
-}: {
-  type?: "text" | "number";
-  isDisabled?: boolean;
-  register?: any;
-  error?: string;
-  name?: string;
-  label?: string;
-  placeholder?: string;
-  [x: string]: any;
-}) => {
-  return (
-    <label className="flex flex-col gap-2 mb-4 text-white">
-      <p className="">{label}</p>
-      <input
-        disabled={isDisabled}
-        placeholder={placeholder}
-        className={cn(
-          "shadow rounded-md py-2 px-4 border w-full",
-          "text-black",
-          {
-            "bg-gray-200 text-gray-500 pointer-events-none": isDisabled,
-          }
-        )}
-        type={type}
-        name={name}
-        {...props}
-        {...register}
-      />
-      {error && <p>{error}</p>}
-    </label>
   );
 };
