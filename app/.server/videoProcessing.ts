@@ -317,12 +317,12 @@ export const createHLSChunks = async ({
     const listPath = path.join(CHUNKS_FOLDER, storageKey, `${sizeName}.m3u8`);
     const exist = await fileExist(listPath);
     if (exist) {
-      console.log("AVOIDING_VERSION::", sizeName);
+      console.log("::AVOIDING_VERSION::", sizeName);
       return;
     }
   }
   const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
-  // define
+  // agenda schedule definition
   agenda.define("generate_hls_chunks", async (job) => {
     const size =
       sizeName === "360p"
@@ -340,8 +340,8 @@ export const createHLSChunks = async ({
     }
     const hlsSegmentFilename = `${outputFolder}/${sizeName}_%03d.ts`;
     const playListPath = `${outputFolder}/${sizeName}.m3u8`;
-    // const { tempPath } = await fetchVideo(storageKey);
-    const { tempPath } = await fetchVideo("animaciones/" + storageKey); // specific for this app
+    // specific for this app
+    const { tempPath } = await fetchVideo("animaciones/" + storageKey);
     if (!tempPath) {
       onError?.();
       console.error("No File Found"); // @todo should trhow?
@@ -359,14 +359,7 @@ export const createHLSChunks = async ({
     return await command
       .clone()
       .on("progress", function ({ frames, percent }) {
-        console.info(
-          "PROCESSING:: " +
-            `${sizeName}::` +
-            frames +
-            "::::" +
-            percent?.toFixed(0) +
-            "%::::"
-        );
+        console.info(`::PROCESSING::${sizeName}::${percent?.toFixed(0)}::`);
       })
       .on("error", function (err) {
         onError?.();
@@ -404,7 +397,7 @@ export const uploadChunks = async (
     // console.log("CLOUD_PATH::", cloudPath);
     const putURL = await getPutFileUrl(cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
-    const r = await put({
+    await put({
       file,
       contentType: "application/x-mpegURL",
       putURL,
@@ -414,11 +407,11 @@ export const uploadChunks = async (
       fs.rmSync(chunkPath, { recursive: true, force: true });
     }
   }
-  console.log(`All chunks uploaded ${chunkPaths.length} for: ${tempFolder}`);
+  console.log(`ALL_CHUNKS_UPLOADED ${chunkPaths.length} for: ${tempFolder}`);
   // update db
   await cb?.();
   if (cleanUp) {
-    // @todo: use uuid for unique folder
+    // @todo: remove uuid folder?
     // fs.rmSync(dirname(chunkPaths[0]), { recursive: true, force: true });
   }
 };
