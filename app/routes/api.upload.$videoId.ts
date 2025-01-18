@@ -16,6 +16,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
         storageLink: "/videos?storageKey=" + storageKey,
       },
     });
-    return new Response("{ok:true}");
+    return { ok: true };
   });
 }

@@ -341,7 +341,8 @@ export const createHLSChunks = async ({
     }
     const hlsSegmentFilename = `${outputFolder}/${sizeName}_%03d.ts`;
     const playListPath = `${outputFolder}/${sizeName}.m3u8`;
-    const { tempPath } = await fetchVideo(storageKey);
+    // const { tempPath } = await fetchVideo(storageKey);
+    const { tempPath } = await fetchVideo("animaciones/" + storageKey); // specific for this app
     const command = Ffmpeg(tempPath, { timeout: 432000 })
       .size(size)
       .addOption("-profile:v", "baseline")

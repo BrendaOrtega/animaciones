@@ -1,4 +1,3 @@
-import { FetchModuleOptions } from "vite";
 import {
   createHLSChunks,
   updateVideoVersions,
@@ -9,7 +8,7 @@ import { Agenda } from "@hokify/agenda";
 import { fileExist } from "./tigris";
 
 const MACHINES_API_URL = "https://api.machines.dev/v1/apps/animations/machines";
-const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
+// const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
 
 export const generateVersion = async ({
   machineId,
