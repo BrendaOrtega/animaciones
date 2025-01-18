@@ -7,8 +7,6 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import slugify from "slugify";
-import { getComboURLs, removeFilesFor } from "~/.server/tigris";
 import { getUserOrRedirect } from "~/.server/user";
 import { LayoutGroup } from "motion/react";
 import {
@@ -20,6 +18,7 @@ import { Module } from "~/components/admin/module_component/Module";
 import { VideoFormDrawer } from "~/components/admin/module_component/VideoFormDrawer";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { updateVideoSchema } from "~/lib/zod";
+import { removeFilesFor } from "~/.server/removeFilesFor";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -61,9 +60,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await createVersionDetached(storageKey, "1080p");
     return json(null, { status: 200 });
   }
+  // DEPRECATED
   if (intent === "get_combo_urls") {
     const storageKey = String(formData.get("storageKey"));
-    return await getComboURLs(storageKey);
+    return null;
   }
   if (intent === "delete_video") {
     const id = String(formData.get("videoId"));

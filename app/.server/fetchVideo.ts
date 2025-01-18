@@ -26,24 +26,22 @@ export const fetchVideo = async (storageKey: string): Promise<VideoFetched> => {
       ok: false,
       tempPath: null,
       fileStream: new WriteStream(), // XD
-    }; // @todo use invariant
+    };
   }
-  //  save file temp
-  // let tempPath = "./conversiones/" + directory + (storageKey || randomUUID());
+  //  create temp directory
   const __dirname = path.dirname(tempPath);
   if (!fs.existsSync(__dirname)) {
     fs.mkdirSync(__dirname, { recursive: true });
   }
-
-  // @todo try with a Buffer
+  // @todo try with a Buffer?
   const fileStream = fs.createWriteStream(tempPath); // la cajita (en disco) puede ser un Buffer 🧐
   await finished(Readable.fromWeb(response.body).pipe(fileStream));
-  // console.log("FILE STATS: ", fs.statSync(tempPath));
+  // console.info("FILE STATS: ", fs.statSync(tempPath));
   return {
     contentLength: response.headers.get("content-length") || "",
     contentType: response.headers.get("content-type") || "",
     ok: response.ok,
     tempPath,
-    fileStream, // @todo no files?
+    fileStream,
   };
 };

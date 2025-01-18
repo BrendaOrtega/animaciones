@@ -1,5 +1,5 @@
 import { type Video } from "@prisma/client";
-import { Form, useFetcher } from "@remix-run/react";
+import { createSearchParams, Form, useFetcher } from "@remix-run/react";
 import { PrimaryButton } from "~/components/PrimaryButton";
 import { useForm } from "react-hook-form";
 import { ImageInput } from "./ImageInput";
@@ -74,13 +74,26 @@ export const VideoForm = ({
     if (!video.id || !video.storageKey)
       return alert("ABORTANDO::No existe video");
 
-    return fetcher.submit(
+    fetcher.submit(
+      {},
       {
-        intent: "trigger_video_processing",
-        storageKey: video.storageKey as string,
-      },
-      { method: "POST" }
+        action:
+          "/api/video?" +
+          createSearchParams({
+            storageKey: video.storageKey,
+            intent: "local_video_processing",
+          }),
+        method: "POST",
+      }
     );
+
+    // return fetcher.submit(
+    //   {
+    //     intent: "trigger_video_processing",
+    //     storageKey: video.storageKey as string,
+    //   },
+    //   { method: "POST" }
+    // );
   };
 
   const data = (fetcher.data as { playListURL: string }) || {

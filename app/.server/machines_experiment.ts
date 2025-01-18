@@ -5,7 +5,7 @@ import {
   VIDEO_SIZE,
 } from "./videoProcessing";
 import { Agenda } from "@hokify/agenda";
-import { fileExist } from "./tigris";
+import { fileExist } from "react-hook-multipart";
 
 const MACHINES_API_URL = "https://api.machines.dev/v1/apps/animations/machines";
 // const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
@@ -22,7 +22,7 @@ export const generateVersion = async ({
   if (!machineId) return console.error("NO MACHINE ID FOUND");
 
   return await createHLSChunks({
-    onError: () => stopMachine(machineId as string),
+    onError: stopMachine(machineId as string),
     storageKey,
     sizeName: size,
     checkExistance: false,
