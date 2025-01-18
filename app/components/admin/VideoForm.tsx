@@ -74,26 +74,26 @@ export const VideoForm = ({
     if (!video.id || !video.storageKey)
       return alert("ABORTANDO::No existe video");
 
-    fetcher.submit(
-      {},
-      {
-        action:
-          "/api/video?" +
-          createSearchParams({
-            storageKey: video.storageKey,
-            intent: "local_video_processing",
-          }),
-        method: "POST",
-      }
-    );
-
-    // return fetcher.submit(
+    // fetcher.submit(
+    //   {},
     //   {
-    //     intent: "trigger_video_processing",
-    //     storageKey: video.storageKey as string,
-    //   },
-    //   { method: "POST" }
+    //     action:
+    //       "/api/video?" +
+    //       createSearchParams({
+    //         storageKey: video.storageKey,
+    //         intent: "local_video_processing",
+    //       }),
+    //     method: "POST",
+    //   }
     // );
+
+    return fetcher.submit(
+      {
+        intent: "trigger_video_processing",
+        storageKey: video.storageKey as string,
+      },
+      { method: "POST" }
+    );
   };
 
   const data = (fetcher.data as { playListURL: string }) || {
