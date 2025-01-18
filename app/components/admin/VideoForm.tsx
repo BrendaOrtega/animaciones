@@ -74,24 +74,29 @@ export const VideoForm = ({
 
   const handleGenerateVersions = () => {
     // Kidnaped du an experiment 🚧
-    return fetcher.submit(
-      { intent: "experiment", storageKey: video.storageKey },
-      { method: "POST" }
-    );
-
     if (!confirm("Esta operación gasta recursos, ¿estás segura de continuar?"))
       return;
-    // soy flojo como pa definir muchs fetchers con tipos distintos U_U
-    if (!video.id || !video.storageKey) return alert("No existe video");
-    fetcher.submit(
-      {
-        intent: "generate_video_versions",
-        // intent: "generate_hsl", // HSL experiment
-        videoId: video.id,
-        storageKey: video.storageKey,
-      },
-      { method: "POST", action: "/api" }
+
+    if (!video.id || !video.storageKey)
+      return alert("ABORTANDO::No existe video");
+
+    return fetcher.submit(
+      { intent: "experiment", storageKey: video.storageKey as string },
+      { method: "POST" } // @todo add action and change for generate_video_versions
     );
+    // fetcher.submit(
+    //   {
+    //     intent: "generate_video_versions",
+    //     // intent: "generate_hsl", // HSL experiment
+    //     videoId: video.id as string,
+    //     storageKey: video.storageKey as string,
+    //   },
+    //   { method: "POST", action: "/api" }
+    // );
+  };
+
+  const data = (fetcher.data as { playListURL: string }) || {
+    playListURL: null,
   };
 
   return (
@@ -127,12 +132,9 @@ export const VideoForm = ({
             onVideoLoads={handleVideoLoad}
           />
         )}
-        {fetcher.data?.playListURL && (
+        {data.playListURL && (
           <video controls className="aspect-video">
-            <source
-              src={fetcher.data.playListURL}
-              type="application/x-mpegURL"
-            />
+            <source src={data.playListURL} type="application/x-mpegURL" />
           </video>
         )}
         {video.storageKeys && video.storageKeys.length > 0 && (
