@@ -14,7 +14,7 @@ export const VideoForm = ({
   videosLength,
 }: {
   videosLength?: number;
-  onSubmit?: (arg0?: Partial<Video>) => void;
+  onSubmit?: (arg0: Partial<Video>) => void;
   video: Partial<Video>;
 }) => {
   const fetcher = useFetcher();

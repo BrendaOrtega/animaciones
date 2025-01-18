@@ -29,9 +29,8 @@ export const VideoFormDrawer = ({
       <VideoForm
         // @todo❌ sugerir indice, empieza a tener sentido el módulo, cuando menos como meta referencia? 🤫
         // Nel, sigamos la convención de un S3 y usemos / para mantener un array de módulos y submódulos en el modelo del curso. Así conservamos el orden también. ✅
-        onSubmit={() => {
-          // @Review dónde está el objeto fresco?
-          setVideo(video);
+        onSubmit={(values: Partial<Video>) => {
+          setVideo(values);
           setShowVideoDrawer(false);
         }}
         video={video || initialVideo}
