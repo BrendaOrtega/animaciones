@@ -1,7 +1,13 @@
 import { Form } from "@remix-run/react";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "~/lib/utils";
-import { FaArrowRight, FaChevronDown } from "react-icons/fa";
+import {
+  FaArrowRight,
+  FaChevronDown,
+  FaGithub,
+  FaLinkedin,
+  FaYoutube,
+} from "react-icons/fa";
 import { BiLogoTypescript, BiLogoPython } from "react-icons/bi";
 import { FaGolang } from "react-icons/fa6";
 import { DiRubyRough } from "react-icons/di";
@@ -13,7 +19,8 @@ import { FaProductHunt } from "react-icons/fa";
 import { IoLogoFreebsdDevil } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
 import { FaHeart } from "react-icons/fa";
-import { AnimatePresence, LayoutGroup, motion, useSpring } from "motion/react";
+import { motion } from "motion/react";
+import { FaTwitter } from "react-icons/fa";
 
 const BG_COLOR = "bg-[#1717170D]";
 // const BG_COLOR_0 = "bg-[#faefe5]";
@@ -36,45 +43,40 @@ export const AnimatedNavBar = () => {
       <SignInButtons />
       <Panel
         currentHover={currentHover}
-        id={currentHover}
         direction={currentHover === "producto" ? -1 : 1}
-        layout={
-          currentHover === "producto" ? (
-            <ProductLayout />
-          ) : currentHover === "recursos" ? (
-            <ResourcesLayout />
-          ) : currentHover === "empresa" ? (
-            <CompanyLayout />
-          ) : null
-        }
-      />
+      >
+        {currentHover === "producto" ? (
+          <ProductLayout />
+        ) : currentHover === "recursos" ? (
+          <ResourcesLayout />
+        ) : currentHover === "empresa" ? (
+          <CompanyLayout />
+        ) : null}
+      </Panel>
     </nav>
   );
 };
 
 const Panel = ({
   direction = 1,
-  id,
-  layout,
+  children,
   currentHover,
 }: {
   currentHover?: string;
   direction?: number;
-  id: string;
-  layout: ReactNode;
+  children: ReactNode;
 }) => {
-  if (currentHover === "") return null;
-  return (
+  return currentHover === "" ? null : (
     <motion.section
-      transition={{ type: "spring", bounce: 0.2 }}
+      transition={{ type: "spring", bounce: 0 }}
       initial={{
-        width: "672px",
+        width: "550px",
         height: 300,
         x: direction * 10,
         filter: "blur(1px)",
       }}
       animate={{ width: "auto", height: "auto", x: 0, filter: "blur(0px)" }}
-      key={id}
+      key={currentHover}
       className={cn(
         "max-w-2xl",
         "rounded-3xl",
@@ -82,11 +84,123 @@ const Panel = ({
         "absolute border bg-white h-max shadow top-14"
       )}
     >
-      {layout}
+      {children}
     </motion.section>
   );
 };
 
+const Menu = ({
+  currentHover,
+  onHover,
+}: {
+  currentHover: string;
+  onHover?: (name: string) => void;
+}) => {
+  return (
+    <section className="flex">
+      <Button
+        mode={currentHover === "" || (currentHover === "producto" && "solid")}
+        onMouseEnter={() => onHover?.("producto")}
+        chevron
+      >
+        Producto
+      </Button>
+      <Button
+        mode={currentHover === "recursos" && "solid"}
+        onMouseEnter={() => onHover?.("recursos")}
+        chevron
+      >
+        Recursos
+      </Button>
+      <Button
+        mode={currentHover === "empresa" && "solid"}
+        onMouseEnter={() => onHover?.("empresa")}
+        chevron
+      >
+        Empresa
+      </Button>
+      <Button onMouseEnter={() => onHover?.("")}>Industria</Button>
+      <Button>Precios</Button>
+    </section>
+  );
+};
+
+const SignInButtons = () => {
+  return (
+    <Form className="flex gap-1">
+      <Button mode="shadow">Log in</Button>
+      <Button mode="primary">Sign up</Button>
+    </Form>
+  );
+};
+
+const Button = ({
+  children,
+  className,
+  mode = "ghost",
+  chevron,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  chevron?: boolean;
+  mode?: "ghost" | "solid" | "shadow" | "primary";
+  className?: string;
+  children: ReactNode;
+}) => {
+  return (
+    <button
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className={cn(
+        "py-1 px-3",
+        "group",
+        "hover:bg-[#1717170D]",
+        "text-xs font-medium",
+        "flex items-center gap-1",
+        "rounded-lg transition-all",
+        {
+          "bg-transparent": mode === "ghost",
+          "bg-[#1717170D]": mode === "solid",
+          "border shadow-xs": mode === "shadow",
+          "border bg-black text-white": mode === "primary",
+          "hover:bg-black hover:ring-2 ring-black": mode === "primary",
+        },
+        className
+      )}
+    >
+      <span>{children}</span>
+      {chevron && (
+        <span className="text-[7px] group-hover:rotate-180 transition-all">
+          <FaChevronDown />
+        </span>
+      )}
+    </button>
+  );
+};
+
+const Logo = () => {
+  return (
+    <svg
+      className="max-w-[54px] max-h-[40px]"
+      width="65"
+      height="64"
+      viewBox="0 0 65 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M32.5 64C50.1731 64 64.5 49.6731 64.5 32C64.5 20.1555 58.0648 9.81393 48.5 4.28099V31.9999V47.9998H40.5V45.8594C38.1466 47.2207 35.4143 47.9999 32.5 47.9999C23.6634 47.9999 16.5 40.8364 16.5 31.9999C16.5 23.1633 23.6634 15.9999 32.5 15.9999C35.4143 15.9999 38.1466 16.779 40.5 18.1404V1.00812C37.943 0.350018 35.2624 0 32.5 0C14.8269 0 0.500038 14.3269 0.500038 32C0.500038 49.6731 14.8269 64 32.5 64Z"
+        fill="black"
+      />
+    </svg>
+  );
+};
+
+// Layouts
 const CompanyLayout = () => {
   return (
     <section className="inline-flex mx-3 text-xs">
@@ -159,45 +273,36 @@ const CompanyLayout = () => {
         <h4 className="uppercase text-gray-400 text-[10px]">Social</h4>
         <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
           <span className="p-1 border rounded-lg">
-            <BiLogoTypescript />
+            <FaTwitter />
           </span>
-          <span className="text-[10px] font-semibold">Typescript</span>
+          <span className="text-[10px] font-semibold">X(Twitter)</span>
           <span className="group-hover:visible invisible group-hover:translate-x-6 transition-all">
             <FaArrowRight />
           </span>
         </li>
         <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
           <span className="p-1 border rounded-lg">
-            <BiLogoPython />
+            <FaLinkedin />
           </span>
-          <span className="text-[10px] font-semibold">Python</span>
+          <span className="text-[10px] font-semibold">LinkedIn</span>
           <span className="group-hover:visible invisible group-hover:translate-x-6 transition-all">
             <FaArrowRight />
           </span>
         </li>
         <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
           <span className="p-1 border rounded-lg">
-            <FaGolang />
+            <FaGithub />
           </span>
-          <span className="text-[10px] font-semibold">Go</span>
+          <span className="text-[10px] font-semibold">Github</span>
           <span className="group-hover:visible invisible group-hover:translate-x-6 transition-all">
             <FaArrowRight />
           </span>
         </li>
         <li className="cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
           <span className="p-1 border rounded-lg">
-            <DiRubyRough />
+            <FaYoutube />
           </span>
-          <span className="text-[10px] font-semibold">Ruby</span>
-          <span className="group-hover:visible invisible group-hover:translate-x-6 transition-all">
-            <FaArrowRight />
-          </span>
-        </li>
-        <li className="flex items-center gap-3 group cursor-pointer hover:bg-[#faefe5]/40">
-          <span className="p-1 border rounded-lg">
-            <RiPhpFill />
-          </span>
-          <span className="text-[10px] font-semibold">PHP</span>
+          <span className="text-[10px] font-semibold">Youtube</span>
           <span className="group-hover:visible invisible group-hover:translate-x-6 transition-all">
             <FaArrowRight />
           </span>
@@ -470,108 +575,5 @@ const ResourcesLayout = () => {
         </div>
       </div>
     </section>
-  );
-};
-
-const Menu = ({
-  currentHover,
-  onHover,
-}: {
-  currentHover: string;
-  onHover?: (name: string) => void;
-}) => {
-  return (
-    <section className="flex">
-      <Button
-        mode={currentHover === "" && "solid"}
-        onMouseEnter={() => onHover?.("producto")}
-        chevron
-      >
-        Producto
-      </Button>
-      <Button onMouseEnter={() => onHover?.("recursos")} chevron>
-        Recursos
-      </Button>
-      <Button onMouseEnter={() => onHover?.("empresa")} chevron>
-        Empresa
-      </Button>
-      <Button onMouseEnter={() => onHover?.("")}>Industria</Button>
-      <Button>Precios</Button>
-    </section>
-  );
-};
-
-const SignInButtons = () => {
-  return (
-    <Form className="flex gap-1">
-      <Button mode="shadow">Log in</Button>
-      <Button mode="primary">Sign up</Button>
-    </Form>
-  );
-};
-
-const Button = ({
-  children,
-  className,
-  mode = "ghost",
-  chevron,
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-  chevron?: boolean;
-  mode?: "ghost" | "solid" | "shadow" | "primary";
-  className?: string;
-  children: ReactNode;
-}) => {
-  return (
-    <button
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className={cn(
-        "py-1 px-3",
-        "group",
-        "hover:bg-[#1717170D]",
-        "text-xs font-medium",
-        "flex items-center gap-1",
-        "rounded-lg transition-all",
-        {
-          "bg-transparent": mode === "ghost",
-          "bg-[#1717170D]": mode === "solid",
-          "border shadow-xs": mode === "shadow",
-          "border bg-black text-white": mode === "primary",
-          "hover:bg-black hover:ring-2 ring-black": mode === "primary",
-        },
-        className
-      )}
-    >
-      <span>{children}</span>
-      {chevron && (
-        <span className="text-[7px] group-hover:rotate-180 transition-all">
-          <FaChevronDown />
-        </span>
-      )}
-    </button>
-  );
-};
-
-const Logo = () => {
-  return (
-    <svg
-      className="max-w-[54px] max-h-[40px]"
-      width="65"
-      height="64"
-      viewBox="0 0 65 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M32.5 64C50.1731 64 64.5 49.6731 64.5 32C64.5 20.1555 58.0648 9.81393 48.5 4.28099V31.9999V47.9998H40.5V45.8594C38.1466 47.2207 35.4143 47.9999 32.5 47.9999C23.6634 47.9999 16.5 40.8364 16.5 31.9999C16.5 23.1633 23.6634 15.9999 32.5 15.9999C35.4143 15.9999 38.1466 16.779 40.5 18.1404V1.00812C37.943 0.350018 35.2624 0 32.5 0C14.8269 0 0.500038 14.3269 0.500038 32C0.500038 49.6731 14.8269 64 32.5 64Z"
-        fill="black"
-      />
-    </svg>
   );
 };
