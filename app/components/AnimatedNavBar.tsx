@@ -1,5 +1,5 @@
 import { Form } from "@remix-run/react";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/utils";
 import { FaArrowRight, FaChevronDown } from "react-icons/fa";
 import { BiLogoTypescript, BiLogoPython } from "react-icons/bi";
@@ -13,33 +13,37 @@ import { FaProductHunt } from "react-icons/fa";
 import { IoLogoFreebsdDevil } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
 import { FaHeart } from "react-icons/fa";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion, useSpring } from "motion/react";
 
 const BG_COLOR = "bg-[#1717170D]";
 // const BG_COLOR_0 = "bg-[#faefe5]";
 
 export const AnimatedNavBar = () => {
-  const [hover, setHover] = useState("");
+  const [currentHover, setCurrentHover] = useState("producto");
   return (
     <nav
-      onMouseLeave={() => setHover("")}
+      onMouseLeave={() => setCurrentHover("")}
       className={cn(
-        "relative",
+        "relative", // for panel to hook
         "px-4 mx-auto max-w-5xl flex justify-around items-center h-14 bg-white"
       )}
     >
       <Logo />
-      <Menu onHover={(name: string) => setHover(name)} />
+      <Menu
+        onHover={(name: string) => setCurrentHover(name)}
+        currentHover={currentHover}
+      />
       <SignInButtons />
       <Panel
-        id={hover}
-        direction={hover === "producto" ? -1 : 1}
+        currentHover={currentHover}
+        id={currentHover}
+        direction={currentHover === "producto" ? -1 : 1}
         layout={
-          hover === "producto" ? (
+          currentHover === "producto" ? (
             <ProductLayout />
-          ) : hover === "recursos" ? (
+          ) : currentHover === "recursos" ? (
             <ResourcesLayout />
-          ) : hover === "empresa" ? (
+          ) : currentHover === "empresa" ? (
             <CompanyLayout />
           ) : null
         }
@@ -52,29 +56,34 @@ const Panel = ({
   direction = 1,
   id,
   layout,
+  currentHover,
 }: {
+  currentHover?: string;
   direction?: number;
   id: string;
   layout: ReactNode;
 }) => {
+  if (currentHover === "") return null;
   return (
-    <section
+    <motion.section
+      transition={{ type: "spring", bounce: 0.2 }}
+      initial={{
+        width: "672px",
+        height: 300,
+        x: direction * 10,
+        filter: "blur(1px)",
+      }}
+      animate={{ width: "auto", height: "auto", x: 0, filter: "blur(0px)" }}
+      key={id}
       className={cn(
+        "max-w-2xl",
         "rounded-3xl",
         "overflow-hidden",
         "absolute border bg-white h-max shadow top-14"
       )}
     >
-      <motion.div
-        initial={{ x: 50 * direction, filter: "blur(2px)", opacity: 1 }}
-        exit={{ x: 5 * direction, opacity: 1, filter: "blur(2px)" }}
-        animate={{ x: 0, filter: "blur(0px)", opacity: 1 }}
-        transition={{ bounce: 0, duration: 0.25 }}
-        key={id}
-      >
-        {layout}
-      </motion.div>
-    </section>
+      {layout}
+    </motion.section>
   );
 };
 
@@ -286,18 +295,16 @@ const ProductLayout = () => {
       </section>
       <section className="pt-3">
         <ul className="text-gray-700 grid gap-3 mb-3">
-          <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
+          <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40 rounded-lg px-3 w-max">
             <span className="p-1 border rounded-lg">
-              <SiRaycast />
+              <IoLogoFreebsdDevil />
             </span>
             <div className="grid">
-              <span className="text-[10px] font-semibold">Raycast</span>
-              <span className="text-[8px]">
-                Comparte links programáricamente
-              </span>
+              <span className="text-[10px] font-semibold">Elxo</span>
+              <span className="text-[8px]">Elimina la latencia</span>
             </div>
           </li>
-          <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
+          <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40 rounded-lg px-3 w-max">
             <span className="p-1 border rounded-lg">
               <FaProductHunt />
             </span>
@@ -306,13 +313,15 @@ const ProductLayout = () => {
               <span className="text-[8px]">Desbloquea tu crecimiento</span>
             </div>
           </li>
-          <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40">
+          <li className=" cursor-pointer flex items-center gap-3 group hover:bg-[#faefe5]/40 rounded-lg px-3 w-max">
             <span className="p-1 border rounded-lg">
-              <IoLogoFreebsdDevil />
+              <SiRaycast />
             </span>
             <div className="grid">
-              <span className="text-[10px] font-semibold">Elxo</span>
-              <span className="text-[8px]">Elimina la latencia</span>
+              <span className="text-[10px] font-semibold">Raycast</span>
+              <span className="text-[8px]">
+                Comparte links programáricamente
+              </span>
             </div>
           </li>
         </ul>
@@ -464,10 +473,20 @@ const ResourcesLayout = () => {
   );
 };
 
-const Menu = ({ onHover }: { onHover?: (name: string) => void }) => {
+const Menu = ({
+  currentHover,
+  onHover,
+}: {
+  currentHover: string;
+  onHover?: (name: string) => void;
+}) => {
   return (
     <section className="flex">
-      <Button onMouseEnter={() => onHover?.("producto")} chevron mode="solid">
+      <Button
+        mode={currentHover === "" && "solid"}
+        onMouseEnter={() => onHover?.("producto")}
+        chevron
+      >
         Producto
       </Button>
       <Button onMouseEnter={() => onHover?.("recursos")} chevron>
