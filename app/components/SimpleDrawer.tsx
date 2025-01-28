@@ -92,7 +92,7 @@ export const Drawer = ({
             to="/player"
             tabIndex={0}
             onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center bg-gray-200/10 rounded-full p-1 active:scale-95"
+            className=" ml-10 w-10 h-10 flex items-center justify-center bg-gray-200/10 rounded-full p-1 active:scale-95"
           >
             <IoClose className="text-white text-2xl" />
           </Link>

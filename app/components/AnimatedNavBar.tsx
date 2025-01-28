@@ -66,16 +66,7 @@ const Panel = ({
   children: ReactNode;
 }) => {
   return currentHover === "" ? null : (
-    <motion.section
-      transition={{ type: "spring", bounce: 0 }}
-      initial={{
-        width: "550px",
-        height: 300,
-        x: direction * 10,
-        filter: "blur(1px)",
-      }}
-      animate={{ width: "auto", height: "auto", x: 0, filter: "blur(0px)" }}
-      key={currentHover}
+    <section
       className={cn(
         "max-w-2xl",
         "rounded-3xl",
@@ -84,7 +75,7 @@ const Panel = ({
       )}
     >
       {children}
-    </motion.section>
+    </section>
   );
 };
 

@@ -21,7 +21,7 @@ export const VideoForm = ({
   const {
     handleSubmit,
     register,
-    formState: { isValid },
+    formState: { isValid, isDirty },
     setValue,
   } = useForm({
     defaultValues: {
@@ -74,19 +74,6 @@ export const VideoForm = ({
     if (!video.id || !video.storageKey)
       return alert("ABORTANDO::No existe video");
 
-    // fetcher.submit(
-    //   {},
-    //   {
-    //     action:
-    //       "/api/video?" +
-    //       createSearchParams({
-    //         storageKey: video.storageKey,
-    //         intent: "local_video_processing",
-    //       }),
-    //     method: "POST",
-    //   }
-    // );
-
     return fetcher.submit(
       {
         intent: "trigger_video_processing",
@@ -99,6 +86,8 @@ export const VideoForm = ({
   const data = (fetcher.data as { playListURL: string }) || {
     playListURL: null,
   };
+
+  const isDisabled = !isValid || !isDirty;
 
   return (
     <>
@@ -191,7 +180,7 @@ export const VideoForm = ({
         )}
         <div className="flex gap-2 pt-4 sticky bottom-0 bg-black">
           <PrimaryButton
-            isDisabled={!isValid || isLoading}
+            isDisabled={isDisabled || isLoading}
             className="w-full"
             type="submit"
           >

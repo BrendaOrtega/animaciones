@@ -6,8 +6,9 @@ import { getAdminUserOrRedirect } from "~/.server/user";
 export async function action({ request, params }: ActionFunctionArgs) {
   await getAdminUserOrRedirect(request);
   return await handler(request, async ({ key }: { key: string }) => {
+    console.log("The final key", key);
     const storageKey = key.replace("animaciones/", ""); // weird hack 🙄🤢
-    await db.video.update({
+    const updated = await db.video.update({
       where: {
         id: params.videoId,
       },
@@ -16,6 +17,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         storageLink: "/videos?storageKey=" + storageKey,
       },
     });
-    return { ok: true };
+    console.log("UPDATED", updated);
+    return new Response(JSON.stringify(updated));
   });
 }
