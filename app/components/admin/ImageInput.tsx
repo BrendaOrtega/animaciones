@@ -80,8 +80,8 @@ export const ImageInput = ({
           name={name}
           defaultValue={defaultValue}
           className="my-2 w-full rounded-lg disabled:bg-gray-200 text-gray-500"
-          {...register(name)}
           onChange={handleInputChange}
+          {...register(name)}
         />
         <button
           type="button"

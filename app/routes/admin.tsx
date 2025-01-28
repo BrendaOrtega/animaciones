@@ -1,5 +1,5 @@
 import { type Course, type Video } from "@prisma/client";
-import { json, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { FormEvent, useState } from "react";
 import { db } from "~/.server/db";
 import {
@@ -82,19 +82,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
   if (intent === "update_video") {
     const data = JSON.parse(formData.get("data") as string) as Video;
-    if (!data.id) throw json("Video not found", { status: 404 });
+    if (!data.id) throw new Response("Video not found", { status: 404 });
 
     data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
-    const validData = updateVideoSchema.parse(data); // @todo finish it
-    // console.log("Validated: ", validData);
-    data.storageLink = data.storageLink
-      ? data.storageLink
-      : "/videos?storageKey=" + data.storageKey; // experiment?
+    const {
+      data: validData,
+      success,
+      error,
+    } = updateVideoSchema.safeParse(data); // @todo finish it
+    !success && console.error("FALLÓ::", error?.issues);
+    if (!success) throw new Response({ errors: error.issues }, { status: 400 });
+
+    validData.storageLink ??= "/videos?storageKey=" + validData.storageKey; // experiment
     return await db.video.update({
       where: {
-        id: data.id,
+        id: validData.id,
       },
-      data: { ...data, id: undefined },
+      data: { ...validData, id: undefined },
     });
   }
   return null;
