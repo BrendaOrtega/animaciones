@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Agenda } from "@hokify/agenda";
-import { fileExist, getPutFileUrl } from "./tigris";
+import { getPutFileUrl } from "react-hook-multipart";
 import Ffmpeg from "fluent-ffmpeg";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -8,9 +8,8 @@ import { replaceLinks } from "./replaceM3U8Links";
 import { fork } from "child_process";
 import path, { dirname } from "path";
 import { fetchVideo } from "./fetchVideo";
-import { TbRuler2 } from "react-icons/tb";
 
-export const CHUNKS_FOLDER = "chunks";
+export const CHUNKS_FOLDER = "animaciones/chunks";
 
 // EXPERIMENTS 🚧
 export const forkChild = (
@@ -203,7 +202,7 @@ export const cleanUp = async (storageKey: string) => {
   } catch (e) {}
 };
 
-function put({
+const put = ({
   file,
   contentType = "application/x-mpegURL",
   putURL,
@@ -211,16 +210,15 @@ function put({
   file: Buffer<ArrayBufferLike>;
   contentType?: string;
   putURL: string;
-}) {
-  return fetch(putURL, {
+}) =>
+  fetch(putURL, {
     method: "PUT",
     body: file,
     headers: {
-      "Content-Length": Buffer.byteLength(file),
+      "Content-Length": Buffer.byteLength(file).toString(),
       "Content-Type": contentType,
     },
-  }).catch((e) => console.error(e));
-}
+  });
 
 // m3u8 experiment (HSL)
 export const generateHSL = async (storageKey: string) => {
@@ -311,19 +309,10 @@ export const createHLSChunks = async ({
   storageKey: string;
   cb?: (playListPath: string) => void;
 }) => {
-  if (checkExistance) {
-    // will avoid everything if exists
-    // but we want to check for the m3u8 playlist
-    const listPath = path.join(CHUNKS_FOLDER, storageKey, `${sizeName}.m3u8`);
-    const exist = await fileExist(listPath);
-    if (exist) {
-      console.log("AVOIDING_VERSION::", sizeName);
-      cb?.(null);
-      return;
-    }
-  }
-  const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
-  // define
+  const agenda = new Agenda({
+    db: { address: process.env.DATABASE_URL as string },
+  });
+  // agenda schedule definition
   agenda.define("generate_hls_chunks", async (job) => {
     const size =
       sizeName === "360p"
@@ -341,7 +330,13 @@ export const createHLSChunks = async ({
     }
     const hlsSegmentFilename = `${outputFolder}/${sizeName}_%03d.ts`;
     const playListPath = `${outputFolder}/${sizeName}.m3u8`;
-    const { tempPath } = await fetchVideo(storageKey);
+    // bridge specific for this app animaciones/ -->
+    const { tempPath } = await fetchVideo("animaciones/" + storageKey);
+    // <--
+    if (!tempPath) {
+      console.error("::ARCHIVO_NO_ENCONTRADO::", storageKey);
+      return onError?.();
+    }
     const command = Ffmpeg(tempPath, { timeout: 432000 })
       .size(size)
       .addOption("-profile:v", "baseline")
@@ -355,16 +350,16 @@ export const createHLSChunks = async ({
     return await command
       .clone()
       .on("progress", function ({ frames, percent }) {
-        console.log(
-          "PROCESSING:: " + frames + "::::" + percent?.toFixed(0) + "%::::"
+        console.info(
+          `::PROCESSING_VIDEO::${sizeName}::${percent?.toFixed(0)}%::`
         );
       })
       .on("error", function (err) {
-        console.log("ERROR_ON_MEDIA_PROCESSING: " + err.message);
         onError?.();
+        console.error("ERROR_ON_MEDIA_PROCESSING: " + err.message);
       })
       .on("end", function () {
-        console.log(`::VERSION_${sizeName}_CREATED::`);
+        console.info(`::VERSION_${sizeName}_CREATED::`);
         // update db?
         // update main file?
         cb?.(outputFolder); // chunks/:storageKey
@@ -375,6 +370,7 @@ export const createHLSChunks = async ({
   await agenda.start();
   await agenda.schedule(when, "generate_hls_chunks", { storageKey });
 };
+
 export const uploadChunks = async (
   tempFolder: string,
   cleanUp: boolean = true,
@@ -386,35 +382,39 @@ export const uploadChunks = async (
   const chunkPaths = fs
     .readdirSync(tempFolder)
     .map((fileName) => path.join(tempFolder, fileName));
-  console.log("UPLOADING_FILES::", chunkPaths, chunkPaths.length);
+  console.info(chunkPaths, "::ALL_CHUNKS_READY::");
+  console.info("UPLOADING_FILES::", chunkPaths.length);
   for await (let chunkPath of chunkPaths) {
     // @todo, try/catch
-    let cloudPath: string[] | string = chunkPath.split("/").slice(1);
-    cloudPath.splice(cloudPath.length - 2, 1);
-    cloudPath = cloudPath.join("/");
-    // console.log("CLOUD_PATH::", cloudPath);
+    let cloudPath: string[] | string = chunkPath.split("/").slice(1); // remove media/
+    cloudPath.splice(cloudPath.length - 2, 1); // remove size/
+    cloudPath = cloudPath.join("/"); // animaciones/chunks/:id/(size)p_(d+).(m3u8|ts)
+    console.log("::THIS IS THE PATH::", cloudPath);
     const putURL = await getPutFileUrl(cloudPath); // bridge
     const file = fs.readFileSync(chunkPath);
-    const r = await put({
+    // @todo retry
+    const response = await put({
       file,
-      contentType: "application/x-mpegURL",
       putURL,
+      contentType: "application/x-mpegURL",
     });
-    // console.log("chunk uploaded::", r.ok);
+
+    if (response.status === 403) {
+      console.log("UPLOAD_FORBIDDEN::", response.statusText);
+      break;
+    }
     if (cleanUp) {
       fs.rmSync(chunkPath, { recursive: true, force: true });
     }
   }
-  console.log(`All chunks uploaded ${chunkPaths.length} for: ${tempFolder}`);
+  console.log(`ALL_CHUNKS_UPLOADED ${chunkPaths.length} for: ${tempFolder}`);
   // update db
   await cb?.();
   if (cleanUp) {
-    // @todo: use uuid for unique folder
-    // fs.rmSync(dirname(chunkPaths[0]), { recursive: true, force: true });
+    // already adressed inside for loop
   }
 };
 // DIC 2024
-
 // @todo This should accept streams
 export const convertToHLS = async (tempPath: string, storageKey: string) => {
   if (!fs.existsSync(`./conversiones/playlist/${storageKey}/`)) {

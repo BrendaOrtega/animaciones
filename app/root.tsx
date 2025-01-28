@@ -92,8 +92,8 @@ export function ErrorBoundary() {
   } else if (error instanceof Error) {
     return (
       <div>
-        <h1>como estan</h1>
-        <p>hola{error.message}</p>
+        <h1>ERROR::VALIO::BABY</h1>
+        <p>{error.message}</p>
         <p>The stack trace is:</p>
         <pre>{error.stack}</pre>
       </div>

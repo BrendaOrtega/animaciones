@@ -1,15 +1,15 @@
-import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { replaceLinks } from "~/.server/replaceM3U8Links";
-import { getReadURL } from "~/.server/tigris";
+import { getReadURL } from "react-hook-multipart";
 import path from "path";
-import { getUserORNull, getUserOrRedirect } from "~/.server/user";
+import invariant from "tiny-invariant";
+import { CHUNKS_FOLDER } from "~/.server/videoProcessing";
 
-const CHUNKS_FOLDER = "chunks";
 // @todo members only?
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   // await getUserOrRedirect({ request });
   const storageKey = params["storageKey"];
-  if (!storageKey) throw json("Not found", { status: 404 });
+  if (!storageKey) throw Response.json("Not found", { status: 404 });
 
   let string = null;
   console.info("::SEGMENT::REQUIRED::", params.segment);
@@ -21,6 +21,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       },
     });
   } else {
+    invariant(params.segment);
     string = await getReadURL(
       path.join(CHUNKS_FOLDER, storageKey, params.segment)
     );

@@ -40,7 +40,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const searchParams = url.searchParams;
-  // @todo specific video
   const videos = await db.video.findMany({
     where: {
       courseIds: {
@@ -64,8 +63,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       slug: searchParams.get("videoSlug") || "bienvenida-al-curso", // @todo better sorting
     },
   });
-
-  // console.log("Load triggered::", video?.slug);
 
   if (!video) throw json(null, { status: 404 });
   const nextVideo = await db.video.findFirst({
@@ -94,9 +91,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Route() {
-  // const navigate = useNavigate();
-  // const fetcher = useFetcher();
-
   const { nextVideo, isPurchased, video, videos, searchParams, moduleNames } =
     useLoaderData<typeof loader>();
   const [successIsOpen] = useState(searchParams.success);
@@ -114,12 +108,10 @@ export default function Route() {
     submit(searchParams);
   };
 
-  // experiment current position in the list
   useEffect(() => {
     let list = localStorage.getItem("watched") || "[]";
     list = JSON.parse(list);
     const last = list[list.length - 1];
-    // handleClickEnding(undefined, last);
   }, []);
 
   return (

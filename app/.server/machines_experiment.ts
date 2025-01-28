@@ -1,4 +1,3 @@
-import { FetchModuleOptions } from "vite";
 import {
   createHLSChunks,
   updateVideoVersions,
@@ -6,10 +5,10 @@ import {
   VIDEO_SIZE,
 } from "./videoProcessing";
 import { Agenda } from "@hokify/agenda";
-import { fileExist } from "./tigris";
+import { fileExist } from "react-hook-multipart";
 
 const MACHINES_API_URL = "https://api.machines.dev/v1/apps/animations/machines";
-const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
+// const INTERNAL_WORKER_URL = `http://worker.process.animations.internal:3000`;
 
 export const generateVersion = async ({
   machineId,
@@ -23,7 +22,7 @@ export const generateVersion = async ({
   if (!machineId) return console.error("NO MACHINE ID FOUND");
 
   return await createHLSChunks({
-    onError: () => stopMachine(machineId as string),
+    onError: stopMachine(machineId as string),
     storageKey,
     sizeName: size,
     checkExistance: false,
@@ -41,12 +40,15 @@ export const createVersionDetached = async (
   size: VIDEO_SIZE
 ) => {
   // @todo: if exists avoid
-  const exist = await fileExist(`chunks/${storageKey}/${size}.m3u8`);
+  const playListPath = `animaciones/chunks/${storageKey}/${size}.m3u8`;
+  const exist = await fileExist(playListPath);
   if (exist) {
     return console.info("VERSION_ALREADY_EXIST_ABORTING", size);
   }
-  const agenda = new Agenda({ db: { address: process.env.DATABASE_URL } });
-  agenda.define("create_chunks", async (job) => {
+  const agenda = new Agenda({
+    db: { address: process.env.DATABASE_URL as string },
+  });
+  agenda.define("create_chunks", async () => {
     console.log("CREATING::PERFORMANCE::MACHINE::");
     const machineId = await createMachine({
       image: await listMachinesAndFindImage(),

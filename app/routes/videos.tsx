@@ -1,6 +1,5 @@
-import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { getReadURL } from "~/.server/tigris";
-import { getUserORNull, getUserOrRedirect } from "~/.server/user";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { getReadURL } from "react-hook-multipart";
 
 // @todo members only?
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -10,9 +9,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const storageKey = url.searchParams.get("storageKey");
   if (!storageKey || storageKey === "undefined" || storageKey === "null")
-    throw json(undefined, { status: 404 });
-  const readURL = await getReadURL(storageKey);
-  console.log("DELIVERING direct-video-reading-url FOR: ", storageKey);
+    throw Response.json("::VIDEO_NOT_FOUND::", { status: 404 });
+  const readURL = await getReadURL("animaciones/" + storageKey); // bridge animaciones/
+  console.log("direct-video-reading-url FOR: ", storageKey);
   // console.log("URL_ADQUIRED", readURL);
   return redirect(readURL);
 };
