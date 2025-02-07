@@ -79,10 +79,10 @@ const MyTabs = ({
               className="w-full md:w-[560px] bg-white dark:bg-[#1B1D22]  rounded-3xl p-6 md:p-12 text-left border-[1px] border-lightGray dark:border-none "
             >
               <h4 className="text-dark dark:text-white text-4xl md:text-5xl font-bold	">
-                <span className="line-through	">$999 </span>{" "}
-                <span className=" text-[#FF4B4B] dark:text-[#C8496C] ml-2">
+                <span>$999 </span>{" "}
+                {/* <span className=" text-[#FF4B4B] dark:text-[#C8496C] ml-2">
                   $599{" "}
-                </span>
+                </span> */}
                 <span className="text-xl font-normal text-iron dark:text-metal/70 ">
                   / MXN{" "}
                 </span>
@@ -130,10 +130,10 @@ const MyTabs = ({
           >
             {" "}
             <h4 className="text-dark dark:text-white text-4xl md:text-5xl font-bold	">
-              <span className="line-through	">$1,499 </span>{" "}
-              <span className=" text-[#FF4B4B] dark:text-[#C8496C] ml-2">
+              <span>$1,499 </span>{" "}
+              {/* <span className=" text-[#FF4B4B] dark:text-[#C8496C] ml-2">
                 $999{" "}
-              </span>
+              </span> */}
               <span className="text-xl font-normal text-iron dark:text-metal/70  ">
                 / MXN{" "}
               </span>
