@@ -44,14 +44,14 @@ export const VideoForm = ({
   };
 
   const handleSaveVideo = (values: Partial<Video>) => {
-    // @todo validate zod
     fetcher.submit(
       {
-        intent: "update_video",
+        intent: values.id ? "update_video" : "create_video",
         data: JSON.stringify(values),
       },
       { method: "POST" }
     );
+
     onSubmit?.(values);
   };
 
