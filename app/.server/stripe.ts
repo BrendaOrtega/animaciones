@@ -9,9 +9,10 @@ export const PRICE_1499 = "price_1QKLfhJ7Zwl77LqnZw5iaY1V";
 export const PRICE_999 = "price_1QKRbEJ7Zwl77Lqn0O8rRwrN";
 
 export const DEV_PRICE = "price_1KBnlPJ7Zwl77LqnixoYRahN"; // 1200
-export const DEV_COUPON = "rXOpoqJe"; // -25%
-export const COUPON_40 = "EphZ17Lv"; // -40%
-export const COUPON_50 = "yYMKDuTC"; // -50%
+export const DEV_COUPON = ""; // -25%
+// export const COUPON_40 = "EphZ17Lv"; // -40%
+export const COUPON_40 = "";
+export const COUPON_50 = ""; // -50%
 
 export const get40Checkout = async () => {
   return await getStripeCheckout({
@@ -22,7 +23,7 @@ export const get40Checkout = async () => {
 export const get50CheckoutWithShirt = async (tokenEmail: string) => {
   return await getStripeCheckout({
     price: PRICE_1499,
-    coupon: isDev ? DEV_COUPON : COUPON_50, // -50%
+    // coupon: isDev ? DEV_COUPON : COUPON_50, // -50%
     metadata: {
       host: tokenEmail,
     },
@@ -32,7 +33,7 @@ export const get50CheckoutWithShirt = async (tokenEmail: string) => {
 export const get50Checkout = async (tokenEmail: string) => {
   return await getStripeCheckout({
     // price: PRICE_999,
-    coupon: isDev ? DEV_COUPON : COUPON_50, // -50%
+    // coupon: isDev ? DEV_COUPON : COUPON_50, // -50%
     metadata: {
       host: tokenEmail,
     },
