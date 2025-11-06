@@ -1,9 +1,18 @@
 import { z } from "zod";
 
+const CourseId = z.string().min(3);
+export const createVideoSchema = z.object({
+  index: z.coerce.number().min(1),
+  slug: z.string().min(3),
+  title: z.string().min(3),
+  moduleName: z.string().min(3),
+  courseIds: z.array(CourseId).min(1),
+});
+
 export const updateVideoSchema = z.object({
   id: z.string().min(3),
   slug: z.string().min(3),
-  index: z.number().min(1),
+  index: z.coerce.number().min(1),
   title: z.string().min(3),
 
   isPublic: z.boolean().default(false),
@@ -20,4 +29,5 @@ export const updateVideoSchema = z.object({
   moduleName: z.string().optional().nullable(),
   courseIds: z.array(z.string()),
 });
-export type updateVideoType = z.infer<typeof updateVideoSchema>;
+export type UpdateVideoType = z.infer<typeof updateVideoSchema>;
+export type CreateVideoSchema = z.infer<typeof createVideoSchema>;

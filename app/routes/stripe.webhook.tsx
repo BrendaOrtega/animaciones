@@ -48,6 +48,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       const email = session.customer_email || session.customer_details?.email;
       const courseId = session.metadata?.courseId || "645d3dbd668b73b34443789c";
+
+      // if fixter's
+      if (
+        session.metadata?.courseSlug &&
+        session.metadata.courseSlug !==
+          "construye-mas-de-14-componentes-animados-con-react-y-motion"
+      ) {
+        return null;
+      }
+
+      // keep going
       if (!email || !courseId) {
         return json(
           "customer_email or courseId are missing from webhook event",

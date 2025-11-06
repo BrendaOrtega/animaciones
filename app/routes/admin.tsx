@@ -2,6 +2,8 @@ import { type Course, type Video } from "@prisma/client";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { FormEvent, useState } from "react";
 import { db } from "~/.server/db";
+import slugify from "slugify";
+import { nanoid } from "nanoid";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -17,8 +19,10 @@ import { VIDEO_SIZE } from "~/.server/videoProcessing";
 import { Module } from "~/components/admin/module_component/Module";
 import { VideoFormDrawer } from "~/components/admin/module_component/VideoFormDrawer";
 import { PrimaryButton } from "~/components/PrimaryButton";
-import { updateVideoSchema } from "~/lib/zod";
+import { createVideoSchema, updateVideoSchema } from "~/lib/zod";
 import { removeFilesFor } from "~/.server/removeFilesFor";
+
+const COURSE_ID = "645d3dbd668b73b34443789c";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -82,17 +86,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
   if (intent === "update_video") {
     const data = JSON.parse(formData.get("data") as string) as Video;
+
     if (!data.id) throw new Response("Video not found", { status: 404 });
 
-    data.courseIds = ["645d3dbd668b73b34443789c"]; // forcing this course
+    data.courseIds = [COURSE_ID]; // forcing this course
     const {
       data: validData,
       success,
       error,
-    } = updateVideoSchema.safeParse(data); // @todo finish it
+    } = updateVideoSchema.safeParse(data);
     !success && console.error("FALLÓ::", error?.issues);
-    if (!success) throw new Response({ errors: error.issues }, { status: 400 });
-
+    if (!success)
+      throw new Response(JSON.stringify({ errors: error.issues }), {
+        status: 400,
+      });
     validData.storageLink ??= "/videos?storageKey=" + validData.storageKey; // experiment
     return await db.video.update({
       where: {
@@ -101,6 +108,28 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       data: { ...validData, id: undefined },
     });
   }
+
+  if (intent === "create_video") {
+    const data = JSON.parse(formData.get("data") as string) as Video;
+    data.slug = `${slugify(data.title as string)}_${nanoid(4)}`;
+    data.courseIds = [COURSE_ID];
+    const {
+      data: validData,
+      success,
+      error,
+    } = createVideoSchema.safeParse(data);
+    !success && console.error("NO SE PUDO CREAR::", error?.issues);
+
+    if (!success)
+      throw new Response(JSON.stringify({ errors: error.issues }), {
+        status: 400,
+      });
+
+    return await db.video.create({
+      data: validData,
+    });
+  }
+
   return null;
 };
 
