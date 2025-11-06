@@ -152,15 +152,28 @@ export const sendMagicLink = async (
 ): Promise<{
   error: boolean | string;
 }> => {
+  console.log("🔍 Buscando usuario con email:", email);
   const user = await db.user.findUnique({
     where: {
       email,
     },
   });
-  if (!user) return { error: "No existe una cuenta con este correo" };
+  if (!user) {
+    console.log("❌ No se encontró usuario con email:", email);
+    return { error: "No existe una cuenta con este correo" };
+  }
+
+  console.log("✅ Usuario encontrado:", user.email);
   const token = jwt.sign({ email }, secret, { expiresIn: "365d" });
-  await sendMagicLinkEmail(user, token);
-  return { error: false };
+
+  try {
+    await sendMagicLinkEmail(user, token);
+    console.log("✅ Magic link enviado exitosamente");
+    return { error: false };
+  } catch (e) {
+    console.error("❌ Error al enviar magic link:", e);
+    return { error: "Error al enviar el email. Por favor intenta de nuevo." };
+  }
 };
 
 // @todo review this

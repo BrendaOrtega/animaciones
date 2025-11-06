@@ -13,6 +13,7 @@
     "stripe": "stripe listen --events checkout.session.completed,checkout.session.async_payment_failed,checkout.session.async_payment_succeeded,  --forward-to localhost:3000/stripe/webhook"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.925.0",
     "@headlessui/react": "^2.1.10",
     "@headlessui/tailwindcss": "^0.2.1",
     "@hokify/agenda": "^6.3.0",

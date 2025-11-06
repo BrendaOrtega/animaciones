@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { sendgridTransport } from "./transports";
+import { emailTransport } from "./transports";
 import { magicLinkTemplate } from "~/email_templates/magicLinkTemplate";
 import { welcomeTemplate } from "~/email_templates/welcomeTemplate";
 import brendiTemplate from "~/email_templates/brendiTemplate";
@@ -29,15 +29,23 @@ export const sendMagicLinkEmail = (user: User, token: string) => {
   url.pathname = "/portal";
   url.searchParams.set("token", token);
 
-  return sendgridTransport
+  console.log("📧 Enviando magic link a:", user.email);
+
+  return emailTransport
     .sendMail({
-      from: "contacto@fixter.org",
+      from: "no-reply@fixtergeek.com",
+      to: user.email,
       subject: "🪄 Aquí está tu magic link 🎩",
-      bcc: [user.email],
       html: magicLinkTemplate({ link: url.toString() }),
     })
-    .then((result: unknown) => console.log(result))
-    .catch((e: Error) => console.error(e));
+    .then((result: unknown) => {
+      console.log("✅ Email enviado exitosamente:", result);
+      return result;
+    })
+    .catch((e: Error) => {
+      console.error("❌ Error al enviar email:", e);
+      throw e;
+    });
 };
 
 export const notifyBrendi = ({
@@ -47,10 +55,10 @@ export const notifyBrendi = ({
   user: User;
   courseTitle: string;
 }) => {
-  return sendgridTransport.sendMail({
-    from: "contacto@fixter.org",
+  return emailTransport.sendMail({
+    from: "no-reply@fixtergeek.com",
+    to: "brenda@fixter.org",
     subject: "🪄 Nueva compra! 🎫",
-    bcc: ["brenda@fixter.org"],
     html: brendiTemplate({
       userMail: user.email,
       title: courseTitle,
@@ -66,13 +74,21 @@ export const sendWelcomeEmail = (email: string, token: string) => {
     next: "/player?videoSlug=bienvenida-al-curso",
   });
 
-  return sendgridTransport
+  console.log("📧 Enviando email de bienvenida a:", email);
+
+  return emailTransport
     .sendMail({
-      from: "contacto@fixter.org",
+      from: "no-reply@fixtergeek.com",
+      to: email,
       subject: "🪄 Aquí está tu acceso 🎫",
-      bcc: [email],
       html: welcomeTemplate({ link: url.toString() }),
     })
-    .then((result: unknown) => console.log(result))
-    .catch((e: Error) => console.error(e));
+    .then((result: unknown) => {
+      console.log("✅ Email de bienvenida enviado exitosamente:", result);
+      return result;
+    })
+    .catch((e: Error) => {
+      console.error("❌ Error al enviar email de bienvenida:", e);
+      throw e;
+    });
 };
